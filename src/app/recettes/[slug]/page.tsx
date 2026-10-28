@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${r.title} — recette facile en ${r.time} min`,
     description: r.description,
     alternates: { canonical: `/recettes/${r.slug}` },
-    openGraph: { type: "article", title: r.title, description: r.description, images: [{ url: unsplash(r.image, 1200), width: 1200, height: 800, alt: r.title }] },
+    openGraph: { type: "article", title: r.title, description: r.description, images: r.image ? [{ url: unsplash(r.image, 1200), width: 1200, height: 800, alt: r.title }] : undefined },
   };
 }
 
@@ -49,7 +49,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     "@type": "Recipe",
     name: r.title,
     description: r.description,
-    image: [unsplash(r.image, 1200), unsplash(r.image, 1920)],
+    image: r.image ? [unsplash(r.image, 1200), unsplash(r.image, 1920)] : undefined,
     author: { "@type": "Organization", name: SITE.name },
     totalTime: `PT${r.time}M`,
     recipeYield: "1 portion",

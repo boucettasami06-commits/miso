@@ -28,7 +28,7 @@ const FAQ = [
   { q: "Puis-je faire un menu végétarien, vegan, sans porc ou sans gluten ?", a: "Bien sûr. Tu choisis ton régime (omnivore, flexitarien, pescétarien, végétarien, vegan), tes restrictions (sans porc, sans gluten, sans lactose) et tes allergies. Les recettes incompatibles sont exclues automatiquement." },
   { q: "Est-ce que je peux remplacer une recette qui ne me plaît pas ?", a: "En un clic. Mijo te propose une alternative qui respecte ton budget, ton objectif et la variété de la semaine, et met à jour la liste de courses instantanément." },
   { q: "C'est quoi le mode « restes du midi » ?", a: "Le soir, tu cuisines une portion en plus que tu emportes le lendemain midi. Moins de temps en cuisine, moins de gaspillage, et un budget qui fond moins vite." },
-  { q: "Mijo est-il gratuit ?", a: "Oui, la génération de menus et la liste de courses sont gratuites et ne demandent aucune inscription. Tes données restent sur ton appareil." },
+  { q: "Comment fonctionne l'abonnement ?", a: "Tu réponds au questionnaire et tu découvres un aperçu de ta semaine. Pour débloquer toutes tes recettes, ta liste de courses et les remplacements illimités, tu choisis une formule mensuelle ou annuelle, sans engagement et résiliable à tout moment." },
 ];
 
 /** Une seule fois chaque marque dans le bandeau (Aldi, Lidl, Carrefour… existent dans plusieurs pays). */
@@ -206,7 +206,7 @@ export default function Home() {
           <h2 className="relative mx-auto max-w-3xl font-display text-4xl font-medium leading-tight sm:text-6xl">
             Ce soir, tu sais déjà ce que tu manges.
           </h2>
-          <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/85">Ta première semaine est prête en moins de 2 minutes. Sans compte, sans carte bancaire.</p>
+          <p className="relative mx-auto mt-5 max-w-xl text-lg text-white/85">Réponds à 6 questions et découvre ta semaine en moins de 2 minutes.</p>
           <Link href="/planifier" className="group relative mt-10 inline-flex items-center gap-2 rounded-full bg-ink px-8 py-4 text-lg font-semibold transition hover:-translate-y-0.5 hover:bg-plum">
             Créer ma semaine <ArrowRight className="transition group-hover:translate-x-1" />
           </Link>

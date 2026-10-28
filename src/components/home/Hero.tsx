@@ -18,7 +18,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 rounded-full border border-line bg-white/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink-soft backdrop-blur"
           >
-            <Sparkles size={14} className="text-tomato" /> Gratuit · sans inscription
+            <Sparkles size={14} className="text-tomato" /> Ta semaine prête en 2 minutes
           </motion.p>
 
           <motion.h1

@@ -77,7 +77,7 @@ export default function Header() {
                 </Link>
               ))}
               <Link href="/planifier" className="mt-2 rounded-full bg-tomato px-5 py-3 text-center font-semibold text-white">
-                Créer mon menu gratuit
+                Créer mon menu
               </Link>
             </div>
           </motion.nav>

@@ -17,6 +17,7 @@ import { money, qty } from "@/lib/format";
 import { equipmentTip } from "@/lib/engine/equipment";
 import type { Aisle, PlannedMeal, Profile, WeekPlan } from "@/lib/types";
 import SmartImage from "../SmartImage";
+import Paywall from "../Paywall";
 
 const AISLES: Aisle[] = [
   "Fruits & légumes", "Boulangerie", "Boucherie & volaille", "Poissonnerie", "Crèmerie & frais", "Épicerie salée", "Épicerie sucrée", "Surgelés", "Placard",
@@ -33,6 +34,9 @@ export default function PlanView() {
   const [open, setOpen] = useState<PlannedMeal | null>(null);
   const [swapping, setSwapping] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  /** null = vérification en cours ; false = aperçu (un plat visible, le reste flouté) */
+  const [unlocked, setUnlocked] = useState<boolean | null>(null);
+  const [paywall, setPaywall] = useState(false);
 
   useEffect(() => {
     const prof = loadProfile();
@@ -47,6 +51,17 @@ export default function PlanView() {
     const today = (new Date().getDay() + 6) % 7;
     setDay(today);
     setReady(true);
+    fetch("/api/subscription", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d: { active?: boolean }) => {
+        setUnlocked(!!d.active);
+        // En aperçu, on ouvre sur le jour du plat dévoilé
+        const first = saved?.meals.find((m) => !m.leftoverOf);
+        if (!d.active && first) setDay(first.day);
+      })
+      .catch(() => setUnlocked(false));
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("paiement") === "indisponible") setToast("Le paiement n'est pas encore configuré sur ce site.");
   }, []);
 
   const notify = (msg: string) => {
@@ -62,7 +77,14 @@ export default function PlanView() {
   if (!ready) return <div className="min-h-screen" />;
   if (!plan || !profile) return <Empty />;
 
+  const locked = unlocked !== true;
+  // En aperçu, un seul plat est dévoilé : le premier cuisiné de la semaine
+  const first = plan.meals.find((m) => !m.leftoverOf);
+  const revealKey = first ? `${first.day}-${first.meal}` : "";
+  const askPay = () => setPaywall(true);
+
   const onSwap = (m: PlannedMeal) => {
+    if (locked) return askPay();
     const key = `${m.day}-${m.meal}`;
     setSwapping(key);
     setTimeout(() => {
@@ -75,6 +97,7 @@ export default function PlanView() {
   };
 
   const regenerate = () => {
+    if (locked) return askPay();
     update(generatePlan(profile));
     notify("Nouvelle semaine générée 🎲");
   };
@@ -159,13 +182,33 @@ export default function PlanView() {
       <AnimatePresence mode="wait">
         <motion.div key={tab} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.3 }}>
           {tab === "menu" && (
-            <MenuTab plan={plan} day={day} setDay={setDay} onOpen={setOpen} onSwap={onSwap} swapping={swapping} />
+            <MenuTab
+              plan={plan}
+              day={day}
+              setDay={setDay}
+              onOpen={(m) => (locked && `${m.day}-${m.meal}` !== revealKey ? askPay() : setOpen(m))}
+              onSwap={onSwap}
+              swapping={swapping}
+              isLocked={(m) => locked && `${m.day}-${m.meal}` !== revealKey}
+              onUnlock={askPay}
+            />
           )}
-          {tab === "courses" && <ShoppingTab plan={plan} profile={profile} notify={notify} />}
+          {tab === "courses" && <ShoppingTab plan={plan} profile={profile} notify={notify} locked={locked} onUnlock={askPay} />}
           {tab === "enseignes" && <StoresTab plan={plan} profile={profile} onPick={pickStore} />}
         </motion.div>
       </AnimatePresence>
 
+      {locked && unlocked !== null && (
+        <div className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream/90 p-3 backdrop-blur-xl sm:p-4">
+          <div className="mx-auto flex max-w-3xl flex-col items-center gap-2 sm:flex-row sm:justify-between">
+            <p className="text-center text-sm text-ink-soft sm:text-left">Ta semaine et ta liste de courses sont prêtes.</p>
+            <button onClick={askPay} className="w-full rounded-full bg-tomato px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_rgba(255,90,31,0.7)] transition hover:bg-tomato-dark sm:w-auto">
+              🔓 Débloquer ma liste de courses et mes recettes de la semaine
+            </button>
+          </div>
+        </div>
+      )}
+      <AnimatePresence>{paywall && <Paywall onClose={() => setPaywall(false)} />}</AnimatePresence>
       <AnimatePresence>{open && <RecipeModal meal={open} profile={profile} onClose={() => setOpen(null)} />}</AnimatePresence>
       <AnimatePresence>
         {toast && (
@@ -188,8 +231,9 @@ function SummaryCard({ icon: Icon, label, value, hint }: { icon: typeof Flame; l
   );
 }
 
-function MenuTab({ plan, day, setDay, onOpen, onSwap, swapping }: {
+function MenuTab({ plan, day, setDay, onOpen, onSwap, swapping, isLocked, onUnlock }: {
   plan: WeekPlan; day: number; setDay: (d: number) => void; onOpen: (m: PlannedMeal) => void; onSwap: (m: PlannedMeal) => void; swapping: string | null;
+  isLocked: (m: PlannedMeal) => boolean; onUnlock: () => void;
 }) {
   const meals = plan.meals.filter((m) => m.day === day);
   const n = dayNutrition(plan, day);
@@ -219,6 +263,7 @@ function MenuTab({ plan, day, setDay, onOpen, onSwap, swapping }: {
             const r = RECIPE_BY_SLUG[m.slug];
             const nut = recipeNutrition(r);
             const key = `${m.day}-${m.meal}`;
+            if (isLocked(m)) return <LockedMeal key={key} label={MEAL_LABEL[m.meal]} photo={r.image} emoji={r.emoji} onUnlock={onUnlock} delay={idx * 0.08} />;
             return (
               <motion.article key={key + m.slug} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.08 }} className="group flex flex-col overflow-hidden rounded-[2rem] border border-line bg-white/70">
                 <button onClick={() => onOpen(m)} className="relative aspect-[4/3] overflow-hidden text-left" aria-label={`Voir la recette ${r.title}`}>
@@ -252,7 +297,31 @@ function MenuTab({ plan, day, setDay, onOpen, onSwap, swapping }: {
   );
 }
 
-function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profile; notify: (s: string) => void }) {
+function LockedMeal({ label, photo, emoji, onUnlock, delay }: { label: string; photo: string; emoji: string; onUnlock: () => void; delay: number }) {
+  return (
+    <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="relative flex flex-col overflow-hidden rounded-[2rem] border border-line bg-white/70">
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <SmartImage photo={photo} emoji={emoji} alt="" fill sizes="(max-width: 768px) 92vw, 30vw" className="scale-110 object-cover blur-xl" />
+        <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-wider">{label}</span>
+        <span className="absolute inset-0 grid place-items-center">
+          <span className="grid h-14 w-14 place-items-center rounded-full bg-white/90 text-2xl shadow-lg">🔒</span>
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <p aria-hidden className="select-none font-display text-2xl leading-tight blur-[7px]">Recette de la semaine</p>
+        <p aria-hidden className="mt-3 select-none text-sm text-ink-soft blur-[5px]">25 min · 640 kcal · 38 g prot.</p>
+        <button onClick={onUnlock} className="mt-auto rounded-full bg-ink py-2.5 text-sm font-semibold text-cream transition hover:bg-tomato">
+          Débloquer
+        </button>
+      </div>
+    </motion.article>
+  );
+}
+
+/** Nombre d'articles de la liste visibles en aperçu. */
+const PREVIEW_LINES = 3;
+
+function ShoppingTab({ plan, profile, notify, locked, onUnlock }: { plan: WeekPlan; profile: Profile; notify: (s: string) => void; locked: boolean; onUnlock: () => void }) {
   const lines = useMemo(() => shoppingList(plan.meals, plan.storeId, profile.hasPantry), [plan, profile.hasPantry]);
   const [checked, setChecked] = useState<string[]>([]);
   useEffect(() => setChecked(loadChecked(plan.id)), [plan.id]);
@@ -265,6 +334,7 @@ function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profi
   const done = lines.filter((l) => checked.includes(l.id)).length;
 
   const copy = async () => {
+    if (locked) return onUnlock();
     const txt = AISLES.map((a) => {
       const ls = lines.filter((l) => l.aisle === a);
       if (!ls.length) return "";
@@ -277,6 +347,42 @@ function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profi
       notify("Impossible de copier sur cet appareil.");
     }
   };
+
+  if (locked) {
+    const preview = lines.filter((l) => !l.pantry).slice(0, PREVIEW_LINES);
+    const hidden = lines.length - preview.length;
+    return (
+      <div className="mx-auto mt-6 max-w-2xl">
+        <h2 className="font-display text-3xl">Ta liste de courses · {lines.length} articles</h2>
+        <ul className="mt-4 divide-y divide-line rounded-[1.75rem] border border-line bg-white/70 px-4">
+          {preview.map((l) => (
+            <li key={l.id} className="flex items-center justify-between gap-4 py-3">
+              <span>
+                <span className="font-semibold">{l.name}</span>
+                <span className="block text-xs text-ink-soft">{l.packs} × {l.packLabel ?? qty(l.packSize, l.unit)}</span>
+              </span>
+              <span className="font-display text-lg">{money(l.cost, plan.currency)}</span>
+            </li>
+          ))}
+          {Array.from({ length: Math.min(hidden, 7) }, (_, i) => (
+            <li key={i} aria-hidden className="flex select-none items-center justify-between gap-4 py-3 blur-[6px]">
+              <span>
+                <span className="font-semibold">{["Ingrédient secret", "Produit frais", "Légumes de saison", "Épicerie"][i % 4]}</span>
+                <span className="block text-xs text-ink-soft">1 × paquet</span>
+              </span>
+              <span className="font-display text-lg">{money(1 + ((i * 7) % 5) + 0.49, plan.currency)}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="relative -mt-24 flex flex-col items-center rounded-b-[1.75rem] bg-gradient-to-t from-cream via-cream/95 to-transparent px-4 pb-2 pt-16 text-center">
+          <p className="font-semibold">+ {hidden} articles, rangés par rayon, au prix de {STORE_BY_ID[plan.storeId].name}</p>
+          <button onClick={onUnlock} className="mt-4 rounded-full bg-tomato px-6 py-3.5 font-semibold text-white transition hover:bg-tomato-dark">
+            🔓 Débloquer ma liste de courses
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_20rem]">

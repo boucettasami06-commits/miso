@@ -896,15 +896,36 @@ const FROM_EXTRA: Recipe[] = EXTRA.map(([slug, title, meal, description, time, d
 type Photo = { src: string; author: string; url: string };
 
 /** Photos dédiées (récupérées par `npm run photos`) prioritaires sur les photos d'illustration. */
+/**
+ * Recettes dont la photo d'illustration représente vraiment ce plat (burger → burger, curry → curry…).
+ * Pour toutes les autres, on préfère une vignette illustrée à une photo trompeuse,
+ * jusqu'à ce qu'une photo dédiée soit ajoutée dans photos.json (`npm run photos`).
+ */
+const ILLUSTRATION_MATCHES = new Set([
+  "porridge-banane-beurre-de-cacahuete", "porridge-vegan-fruits-rouges", "muesli-maison-lait",
+  "skyr-bowl-fruits-rouges-amandes", "fromage-blanc-banane-flocons", "yaourt-soja-granola-pomme",
+  "toast-oeufs-brouilles-jambon", "tartines-avocat-oeuf-mollet", "pancakes-banane-avoine", "pain-perdu-brioche-miel",
+  "smoothie-bowl-banane-fruits-rouges",
+  "poulet-curry-coco-riz-basmati", "poulet-tikka-masala", "curry-vert-crevettes", "curry-pois-chiches-epinards",
+  "curry-patate-douce-pois-chiches", "buddha-bowl-pois-chiches-quinoa", "saumon-roti-patate-douce-haricots-verts",
+  "saumon-teriyaki-nouilles-sautees", "cabillaud-papillote-riz-courgettes", "pates-thon-tomate", "one-pot-pasta-tomate-mozzarella",
+  "pates-bolognaise-maison", "pates-carbonara", "burger-maison-potatoes", "pizza-maison-jambon-champignons",
+  "pizza-margherita-legumes", "ramen-poulet-express", "wok-nouilles-crevettes-legumes", "riz-cantonais",
+  "salade-cesar-poulet", "shakshuka-feta", "veloute-legumes-tartines-fromage", "minestrone",
+  "soupe-poireaux-pommes-de-terre", "assiette-boeuf-riz-haricots-verts", "steak-frites-salade", "kebab-poulet-maison",
+]);
+
 export const RECIPES: Recipe[] = [...BASE, ...FROM_EXTRA].map((r) => {
   const photo = (PHOTOS as Record<string, Photo>)[r.slug];
-  return photo ? { ...r, image: photo.src, credit: { author: photo.author, url: photo.url } } : r;
+  if (photo) return { ...r, image: photo.src, credit: { author: photo.author, url: photo.url } };
+  return ILLUSTRATION_MATCHES.has(r.slug) ? r : { ...r, image: "" };
 });
 
 export const RECIPE_BY_SLUG: Record<string, Recipe> = Object.fromEntries(RECIPES.map((r) => [r.slug, r]));
 
 /** Accepte un identifiant Unsplash ou une URL complète (ex. photo Pexels). */
 export function unsplash(id: string, width = 1600) {
+  if (!id) return "";
   if (id.startsWith("http")) return id;
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=80`;
 }
