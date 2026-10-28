@@ -1,5 +1,6 @@
 "use client";
 
+import { STORE_BY_ID, normalizeStoreId } from "./data/stores";
 import type { Profile, WeekPlan } from "./types";
 
 const PROFILE_KEY = "mijo:profile:v1";
@@ -23,9 +24,17 @@ function write(key: string, value: unknown) {
   }
 }
 
-export const loadProfile = () => read<Profile>(PROFILE_KEY);
+export function loadProfile(): Profile | null {
+  const p = read<Profile>(PROFILE_KEY);
+  return p && { ...p, stores: p.stores.map(normalizeStoreId).filter((id) => STORE_BY_ID[id]) };
+}
 export const saveProfile = (p: Profile) => write(PROFILE_KEY, p);
-export const loadPlan = () => read<WeekPlan>(PLAN_KEY);
+/** Un plan enregistré avec une ancienne liste d'enseignes est ignoré : il sera régénéré. */
+export function loadPlan(): WeekPlan | null {
+  const plan = read<WeekPlan>(PLAN_KEY);
+  if (!plan || !STORE_BY_ID[plan.storeId] || plan.quotes.some((q) => !STORE_BY_ID[q.storeId])) return null;
+  return plan;
+}
 export const savePlan = (p: WeekPlan) => write(PLAN_KEY, p);
 export const loadChecked = (planId: string) => read<Record<string, string[]>>(CHECKED_KEY)?.[planId] ?? [];
 export const saveChecked = (planId: string, ids: string[]) => write(CHECKED_KEY, { [planId]: ids });

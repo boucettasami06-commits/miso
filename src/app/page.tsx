@@ -136,7 +136,7 @@ export default function Home() {
             {[
               { icon: ListChecks, t: "Rangée par rayon", d: "Ta liste suit le parcours du magasin. Tu coches, tu avances, tu sors." },
               { icon: Recycle, t: "Anti-gaspi natif", d: "Mijo choisit des recettes qui partagent leurs ingrédients : le reste du paquet de lundi sert jeudi." },
-              { icon: Wallet, t: "8 enseignes comparées", d: "Lidl, Aldi, Leclerc, Auchan, Super U, Intermarché, Carrefour, Monoprix : tu vois où ton panier coûte le moins." },
+              { icon: Wallet, t: "16 enseignes comparées", d: "Lidl, Aldi, Netto, Leclerc, Auchan, Carrefour, Intermarché, Super U, Casino, Monoprix, Grand Frais, Biocoop… : tu vois où ton panier coûte le moins." },
             ].map((f) => (
               <li key={f.t} className="flex gap-4">
                 <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sage-light text-ink">

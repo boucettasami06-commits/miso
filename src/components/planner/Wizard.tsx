@@ -7,9 +7,9 @@ import { ArrowLeft, ArrowRight, Check, Coffee, Moon, Sun } from "lucide-react";
 import { DEFAULT_PROFILE } from "@/lib/defaults";
 import { generatePlan } from "@/lib/engine/generator";
 import { dailyTargets } from "@/lib/engine/nutrition";
-import { STORES } from "@/lib/data/stores";
+import { STORES, STORE_KIND_LABEL } from "@/lib/data/stores";
 import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
-import type { Activity, Allergen, CookTime, Diet, Goal, MealType, Profile, Restriction } from "@/lib/types";
+import type { Activity, Allergen, CookTime, Diet, Goal, MealType, Profile, Restriction, Store } from "@/lib/types";
 import SmartImage from "../SmartImage";
 
 const GOALS: { id: Goal; title: string; text: string; photo: string; emoji: string }[] = [
@@ -294,13 +294,23 @@ export default function Wizard() {
                     : `⚠ En dessous du minimum réaliste pour ton profil (≈ ${euro(Math.ceil(minBudget))}). On fera au mieux.`}
                 </p>
               </div>
-              <Field label="Tes enseignes (laisse vide pour toutes les comparer)" className="mt-8">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {STORES.map((s) => (
-                    <Chip key={s.id} active={p.stores.includes(s.id)} onClick={() => set("stores", toggle(p.stores, s.id))}>
-                      <span className="block font-semibold">{s.name}</span>
-                      <span className="block text-xs opacity-70">{s.tagline}</span>
-                    </Chip>
+              <Field label="Où fais-tu tes courses ? (laisse vide pour comparer les 16 enseignes)" className="mt-8">
+                <div className="space-y-5">
+                  {(Object.keys(STORE_KIND_LABEL) as Store["kind"][]).map((kind) => (
+                    <div key={kind}>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-ink-soft">{STORE_KIND_LABEL[kind]}</p>
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        {STORES.filter((s) => s.kind === kind).map((s) => (
+                          <Chip key={s.id} active={p.stores.includes(s.id)} onClick={() => set("stores", toggle(p.stores, s.id))}>
+                            <span className="flex items-center gap-2 font-semibold">
+                              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: s.color }} />
+                              {s.name}
+                            </span>
+                            <span className="block text-xs opacity-70">{s.tagline}</span>
+                          </Chip>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </Field>
@@ -408,7 +418,7 @@ function Stepper({ value, min, max, onChange }: { value: number; min: number; ma
 }
 
 function Cooking() {
-  const lines = ["On calcule tes besoins…", "On compare 8 enseignes…", "On mutualise les ingrédients…", "On dresse les assiettes…"];
+  const lines = ["On calcule tes besoins…", "On compare 16 enseignes…", "On mutualise les ingrédients…", "On dresse les assiettes…"];
   const [i, setI] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setI((x) => Math.min(lines.length - 1, x + 1)), 450);

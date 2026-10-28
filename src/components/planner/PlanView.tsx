@@ -34,8 +34,15 @@ export default function PlanView() {
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
-    setPlan(loadPlan());
-    setProfile(loadProfile());
+    const prof = loadProfile();
+    let saved = loadPlan();
+    // Profil connu mais plan absent ou obsolète : on régénère directement
+    if (!saved && prof) {
+      saved = generatePlan(prof);
+      savePlan(saved);
+    }
+    setPlan(saved);
+    setProfile(prof);
     const today = (new Date().getDay() + 6) % 7;
     setDay(today);
     setReady(true);

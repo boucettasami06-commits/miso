@@ -1,7 +1,9 @@
 import type { Recipe } from "../types";
+import { EXTRA } from "./recipes-extra";
+import PHOTOS from "./photos.json";
 
 /** Identifiants de photos Unsplash (licence libre). Servies en haute définition via next/image. */
-const IMG = {
+export const IMG = {
   porridge: "photo-1517673132405-a56a62b18caf",
   yogurtBowl: "photo-1488477181946-6428a0291777",
   eggsBreakfast: "photo-1525351484163-7529414344d8",
@@ -43,7 +45,7 @@ const IMG = {
   dessert: "photo-1565958011703-44f9829ba187",
 } as const;
 
-export const RECIPES: Recipe[] = [
+const BASE: Recipe[] = [
   // ───────────────────────── PETITS-DÉJEUNERS ─────────────────────────
   {
     slug: "porridge-banane-beurre-de-cacahuete",
@@ -876,8 +878,33 @@ export const RECIPES: Recipe[] = [
   },
 ];
 
+const FROM_EXTRA: Recipe[] = EXTRA.map(([slug, title, meal, description, time, difficulty, fit, protein, cuisine, img, emoji, ings, steps, batch]) => {
+  const [sain, muscle, equilibre, gourmand] = fit.split("").map(Number) as Recipe["fit"][keyof Recipe["fit"]][];
+  return {
+    slug, title, description, time, difficulty, protein, cuisine, emoji, steps,
+    meal: meal === "b" ? "breakfast" : "main",
+    fit: { sain, muscle, equilibre, gourmand },
+    image: IMG[img],
+    batchFriendly: batch,
+    ingredients: ings.split(" ").map((pair) => {
+      const [id, qty] = pair.split(":");
+      return { id, qty: Number(qty) };
+    }),
+  };
+});
+
+type Photo = { src: string; author: string; url: string };
+
+/** Photos dédiées (récupérées par `npm run photos`) prioritaires sur les photos d'illustration. */
+export const RECIPES: Recipe[] = [...BASE, ...FROM_EXTRA].map((r) => {
+  const photo = (PHOTOS as Record<string, Photo>)[r.slug];
+  return photo ? { ...r, image: photo.src, credit: { author: photo.author, url: photo.url } } : r;
+});
+
 export const RECIPE_BY_SLUG: Record<string, Recipe> = Object.fromEntries(RECIPES.map((r) => [r.slug, r]));
 
+/** Accepte un identifiant Unsplash ou une URL complète (ex. photo Pexels). */
 export function unsplash(id: string, width = 1600) {
+  if (id.startsWith("http")) return id;
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=80`;
 }

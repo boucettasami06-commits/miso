@@ -69,6 +69,8 @@ export interface Recipe {
   protein: "volaille" | "boeuf" | "porc" | "poisson" | "oeuf" | "vegetal" | "laitier";
   cuisine: string;
   image: string;
+  /** crédit photo (photos récupérées via l'API Pexels) */
+  credit?: { author: string; url: string };
   emoji: string;
   ingredients: RecipeIngredient[];
   steps: string[];
@@ -100,7 +102,9 @@ export interface Profile {
 export interface Store {
   id: string;
   name: string;
+  kind: "discount" | "hyper" | "super" | "proxi" | "special";
   index: number;
+  aisles?: Partial<Record<Aisle, number>>;
   color: string;
   tagline: string;
 }

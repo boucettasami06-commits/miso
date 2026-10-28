@@ -98,7 +98,7 @@ export default function Hero() {
             transition={{ delay: 0.6 }}
             className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft"
           >
-            {["8 enseignes comparées", "Portions calculées pour toi", "Zéro inscription"].map((t) => (
+            {["16 enseignes comparées", "Portions calculées pour toi", "Zéro inscription"].map((t) => (
               <li key={t} className="flex items-center gap-2">
                 <Check size={16} className="text-sage" /> {t}
               </li>
