@@ -20,7 +20,7 @@ const GOALS: { id: Goal; label: string }[] = [
 
 const euro = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 
-/** Démo live : le vrai moteur Mijo tourne dans le navigateur à chaque changement. */
+/** Démo live : le vrai moteur Budgemy tourne dans le navigateur à chaque changement. */
 export default function BudgetSimulator() {
   const [budget, setBudget] = useState(45);
   const [people, setPeople] = useState(1);
@@ -45,7 +45,7 @@ export default function BudgetSimulator() {
               Joue avec ton budget. <em className="text-saffron">On s&apos;adapte.</em>
             </h2>
             <p className="mt-4 text-cream/70">
-              Ce n&apos;est pas une maquette : c&apos;est le vrai moteur Mijo qui recompose une semaine (midi & soir) à chaque
+              Ce n&apos;est pas une maquette : c&apos;est le vrai moteur Budgemy qui recompose une semaine (midi & soir) à chaque
               mouvement du curseur.
             </p>
 

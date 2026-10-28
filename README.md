@@ -1,6 +1,6 @@
-# Mijo — menus de la semaine selon ton budget et ton objectif
+# Budgemy — menus de la semaine selon ton budget et ton objectif
 
-Mijo génère chaque semaine un menu personnalisé (petit-déj, midi, soir) en fonction de :
+Budgemy génère chaque semaine un menu personnalisé (petit-déj, midi, soir) en fonction de :
 
 - **l'objectif** : Healthy (déficit de 15 %), Musculation (surplus de 12 %, 1,9 g de protéines/kg), Équilibré, Gourmand ;
 - **le corps et le foyer** : sexe, âge, poids, taille, activité (Mifflin-St Jeor), adultes et enfants ;

@@ -33,11 +33,11 @@ export default function Footer() {
       </div>
       <div className="border-t border-cream/10">
         <p className="mx-auto max-w-7xl px-4 py-6 text-xs text-cream/50 sm:px-6">
-          © {new Date().getFullYear()} Mijo · Prix indicatifs basés sur des moyennes par enseigne, susceptibles de varier selon le magasin. Les informations nutritionnelles ne remplacent pas l&apos;avis d&apos;un professionnel de santé.
+          © {new Date().getFullYear()} Budgemy · Prix indicatifs basés sur des moyennes par enseigne, susceptibles de varier selon le magasin. Les informations nutritionnelles ne remplacent pas l&apos;avis d&apos;un professionnel de santé.
         </p>
       </div>
       <p aria-hidden className="pointer-events-none select-none px-4 pb-2 text-center font-display text-[22vw] font-bold leading-none text-cream/[0.04]">
-        mijo.
+        budgemy.
       </p>
     </footer>
   );

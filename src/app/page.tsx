@@ -11,7 +11,7 @@ import { RECIPES } from "@/lib/data/recipes";
 
 const STEPS = [
   { icon: Target, title: "Tes magasins & tes goûts", text: "Où tu fais tes courses, ta façon de manger, combien vous êtes à table. 6 questions, 90 secondes." },
-  { icon: Wallet, title: "Ton budget", text: "Tu fixes ton enveloppe hebdo et tes enseignes. Mijo optimise chaque centime." },
+  { icon: Wallet, title: "Ton budget", text: "Tu fixes ton enveloppe hebdo et tes enseignes. Budgemy optimise chaque centime." },
   { icon: ChefHat, title: "Ta semaine", text: "7 jours de repas, des portions calculées pour toi et une liste de courses par rayon." },
 ];
 
@@ -23,10 +23,10 @@ const PROFILES = [
 ];
 
 const FAQ = [
-  { q: "Comment Mijo calcule-t-il le prix de mes courses ?", a: "Chaque ingrédient a un prix de référence par conditionnement réel (boîte, paquet, filet), ajusté selon l'indice de prix moyen de chaque enseigne. Mijo calcule ce que tu paies vraiment en caisse — des paquets entiers — et privilégie les recettes qui réutilisent les mêmes ingrédients pour limiter le gaspillage." },
-  { q: "Les menus sont-ils adaptés à la musculation ?", a: "Oui. En mode Musculation, Mijo calcule ta dépense énergétique (formule de Mifflin-St Jeor), ajoute un surplus de 12 % et vise environ 1,9 g de protéines par kilo. Chaque portion est agrandie ou réduite pour coller à tes besoins." },
+  { q: "Comment Budgemy calcule-t-il le prix de mes courses ?", a: "Chaque ingrédient a un prix de référence par conditionnement réel (boîte, paquet, filet), ajusté selon l'indice de prix moyen de chaque enseigne. Budgemy calcule ce que tu paies vraiment en caisse — des paquets entiers — et privilégie les recettes qui réutilisent les mêmes ingrédients pour limiter le gaspillage." },
+  { q: "Les menus sont-ils adaptés à la musculation ?", a: "Oui. En mode Musculation, Budgemy calcule ta dépense énergétique (formule de Mifflin-St Jeor), ajoute un surplus de 12 % et vise environ 1,9 g de protéines par kilo. Chaque portion est agrandie ou réduite pour coller à tes besoins." },
   { q: "Puis-je faire un menu végétarien, vegan, sans porc ou sans gluten ?", a: "Bien sûr. Tu choisis ton régime (omnivore, flexitarien, pescétarien, végétarien, vegan), tes restrictions (sans porc, sans gluten, sans lactose) et tes allergies. Les recettes incompatibles sont exclues automatiquement." },
-  { q: "Est-ce que je peux remplacer une recette qui ne me plaît pas ?", a: "En un clic. Mijo te propose une alternative qui respecte ton budget, ton objectif et la variété de la semaine, et met à jour la liste de courses instantanément." },
+  { q: "Est-ce que je peux remplacer une recette qui ne me plaît pas ?", a: "En un clic. Budgemy te propose une alternative qui respecte ton budget, ton objectif et la variété de la semaine, et met à jour la liste de courses instantanément." },
   { q: "C'est quoi le mode « restes du midi » ?", a: "Le soir, tu cuisines une portion en plus que tu emportes le lendemain midi. Moins de temps en cuisine, moins de gaspillage, et un budget qui fond moins vite." },
   { q: "Comment fonctionne l'abonnement ?", a: "Tu réponds au questionnaire et tu découvres un aperçu de ta semaine. Pour débloquer toutes tes recettes, ta liste de courses et les remplacements illimités, tu choisis une formule mensuelle ou annuelle, sans engagement et résiliable à tout moment." },
 ];
@@ -142,7 +142,7 @@ export default function Home() {
           <ul className="mt-8 space-y-6">
             {[
               { icon: ListChecks, t: "Rangée par rayon", d: "Ta liste suit le parcours du magasin. Tu coches, tu avances, tu sors." },
-              { icon: Recycle, t: "Anti-gaspi natif", d: "Mijo choisit des recettes qui partagent leurs ingrédients : le reste du paquet de lundi sert jeudi." },
+              { icon: Recycle, t: "Anti-gaspi natif", d: "Budgemy choisit des recettes qui partagent leurs ingrédients : le reste du paquet de lundi sert jeudi." },
               { icon: Wallet, t: "45 enseignes, 4 pays", d: "Leclerc, Carrefour, Lidl, Aldi, Colruyt, Delhaize, Migros, Coop, REWE, EDEKA… : tu vois où ton panier coûte le moins." },
             ].map((f) => (
               <li key={f.t} className="flex gap-4">

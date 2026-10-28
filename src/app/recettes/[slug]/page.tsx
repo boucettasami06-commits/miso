@@ -148,7 +148,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </ol>
           <div className="mt-14 rounded-[2rem] bg-sage-light p-8">
             <p className="font-display text-2xl">Cette recette dans ta semaine, à ton budget ?</p>
-            <p className="mt-2 text-ink-soft">Mijo ajuste les portions à ton objectif et l&apos;intègre dans un menu complet avec la liste de courses.</p>
+            <p className="mt-2 text-ink-soft">Budgemy ajuste les portions à ton objectif et l&apos;intègre dans un menu complet avec la liste de courses.</p>
             <Link href="/planifier" className="group mt-6 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 font-semibold text-cream transition hover:bg-tomato">
               Générer mon menu <ArrowRight size={18} className="transition group-hover:translate-x-1" />
             </Link>

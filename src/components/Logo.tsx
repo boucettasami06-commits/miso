@@ -7,7 +7,7 @@ export default function Logo({ className = "" }: { className?: string }) {
         <path d="M14 10c0-3 3-3 3-6M20 10c0-3 3-3 3-6M26 10c0-3 3-3 3-6" stroke="#c6f432" strokeWidth="2.2" strokeLinecap="round" fill="none" />
       </svg>
       <span>
-        mijo<span className="text-tomato">.</span>
+        BUDGEMY<span className="text-tomato">.</span>
       </span>
     </span>
   );

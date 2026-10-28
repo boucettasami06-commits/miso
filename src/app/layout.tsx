@@ -11,8 +11,8 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakart
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Mijo — Menu de la semaine selon ton budget et ton objectif",
-    template: "%s · Mijo",
+    default: "Budgemy — Menu de la semaine selon ton budget et ton objectif",
+    template: "%s · Budgemy",
   },
   description: SITE.description,
   applicationName: SITE.name,
@@ -33,10 +33,10 @@ export const metadata: Metadata = {
     locale: SITE.locale,
     url: SITE.url,
     siteName: SITE.name,
-    title: "Mijo — Ta semaine de repas, mijotée pour ton budget",
+    title: "Budgemy — Ta semaine de repas, pile dans ton budget",
     description: SITE.description,
   },
-  twitter: { card: "summary_large_image", title: "Mijo — Menu de la semaine selon ton budget", description: SITE.description },
+  twitter: { card: "summary_large_image", title: "Budgemy — Menu de la semaine selon ton budget", description: SITE.description },
   robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
   formatDetection: { telephone: false },
 };

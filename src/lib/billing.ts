@@ -51,7 +51,7 @@ export const billingReady = () => !!(process.env.WHOP_API_KEY && secret());
 
 /**
  * Vérifie auprès de l'API Whop qu'un abonnement (ou une clé de licence) est valide,
- * et qu'il appartient bien au produit Mijo si WHOP_PRODUCT_ID est défini.
+ * et qu'il appartient bien au produit Budgemy si WHOP_PRODUCT_ID est défini.
  */
 export async function checkMembership(id: string): Promise<boolean> {
   const key = process.env.WHOP_API_KEY;

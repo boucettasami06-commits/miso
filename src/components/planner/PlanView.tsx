@@ -341,7 +341,7 @@ function ShoppingTab({ plan, profile, notify, locked, onUnlock }: { plan: WeekPl
       return `${a.toUpperCase()}\n${ls.map((l) => `☐ ${l.name} — ${l.packs} × ${l.packLabel ?? qty(l.packSize, l.unit)}`).join("\n")}`;
     }).filter(Boolean).join("\n\n");
     try {
-      await navigator.clipboard.writeText(`Mes courses Mijo (${STORE_BY_ID[plan.storeId].name}, ${money(total, plan.currency)})\n\n${txt}`);
+      await navigator.clipboard.writeText(`Mes courses Budgemy (${STORE_BY_ID[plan.storeId].name}, ${money(total, plan.currency)})\n\n${txt}`);
       notify("Liste copiée dans le presse-papier 📋");
     } catch {
       notify("Impossible de copier sur cet appareil.");

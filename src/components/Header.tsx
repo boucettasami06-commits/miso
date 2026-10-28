@@ -35,7 +35,7 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 md:h-20">
-        <Link href="/" aria-label="Mijo, accueil">
+        <Link href="/" aria-label="Budgemy, accueil">
           <Logo />
         </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium lg:flex" aria-label="Navigation principale">

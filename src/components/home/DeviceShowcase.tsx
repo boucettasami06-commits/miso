@@ -59,7 +59,7 @@ export default function DeviceShowcase() {
             <span className="h-2 w-2 rounded-full bg-tomato" />
             <span className="h-2 w-2 rounded-full bg-saffron" />
             <span className="h-2 w-2 rounded-full bg-sage" />
-            <span className="ml-3 flex-1 truncate rounded-md bg-white/10 px-2 py-0.5 text-[9px] text-white/50">mijo.app/ma-semaine</span>
+            <span className="ml-3 flex-1 truncate rounded-md bg-white/10 px-2 py-0.5 text-[9px] text-white/50">budgemy.app/ma-semaine</span>
           </div>
           <div className="aspect-[16/10] overflow-hidden rounded-t-md bg-cream p-3 pr-[30%] sm:p-4 sm:pr-[30%]">
             {/* Barre budget */}
