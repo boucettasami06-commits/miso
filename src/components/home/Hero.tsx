@@ -40,10 +40,10 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-6 font-display text-[clamp(2.75rem,7vw,5.75rem)] font-medium leading-[0.95] tracking-tight text-balance"
+            className="mt-6 font-display text-[clamp(2.75rem,6.5vw,5.5rem)] font-extrabold leading-[0.98] tracking-tight text-balance"
           >
             Ta semaine de repas,{" "}
-            <span className="relative inline-block min-w-[5ch] italic text-tomato">
+            <span className="relative inline-block min-w-[5ch] text-tomato">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={WORDS[i]}
@@ -79,7 +79,7 @@ export default function Hero() {
           >
             <Link
               href="/planifier"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-tomato px-7 py-4 text-base font-semibold text-white shadow-[0_12px_30px_-10px_rgba(226,87,43,0.7)] transition hover:-translate-y-0.5 hover:bg-tomato-dark"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-tomato px-7 py-4 text-base font-semibold text-white shadow-[0_12px_30px_-10px_rgba(255,90,31,0.7)] transition hover:-translate-y-0.5 hover:bg-tomato-dark"
             >
               Générer ma semaine
               <ArrowRight size={18} className="transition group-hover:translate-x-1" />

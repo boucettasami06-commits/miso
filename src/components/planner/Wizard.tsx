@@ -345,7 +345,7 @@ export default function Wizard() {
             Continuer <ArrowRight size={18} className="transition group-hover:translate-x-1" />
           </button>
         ) : (
-          <button onClick={finish} className="group inline-flex items-center gap-2 rounded-full bg-tomato px-8 py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(226,87,43,0.7)] transition hover:bg-tomato-dark">
+          <button onClick={finish} className="group inline-flex items-center gap-2 rounded-full bg-tomato px-8 py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(255,90,31,0.7)] transition hover:bg-tomato-dark">
             Générer ma semaine <ArrowRight size={20} className="transition group-hover:translate-x-1" />
           </button>
         )}

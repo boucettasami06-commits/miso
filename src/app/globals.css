@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #fbf6ee;
-  --color-cream-2: #f4ecdf;
-  --color-ink: #1c1a17;
-  --color-ink-soft: #57524a;
-  --color-tomato: #e2572b;
-  --color-tomato-dark: #c2441d;
-  --color-sage: #7f9f7b;
-  --color-sage-light: #dfe9d9;
-  --color-saffron: #f2b33d;
-  --color-plum: #2b1a2e;
-  --color-line: #e7dccb;
+  --color-cream: #fafaf5;
+  --color-cream-2: #eff2e6;
+  --color-ink: #10231c;
+  --color-ink-soft: #4b5b53;
+  --color-tomato: #ff5a1f;
+  --color-tomato-dark: #e8470c;
+  --color-sage: #1f9d55;
+  --color-sage-light: #dcf5c8;
+  --color-saffron: #c6f432;
+  --color-plum: #0e3b2c;
+  --color-line: #e2e7d8;
 
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
-  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
   --animate-marquee: marquee 40s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
@@ -57,6 +57,27 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* Titres : sans-serif géométrique, gras et serré, plus « marque » */
+.font-display {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+h1.font-display,
+h2.font-display,
+.font-display.text-5xl,
+.font-display.text-6xl {
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+/* Mots mis en avant : pas d'italique, un surlignage citron */
+.font-display em,
+h1 em,
+h2 em {
+  font-style: normal;
+  background: linear-gradient(transparent 62%, color-mix(in srgb, var(--color-saffron) 80%, transparent) 62%);
+  padding: 0 0.08em;
+}
+
 .text-balance {
   text-wrap: balance;
 }
@@ -80,4 +101,10 @@ body {
 @media print {
   header, footer, .no-print { display: none !important; }
   body { background: white; }
+}
+
+/* Sur fond sombre, le mot mis en avant est déjà coloré : pas de surlignage */
+em.text-saffron {
+  background: none;
+  padding: 0;
 }
