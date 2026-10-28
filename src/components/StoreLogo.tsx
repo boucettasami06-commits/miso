@@ -9,10 +9,35 @@ function readable(hex: string) {
 }
 
 /** Logo officiel de l'enseigne quand il est disponible, sinon une pastille à ses couleurs. */
-export default function StoreLogo({ store, size = 36, compact = false }: { store: Store; size?: number; compact?: boolean }) {
-  const logo = STORE_LOGOS[store.id];
+export default function StoreLogo({
+  store,
+  size = 36,
+  compact = false,
+  logoOnly = false,
+}: {
+  store: Store;
+  size?: number;
+  compact?: boolean;
+  /** vignette : uniquement le logo (ou le nom stylisé pour les logotypes horizontaux) */
+  logoOnly?: boolean;
+}) {
+  const logo = store.logo ? STORE_LOGOS[store.logo] : undefined;
   // Ces logos sont des logotypes horizontaux : illisibles en vignette carrée, on garde le nom seul
-  const wordmarkOnly = store.id === "intermarche" || store.id === "leader-price";
+  const wordmarkOnly = store.logo === "intermarche" || store.logo === "leaderprice";
+  if (logoOnly) {
+    if (logo && !wordmarkOnly) {
+      return (
+        <svg viewBox="0 0 24 24" width={size} height={size} role="img" aria-label={store.name} fill={logo.hex}>
+          <path d={logo.path} />
+        </svg>
+      );
+    }
+    return (
+      <span className="text-center font-display text-lg font-extrabold leading-tight" style={{ color: readable(logo?.hex ?? store.color) }}>
+        {store.name}
+      </span>
+    );
+  }
   return (
     <span className={`inline-flex items-center whitespace-nowrap ${compact ? "max-w-full gap-2" : "gap-3"}`}>
       {wordmarkOnly ? null : logo ? (

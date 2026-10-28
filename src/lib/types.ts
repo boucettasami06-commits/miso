@@ -7,6 +7,26 @@ export type Sex = "homme" | "femme";
 export type Activity = "sedentaire" | "leger" | "actif" | "tres-actif";
 export type CookTime = "express" | "normal" | "chef";
 export type LunchMode = "leftovers" | "fresh";
+export type Country = "FR" | "BE" | "CH" | "DE";
+export type Equipment =
+  | "plaques"
+  | "four"
+  | "micro-ondes"
+  | "air-fryer"
+  | "mixeur"
+  | "robot-cuiseur"
+  | "multicuiseur"
+  | "cuiseur-vapeur"
+  | "cuiseur-riz"
+  | "wok"
+  | "plancha"
+  | "raclette"
+  | "grille-pain"
+  | "robot-patissier"
+  | "batteur"
+  | "moules"
+  | "crepiere"
+  | "gaufrier";
 
 export type Flag =
   | "meat"
@@ -99,13 +119,20 @@ export interface Profile {
   hasPantry: boolean;
   /** style choisi dans le questionnaire (sert à le pré-sélectionner au retour) */
   style?: string;
+  /** pays (défaut : France) — détermine les enseignes, les prix et la devise */
+  country?: Country;
+  /** matériel de cuisine disponible ; absent = on suppose une cuisine standard */
+  equipment?: Equipment[];
   /** « eco » : priorité absolue au prix */
   priority?: "eco";
 }
 
 export interface Store {
   id: string;
+  country: Country;
   name: string;
+  /** identifiant du logo dans store-logos.ts */
+  logo?: string;
   kind: "discount" | "hyper" | "super" | "proxi" | "special";
   index: number;
   aisles?: Partial<Record<Aisle, number>>;
@@ -159,6 +186,8 @@ export interface WeekPlan {
   seed: number;
   meals: PlannedMeal[];
   storeId: string;
+  country?: Country;
+  currency?: "EUR" | "CHF";
   quotes: StoreQuote[];
   total: number;
   budget: number;

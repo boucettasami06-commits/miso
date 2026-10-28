@@ -19,7 +19,7 @@ export default function OG() {
         <div style={{ display: "flex", gap: 16, fontSize: 28, color: "#4b5b53" }}>
           <span>Healthy · Muscu · Équilibré · Gourmand</span>
           <span>—</span>
-          <span>16 enseignes comparées</span>
+          <span>France · Belgique · Suisse · Allemagne</span>
         </div>
       </div>
     ),

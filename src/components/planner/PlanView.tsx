@@ -13,7 +13,8 @@ import { RECIPE_BY_SLUG } from "@/lib/data/recipes";
 import { INGREDIENTS } from "@/lib/data/ingredients";
 import { STORE_BY_ID } from "@/lib/data/stores";
 import { loadChecked, loadPlan, loadProfile, saveChecked, savePlan } from "@/lib/storage";
-import { euro, qty } from "@/lib/format";
+import { money, qty } from "@/lib/format";
+import { equipmentTip } from "@/lib/engine/equipment";
 import type { Aisle, PlannedMeal, Profile, WeekPlan } from "@/lib/types";
 import SmartImage from "../SmartImage";
 
@@ -117,9 +118,9 @@ export default function PlanView() {
         <div className="rounded-[1.75rem] bg-ink p-6 text-cream md:col-span-2">
           <div className="flex items-center justify-between text-sm text-cream/60">
             <span className="flex items-center gap-2"><ShoppingBasket size={16} /> Panier chez {STORE_BY_ID[plan.storeId].name}</span>
-            <span>Budget {euro(plan.budget)}</span>
+            <span>Budget {money(plan.budget, plan.currency)}</span>
           </div>
-          <p className="mt-3 font-display text-5xl">{euro(plan.total)}</p>
+          <p className="mt-3 font-display text-5xl">{money(plan.total, plan.currency)}</p>
           <div className="mt-4 h-3 overflow-hidden rounded-full bg-cream/10">
             <motion.div
               initial={{ width: 0 }}
@@ -129,7 +130,7 @@ export default function PlanView() {
             />
           </div>
           <p className={`mt-3 text-sm ${ratio <= 1 ? "text-sage-light" : "text-saffron"}`}>
-            {ratio <= 1 ? `✓ ${euro(plan.budget - plan.total)} sous ton budget` : `${euro(plan.total - plan.budget)} au-dessus de ton budget — essaie « Tout régénérer » ou une autre enseigne`}
+            {ratio <= 1 ? `✓ ${money(plan.budget - plan.total, plan.currency)} sous ton budget` : `${money(plan.total - plan.budget, plan.currency)} au-dessus de ton budget — essaie « Tout régénérer » ou une autre enseigne`}
           </p>
         </div>
         <SummaryCard icon={Flame} label="Énergie moyenne / jour" value={`${avgKcal} kcal`} hint={`Objectif sur ces repas ≈ ${Math.round(plan.targets.kcal * mealsShare)} kcal`} />
@@ -165,7 +166,7 @@ export default function PlanView() {
         </motion.div>
       </AnimatePresence>
 
-      <AnimatePresence>{open && <RecipeModal meal={open} onClose={() => setOpen(null)} />}</AnimatePresence>
+      <AnimatePresence>{open && <RecipeModal meal={open} profile={profile} onClose={() => setOpen(null)} />}</AnimatePresence>
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} className="fixed bottom-6 left-1/2 z-[70] -translate-x-1/2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-cream shadow-xl" role="status">
@@ -270,7 +271,7 @@ function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profi
       return `${a.toUpperCase()}\n${ls.map((l) => `☐ ${l.name} — ${l.packs} × ${l.packLabel ?? qty(l.packSize, l.unit)}`).join("\n")}`;
     }).filter(Boolean).join("\n\n");
     try {
-      await navigator.clipboard.writeText(`Mes courses Mijo (${STORE_BY_ID[plan.storeId].name}, ${euro(total)})\n\n${txt}`);
+      await navigator.clipboard.writeText(`Mes courses Mijo (${STORE_BY_ID[plan.storeId].name}, ${money(total, plan.currency)})\n\n${txt}`);
       notify("Liste copiée dans le presse-papier 📋");
     } catch {
       notify("Impossible de copier sur cet appareil.");
@@ -287,7 +288,7 @@ function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profi
             <section key={a}>
               <h2 className="flex items-baseline justify-between border-b border-line pb-2 font-display text-2xl">
                 {a}
-                <span className="text-sm text-ink-soft">{euro(ls.reduce((x, l) => x + l.cost, 0))}</span>
+                <span className="text-sm text-ink-soft">{money(ls.reduce((x, l) => x + l.cost, 0), plan.currency)}</span>
               </h2>
               {a === "Placard" && profile.hasPantry && <p className="mt-2 text-xs text-ink-soft">Tu as indiqué avoir ces basiques : seul ce que tu consommes est compté.</p>}
               <ul className="mt-2">
@@ -306,7 +307,7 @@ function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profi
                             {!l.pantry && l.leftover / l.packSize > 0.25 && ` · reste ${qty(l.leftover, l.unit)}`}
                           </span>
                         </span>
-                        <span className="font-display text-lg">{euro(l.cost)}</span>
+                        <span className="font-display text-lg">{money(l.cost, plan.currency)}</span>
                       </button>
                     </li>
                   );
@@ -318,7 +319,7 @@ function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profi
       </div>
       <aside className="h-fit rounded-[2rem] bg-ink p-6 text-cream lg:sticky lg:top-40">
         <p className="text-sm text-cream/60">Total chez {STORE_BY_ID[plan.storeId].name}</p>
-        <p className="mt-2 font-display text-5xl">{euro(total)}</p>
+        <p className="mt-2 font-display text-5xl">{money(total, plan.currency)}</p>
         <p className="mt-2 text-sm text-cream/60">{lines.length} articles · {done} cochés</p>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-cream/10">
           <motion.div animate={{ width: `${(done / Math.max(1, lines.length)) * 100}%` }} className="h-full bg-sage" />
@@ -334,15 +335,15 @@ function ShoppingTab({ plan, profile, notify }: { plan: WeekPlan; profile: Profi
 }
 
 function StoresTab({ plan, profile, onPick }: { plan: WeekPlan; profile: Profile; onPick: (id: string) => void }) {
-  const all = useMemo(() => quotes(basketFromMeals(plan.meals), profile.hasPantry), [plan.meals, profile.hasPantry]);
+  const all = useMemo(() => quotes(basketFromMeals(plan.meals), profile.hasPantry, plan.country), [plan.meals, profile.hasPantry, plan.country]);
   const max = Math.max(...all.map((q) => q.total));
   const cheapest = all[0];
   return (
     <div className="mt-6 rounded-[2rem] border border-line bg-white/60 p-6 sm:p-8">
       <h2 className="font-display text-3xl">Ton panier dans chaque enseigne</h2>
       <p className="mt-2 text-ink-soft">
-        Même liste, même quantités. Écart entre la moins chère et la plus chère : <b className="text-ink">{euro(max - cheapest.total)}</b> par semaine, soit{" "}
-        <b className="text-tomato">{euro((max - cheapest.total) * 52)}</b> par an.
+        Même liste, même quantités. Écart entre la moins chère et la plus chère : <b className="text-ink">{money(max - cheapest.total, plan.currency)}</b> par semaine, soit{" "}
+        <b className="text-tomato">{money((max - cheapest.total) * 52, plan.currency)}</b> par an.
       </p>
       <ul className="mt-8 space-y-3">
         {all.map((q, i) => {
@@ -357,7 +358,7 @@ function StoresTab({ plan, profile, onPick }: { plan: WeekPlan; profile: Profile
                     {i === 0 && "🏆"} {s.name}
                     {!allowed && <span className="rounded-full bg-cream-2 px-2 py-0.5 text-[10px] font-semibold uppercase text-ink-soft">hors sélection</span>}
                   </span>
-                  <span className="font-display text-lg">{euro(q.total)}</span>
+                  <span className="font-display text-lg">{money(q.total, plan.currency)}</span>
                 </div>
                 <div className={`mt-2 h-2.5 overflow-hidden rounded-full ${active ? "bg-cream/15" : "bg-cream-2"}`}>
                   <motion.div initial={{ width: 0 }} animate={{ width: `${(q.total / max) * 100}%` }} transition={{ duration: 0.9, delay: i * 0.06 }} className="h-full rounded-full" style={{ background: i === 0 ? "var(--color-sage)" : active ? "var(--color-saffron)" : s.color }} />
@@ -371,7 +372,7 @@ function StoresTab({ plan, profile, onPick }: { plan: WeekPlan; profile: Profile
   );
 }
 
-function RecipeModal({ meal, onClose }: { meal: PlannedMeal; onClose: () => void }) {
+function RecipeModal({ meal, profile, onClose }: { meal: PlannedMeal; profile: Profile; onClose: () => void }) {
   const r = RECIPE_BY_SLUG[meal.slug];
   const n = recipeNutrition(r);
   useEffect(() => {
@@ -403,6 +404,7 @@ function RecipeModal({ meal, onClose }: { meal: PlannedMeal; onClose: () => void
         <div className="p-6 sm:p-8">
           <h2 className="font-display text-3xl sm:text-4xl">{r.title}</h2>
           <p className="mt-2 text-ink-soft">{r.description}</p>
+          {equipmentTip(r, profile.equipment) && <p className="mt-4 rounded-2xl bg-saffron/25 p-3 text-sm">{equipmentTip(r, profile.equipment)}</p>}
           <div className="mt-4 flex flex-wrap gap-2 text-sm">
             <Badge><Clock size={14} /> {r.time} min</Badge>
             <Badge><ChefHat size={14} /> {meal.leftoverOf ? "Restes : réchauffer" : `${meal.portions.toLocaleString("fr-FR")} portions à cuisiner`}</Badge>

@@ -1,7 +1,7 @@
 import { INGREDIENTS } from "../data/ingredients";
 import { RECIPE_BY_SLUG } from "../data/recipes";
-import { STORES, packPrice } from "../data/stores";
-import type { PlannedMeal, ShoppingLine, StoreQuote } from "../types";
+import { STORES, packPrice, storesOf } from "../data/stores";
+import type { Country, PlannedMeal, ShoppingLine, StoreQuote } from "../types";
 
 /** Index dense des ingrédients pour des calculs de panier rapides. */
 export const ING_IDS = Object.keys(INGREDIENTS);
@@ -54,8 +54,9 @@ export function bestCost(basket: Basket, storeIds: string[], hasPantry: boolean)
   return best;
 }
 
-export function quotes(basket: Basket, hasPantry: boolean): StoreQuote[] {
-  return STORES.map((s) => ({ storeId: s.id, total: round2(storeCost(basket, s.id, hasPantry)) })).sort(
+/** Coût du panier dans chaque enseigne du pays, de la moins chère à la plus chère. */
+export function quotes(basket: Basket, hasPantry: boolean, country: Country = "FR"): StoreQuote[] {
+  return storesOf(country).map((s) => ({ storeId: s.id, total: round2(storeCost(basket, s.id, hasPantry)) })).sort(
     (a, b) => a.total - b.total,
   );
 }

@@ -31,6 +31,9 @@ const FAQ = [
   { q: "Mijo est-il gratuit ?", a: "Oui, la génération de menus et la liste de courses sont gratuites et ne demandent aucune inscription. Tes données restent sur ton appareil." },
 ];
 
+/** Une seule fois chaque marque dans le bandeau (Aldi, Lidl, Carrefour… existent dans plusieurs pays). */
+const BRANDS = STORES.filter((s, i, all) => all.findIndex((x) => (x.logo ?? x.name) === (s.logo ?? s.name)) === i);
+
 export default function Home() {
   const showcase = ["poulet-curry-coco-riz-basmati", "saumon-roti-patate-douce-haricots-verts", "burger-maison-potatoes", "buddha-bowl-pois-chiches-quinoa", "pancakes-banane-avoine", "chili-con-carne", "pizza-maison-jambon-champignons", "wok-nouilles-crevettes-legumes"]
     .map((s) => RECIPES.find((r) => r.slug === s)!)
@@ -50,12 +53,12 @@ export default function Home() {
       {/* Enseignes */}
       <section aria-label="Enseignes comparées" className="border-y border-line bg-white py-8">
         <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.25em] text-ink-soft">
-          Ton panier comparé dans {STORES.length} enseignes
+          Ton panier comparé dans {STORES.length} enseignes · France, Belgique, Suisse, Allemagne
         </p>
         <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
           <div className="flex w-max animate-marquee items-center gap-16 pr-16 hover:[animation-play-state:paused]">
-            {[...STORES, ...STORES].map((s, i) => (
-              <span key={i} aria-hidden={i >= STORES.length} className="opacity-90 transition hover:scale-105 hover:opacity-100">
+            {[...BRANDS, ...BRANDS].map((s, i) => (
+              <span key={i} aria-hidden={i >= BRANDS.length} className="opacity-90 transition hover:scale-105 hover:opacity-100">
                 <StoreLogo store={s} />
               </span>
             ))}
@@ -140,7 +143,7 @@ export default function Home() {
             {[
               { icon: ListChecks, t: "Rangée par rayon", d: "Ta liste suit le parcours du magasin. Tu coches, tu avances, tu sors." },
               { icon: Recycle, t: "Anti-gaspi natif", d: "Mijo choisit des recettes qui partagent leurs ingrédients : le reste du paquet de lundi sert jeudi." },
-              { icon: Wallet, t: "16 enseignes comparées", d: "Lidl, Aldi, Netto, Leclerc, Auchan, Carrefour, Intermarché, Super U, Casino, Monoprix, Grand Frais, Biocoop… : tu vois où ton panier coûte le moins." },
+              { icon: Wallet, t: "45 enseignes, 4 pays", d: "Leclerc, Carrefour, Lidl, Aldi, Colruyt, Delhaize, Migros, Coop, REWE, EDEKA… : tu vois où ton panier coûte le moins." },
             ].map((f) => (
               <li key={f.t} className="flex gap-4">
                 <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sage-light text-ink">

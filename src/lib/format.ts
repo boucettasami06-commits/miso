@@ -2,6 +2,10 @@ import type { Ingredient } from "./types";
 
 export const euro = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 
+/** Montant dans la devise du pays (CHF pour la Suisse). */
+export const money = (n: number, currency: "EUR" | "CHF" = "EUR", digits = 2) =>
+  n.toLocaleString("fr-FR", { style: "currency", currency, minimumFractionDigits: digits, maximumFractionDigits: digits });
+
 const FRACTIONS: [number, string][] = [
   [0.25, "¼"],
   [0.33, "⅓"],

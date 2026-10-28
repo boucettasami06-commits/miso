@@ -6,9 +6,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Coffee, Moon, Sun } from "lucide-react";
 import { DEFAULT_PROFILE } from "@/lib/defaults";
 import { generatePlan } from "@/lib/engine/generator";
-import { STORES, STORE_KIND_LABEL } from "@/lib/data/stores";
+import { COUNTRIES, COUNTRY_BY_ID, storesOf } from "@/lib/data/stores";
+import { DEFAULT_EQUIPMENT, EQUIPMENT } from "@/lib/engine/equipment";
+import { money } from "@/lib/format";
 import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
-import type { Allergen, CookTime, Diet, MealType, Profile, Restriction, Store } from "@/lib/types";
+import type { Allergen, CookTime, Country, Diet, MealType, Profile, Restriction } from "@/lib/types";
 import StoreLogo from "../StoreLogo";
 
 interface Style {
@@ -75,10 +77,9 @@ const COOK: { id: CookTime; label: string; hint: string; emoji: string }[] = [
   { id: "chef", label: "J'adore cuisiner", hint: "Pas de limite", emoji: "👨‍🍳" },
 ];
 
-const STEPS = ["Magasins", "Style", "Foyer", "Repas", "Régime", "Budget"];
+const STEPS = ["Pays & magasins", "Style", "Foyer", "Équipement", "Repas", "Régime", "Budget"];
 
 const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
-const euro = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 
 export default function Wizard() {
   const router = useRouter();
@@ -96,9 +97,15 @@ export default function Wizard() {
   }, [params]);
 
   const set = <K extends keyof Profile>(k: K, v: Profile[K]) => setP((x) => ({ ...x, [k]: v }));
-  const minBudget = useMemo(() => (step === 5 ? generatePlan({ ...p, budget: 1 }, { seed: 1 }).total : 0), [p, step]);
-  const canNext = step !== 3 || p.meals.length > 0;
+  const minBudget = useMemo(() => (step === 6 ? generatePlan({ ...p, budget: 1 }, { seed: 1 }).total : 0), [p, step]);
+  const canNext = step !== 4 || p.meals.length > 0;
   const people = p.adults + p.children;
+  const country = COUNTRY_BY_ID[p.country ?? "FR"];
+  const stores = storesOf(country.id);
+  const euro = (n: number) => money(n, country.currency, 0);
+  const equipment = p.equipment ?? DEFAULT_EQUIPMENT;
+  const setCountry = (c: Country) =>
+    setP((x) => (x.country === c ? x : { ...x, country: c, stores: [], budget: COUNTRY_BY_ID[c].budget.default }));
 
   const go = (d: number) => {
     setDir(d);
@@ -143,28 +150,51 @@ export default function Wizard() {
           {step === 0 && (
             <>
               <H>Où fais-tu tes courses ?</H>
-              <p className="mt-3 text-ink-soft">Coche un ou plusieurs magasins : on calcule ta liste au prix de l&apos;enseigne la moins chère.</p>
-              <button
-                onClick={() => set("stores", [])}
-                className={`mt-8 w-full rounded-2xl border-2 p-4 text-left transition ${p.stores.length === 0 ? "border-tomato bg-tomato/5" : "border-line bg-white/60 hover:border-ink/30"}`}
-              >
-                <span className="font-semibold">🔎 Peu importe, compare les {STORES.length} enseignes</span>
-                <span className="block text-sm text-ink-soft">On te dira où ton panier coûte le moins cher.</span>
-              </button>
-              <div className="mt-6 space-y-5">
-                {(Object.keys(STORE_KIND_LABEL) as Store["kind"][]).map((kind) => (
-                  <div key={kind}>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-ink-soft">{STORE_KIND_LABEL[kind]}</p>
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                      {STORES.filter((s) => s.kind === kind).map((s) => (
-                        <Chip key={s.id} active={p.stores.includes(s.id)} onClick={() => set("stores", toggle(p.stores, s.id))}>
-                          <StoreLogo store={s} size={22} compact />
-                        </Chip>
-                      ))}
-                    </div>
-                  </div>
+              <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-4" role="radiogroup" aria-label="Pays">
+                {COUNTRIES.map((c) => (
+                  <button
+                    key={c.id}
+                    role="radio"
+                    aria-checked={country.id === c.id}
+                    onClick={() => setCountry(c.id)}
+                    className={`flex items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left font-semibold transition ${country.id === c.id ? "border-tomato bg-tomato/5" : "border-line bg-white/60 hover:border-ink/30"}`}
+                  >
+                    <span className="text-2xl">{c.flag}</span>
+                    {c.name}
+                  </button>
                 ))}
               </div>
+              <p className="mt-8 text-ink-soft">Choisis tes magasins (un ou plusieurs) :</p>
+              <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
+                {stores.map((s) => {
+                  const on = p.stores.includes(s.id);
+                  return (
+                    <motion.button
+                      key={s.id}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => set("stores", toggle(p.stores, s.id))}
+                      aria-pressed={on}
+                      aria-label={s.name}
+                      title={s.name}
+                      className={`relative grid aspect-[4/3] place-items-center rounded-2xl border-2 bg-white p-3 transition ${on ? "border-tomato shadow-lg" : "border-line hover:border-ink/30"}`}
+                    >
+                      <StoreLogo store={s} size={44} logoOnly />
+                      {on && (
+                        <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-tomato text-white">
+                          <Check size={12} />
+                        </span>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => set("stores", [])}
+                className={`mt-4 w-full rounded-2xl border-2 p-4 text-left transition ${p.stores.length === 0 ? "border-tomato bg-tomato/5" : "border-line bg-white/60 hover:border-ink/30"}`}
+              >
+                <span className="font-semibold">🔎 Peu importe, compare les {stores.length} enseignes</span>
+                <span className="block text-sm text-ink-soft">On te dira où ton panier coûte le moins cher.</span>
+              </button>
             </>
           )}
 
@@ -223,6 +253,27 @@ export default function Wizard() {
 
           {step === 3 && (
             <>
+              <H>Ton équipement de cuisine</H>
+              <p className="mt-3 text-ink-soft">On ne te proposera que des recettes faisables chez toi, avec des astuces pour ton air fryer ou ton robot.</p>
+              {(["Cuisson", "Appareils", "Pâtisserie"] as const).map((group) => (
+                <Field key={group} label={group} className="mt-8">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {EQUIPMENT.filter((e) => e.group === group).map((e) => (
+                      <Chip key={e.id} active={equipment.includes(e.id)} onClick={() => set("equipment", toggle(equipment, e.id))}>
+                        <span className="flex items-center gap-2 font-semibold">
+                          <span className="text-xl">{e.emoji}</span>
+                          {e.label}
+                        </span>
+                      </Chip>
+                    ))}
+                  </div>
+                </Field>
+              ))}
+            </>
+          )}
+
+          {step === 4 && (
+            <>
               <H>Quels repas on prépare ?</H>
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {MEALS.map((m) => {
@@ -274,7 +325,7 @@ export default function Wizard() {
             </>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <>
               <H>Ton régime alimentaire</H>
               <div className="mt-8 flex flex-wrap gap-2">
@@ -306,7 +357,7 @@ export default function Wizard() {
             </>
           )}
 
-          {step === 5 && (
+          {step === 6 && (
             <>
               <H>Ton budget courses par semaine</H>
               <div className="mt-8 rounded-[2rem] border border-line bg-white/60 p-6 sm:p-8">
@@ -316,7 +367,7 @@ export default function Wizard() {
                     {euro(p.budget)}
                   </motion.span>
                 </div>
-                <input type="range" min={15} max={250} step={5} value={p.budget} onChange={(e) => set("budget", +e.target.value)} className="mt-5 w-full accent-tomato" aria-label="Budget hebdomadaire" />
+                <input type="range" min={country.budget.min} max={country.budget.max} step={country.budget.step} value={p.budget} onChange={(e) => set("budget", +e.target.value)} className="mt-5 w-full accent-tomato" aria-label="Budget hebdomadaire" />
                 <p className={`mt-4 text-sm ${p.budget >= minBudget ? "text-sage" : "text-tomato"}`}>
                   {p.budget >= minBudget
                     ? `✓ Budget réaliste pour ton foyer (minimum estimé ≈ ${euro(Math.ceil(minBudget))}).`
@@ -395,7 +446,7 @@ function Stepper({ value, min, max, onChange }: { value: number; min: number; ma
 }
 
 function Cooking() {
-  const lines = ["On calcule tes besoins…", "On compare 16 enseignes…", "On mutualise les ingrédients…", "On dresse les assiettes…"];
+  const lines = ["On calcule tes besoins…", "On compare les enseignes…", "On mutualise les ingrédients…", "On dresse les assiettes…"];
   const [i, setI] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setI((x) => Math.min(lines.length - 1, x + 1)), 450);

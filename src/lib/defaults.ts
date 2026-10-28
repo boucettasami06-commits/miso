@@ -1,3 +1,4 @@
+import { DEFAULT_EQUIPMENT } from "./engine/equipment";
 import type { Profile } from "./types";
 
 export const DEFAULT_PROFILE: Profile = {
@@ -19,4 +20,6 @@ export const DEFAULT_PROFILE: Profile = {
   stores: [],
   cookTime: "normal",
   hasPantry: true,
+  country: "FR",
+  equipment: DEFAULT_EQUIPMENT,
 };

@@ -5,7 +5,8 @@ Mijo génère chaque semaine un menu personnalisé (petit-déj, midi, soir) en f
 - **l'objectif** : Healthy (déficit de 15 %), Musculation (surplus de 12 %, 1,9 g de protéines/kg), Équilibré, Gourmand ;
 - **le corps et le foyer** : sexe, âge, poids, taille, activité (Mifflin-St Jeor), adultes et enfants ;
 - **le régime** : omnivore → vegan, sans porc / gluten / lactose, allergies, aliments détestés ;
-- **le budget hebdo et les enseignes** : 16 enseignes — hard-discount (Aldi, Lidl, Netto, Leader Price), hypers (E.Leclerc, Auchan, Hyper U, Carrefour), supermarchés (Intermarché, Super U, Carrefour Market, Casino), proximité (Franprix, Monoprix) et spécialistes (Grand Frais, Biocoop), avec des écarts de prix par rayon ;
+- **le pays, le budget et les enseignes** : 45 enseignes en France (Leclerc, Carrefour, Lidl, Aldi, Intermarché, Super U, Monoprix, Grand Frais…), Belgique (Colruyt, Delhaize, Carrefour, Albert Heijn, Cora…), Suisse (Migros, Coop, Denner, Aldi, Lidl…, prix en CHF) et Allemagne (Aldi, Lidl, REWE, EDEKA, Kaufland, Penny, Netto…), avec des écarts de prix par pays, enseigne et rayon ;
+- **le matériel de cuisine** : four, plaques, micro-ondes, air fryer, robot cuiseur, multicuiseur, mixeur, matériel de pâtisserie… Seules les recettes faisables sont proposées, avec des astuces d'adaptation ;
 - **le temps en cuisine** : plus souple le week-end.
 
 ## Démarrer
@@ -41,7 +42,7 @@ Variable d'environnement : `NEXT_PUBLIC_SITE_URL` (URL canonique pour le SEO, pa
 2. **Sélection gloutonne** créneau par créneau. Le score combine l'adéquation à l'objectif, la couverture protéique, le temps de préparation, la variété (plafond strict de répétitions, protéine et cuisine différentes d'un jour à l'autre) et le **coût marginal** du plat dans le panier en cours. Ce coût marginal favorise naturellement l'anti-gaspi : un plat qui finit un paquet déjà ouvert coûte presque rien.
 3. **Mode « restes du midi »** : le dîner d'un plat qui se réchauffe bien est cuisiné en double pour le midi du lendemain.
 4. **Réparation du budget** : tant que le panier dépasse le budget, on remplace le repas qui offre le meilleur rapport économie / perte de qualité. Si le budget est irréaliste, l'interface affiche le minimum atteignable plutôt que de tricher.
-5. L'enseigne retenue est **la moins chère parmi celles choisies**. Les 16 enseignes sont comparées.
+5. L'enseigne retenue est **la moins chère parmi celles choisies**. Toutes les enseignes du pays sont comparées.
 
 Le tout s'exécute en moins de 50 ms dans le navigateur, sans serveur ni compte. Les données restent dans le `localStorage`.
 

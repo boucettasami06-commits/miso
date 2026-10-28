@@ -1,6 +1,8 @@
 import { INGREDIENTS } from "../data/ingredients";
 import { RECIPES, RECIPE_BY_SLUG } from "../data/recipes";
-import { STORES } from "../data/stores";
+import { COUNTRY_BY_ID, STORE_BY_ID, storesOf } from "../data/stores";
+import { canCook } from "./equipment";
+import { money } from "../format";
 import type { Flag, MealType, PlannedMeal, Profile, Recipe, Targets, WeekPlan } from "../types";
 import { dailyTargets, householdPortions, MEAL_SHARE, portionScale, recipeNutrition } from "./nutrition";
 import { addRecipe, basketFromMeals, bestCost, quotes, round2, type Basket } from "./pricing";
@@ -46,7 +48,7 @@ export function isAllowed(r: Recipe, p: Profile): boolean {
   for (const a of p.allergens) forbidden.push(a);
   if (forbidden.some((x) => f.has(x))) return false;
   if (r.ingredients.some((ri) => p.dislikes.includes(ri.id))) return false;
-  return true;
+  return canCook(r, p.equipment);
 }
 
 export function pool(p: Profile, meal: MealType): Recipe[] {
@@ -162,11 +164,18 @@ export interface GenerateOptions {
   keep?: PlannedMeal[];
 }
 
+/** Enseignes retenues : celles cochées dans le pays du profil, sinon toutes celles du pays. */
+function storesFor(p: Profile): string[] {
+  const country = p.country ?? "FR";
+  const chosen = p.stores.filter((id) => STORE_BY_ID[id]?.country === country);
+  return chosen.length ? chosen : storesOf(country).map((s) => s.id);
+}
+
 function buildCtx(p: Profile): Ctx {
   return {
     p,
     targets: dailyTargets(p),
-    stores: p.stores.length ? p.stores : STORES.map((s) => s.id),
+    stores: storesFor(p),
     leftovers: p.lunchMode === "leftovers" && p.meals.includes("lunch") && p.meals.includes("dinner"),
     poolSize: { breakfast: pool(p, "breakfast").length, main: pool(p, "dinner").length },
   };
@@ -184,6 +193,11 @@ export function generatePlan(p: Profile, opts: GenerateOptions = {}): WeekPlan {
   const ctx = buildCtx(p);
   const stores = ctx.stores;
   const warnings: string[] = [];
+  if (p.equipment?.length && meals.some((m) => m !== "breakfast") && pools.dinner.length < 10) {
+    warnings.push(
+      `Avec ton matériel, seuls ${pools.dinner.length} plats sont réalisables : la semaine sera peu variée. Ajouter des plaques ou un four débloque toutes les recettes.`,
+    );
+  }
   for (const m of meals) {
     if (!pools[m].length) {
       warnings.push(`Aucune recette compatible pour le repas « ${MEAL_LABEL[m]} » avec tes restrictions.`);
@@ -274,7 +288,8 @@ function repairBudget(meals: PlannedMeal[], ctx: Ctx, pools: Record<MealType, Re
 
 function finalize(meals: PlannedMeal[], p: Profile, ctx: Ctx, seed: number, warnings: string[]): WeekPlan {
   const basket = basketFromMeals(meals);
-  const all = quotes(basket, p.hasPantry);
+  const country = p.country ?? "FR";
+  const all = quotes(basket, p.hasPantry, country);
   const eligible = all.filter((q) => ctx.stores.includes(q.storeId));
   const pick = eligible[0] ?? all[0];
   const total = pick.total;
@@ -284,6 +299,8 @@ function finalize(meals: PlannedMeal[], p: Profile, ctx: Ctx, seed: number, warn
     seed,
     meals,
     storeId: pick.storeId,
+    country,
+    currency: COUNTRY_BY_ID[country].currency,
     quotes: all,
     total,
     budget: p.budget,
@@ -293,7 +310,7 @@ function finalize(meals: PlannedMeal[], p: Profile, ctx: Ctx, seed: number, warn
   if (total > p.budget) {
     plan.minAchievable = total;
     warnings.push(
-      `Ton budget est très serré : le minimum atteignable avec tes préférences est de ${total.toFixed(2)} €. ` +
+      `Ton budget est très serré : le minimum atteignable avec tes préférences est de ${money(total, COUNTRY_BY_ID[country].currency)}. ` +
         `Essaie d'élargir les enseignes, de passer au mode « restes du midi » ou de retirer un repas.`,
     );
   }
