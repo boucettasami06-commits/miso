@@ -4,12 +4,13 @@ import Hero from "@/components/home/Hero";
 import BudgetSimulator from "@/components/home/BudgetSimulator";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
+import StoreLogo from "@/components/StoreLogo";
 import RecipeCard from "@/components/RecipeCard";
 import { STORES } from "@/lib/data/stores";
 import { RECIPES } from "@/lib/data/recipes";
 
 const STEPS = [
-  { icon: Target, title: "Ton profil", text: "Objectif, corps, foyer, régime, allergies, temps en cuisine. 6 questions, 90 secondes." },
+  { icon: Target, title: "Tes magasins & tes goûts", text: "Où tu fais tes courses, ta façon de manger, combien vous êtes à table. 6 questions, 90 secondes." },
   { icon: Wallet, title: "Ton budget", text: "Tu fixes ton enveloppe hebdo et tes enseignes. Mijo optimise chaque centime." },
   { icon: ChefHat, title: "Ta semaine", text: "7 jours de repas, des portions calculées pour toi et une liste de courses par rayon." },
 ];
@@ -17,7 +18,7 @@ const STEPS = [
 const PROFILES = [
   { id: "sain", title: "Healthy", kicker: "Mincir & se sentir bien", text: "Déficit léger de 15 %, légumes à chaque repas, protéines maigres. Sans frustration.", photo: "photo-1512621776951-a57141f2eefd", emoji: "🥗", color: "bg-sage-light" },
   { id: "muscle", title: "Musculation", kicker: "Prise de masse & force", text: "1,9 g de protéines/kg, surplus calorique maîtrisé, portions XL calculées pour ton gabarit.", photo: "photo-1490645935967-10de6ba17061", emoji: "💪", color: "bg-saffron/30" },
-  { id: "equilibre", title: "Équilibré", kicker: "Manger normalement, mais mieux", text: "Des repas variés, maison et rapides, qui plaisent à tout le foyer.", photo: "photo-1529042410759-befb1204b468", emoji: "🍽️", color: "bg-cream-2" },
+  { id: "classique", title: "Classique", kicker: "Je mange de tout, simplement", text: "Des repas variés, maison et rapides, qui plaisent à tout le foyer.", photo: "photo-1529042410759-befb1204b468", emoji: "🍽️", color: "bg-cream-2" },
   { id: "gourmand", title: "Gourmand", kicker: "Comfort food assumée", text: "Burger, tartiflette, pizza maison… Le plaisir du fast-food, le prix et la qualité du fait-maison.", photo: "photo-1568901346375-23c9450c58cd", emoji: "🍔", color: "bg-tomato/15" },
 ];
 
@@ -47,12 +48,15 @@ export default function Home() {
       <Hero />
 
       {/* Enseignes */}
-      <section aria-label="Enseignes comparées" className="border-y border-line bg-white/40 py-6">
-        <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
-          <div className="flex w-max animate-marquee gap-14 pr-14">
+      <section aria-label="Enseignes comparées" className="border-y border-line bg-white py-8">
+        <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.25em] text-ink-soft">
+          Ton panier comparé dans {STORES.length} enseignes
+        </p>
+        <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
+          <div className="flex w-max animate-marquee items-center gap-16 pr-16 hover:[animation-play-state:paused]">
             {[...STORES, ...STORES].map((s, i) => (
-              <span key={i} className="whitespace-nowrap font-display text-2xl font-semibold text-ink/35 sm:text-3xl">
-                {s.name}
+              <span key={i} aria-hidden={i >= STORES.length} className="opacity-90 transition hover:scale-105 hover:opacity-100">
+                <StoreLogo store={s} />
               </span>
             ))}
           </div>

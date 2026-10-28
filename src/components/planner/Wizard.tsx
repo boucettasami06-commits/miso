@@ -6,24 +6,41 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Coffee, Moon, Sun } from "lucide-react";
 import { DEFAULT_PROFILE } from "@/lib/defaults";
 import { generatePlan } from "@/lib/engine/generator";
-import { dailyTargets } from "@/lib/engine/nutrition";
 import { STORES, STORE_KIND_LABEL } from "@/lib/data/stores";
 import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
-import type { Activity, Allergen, CookTime, Diet, Goal, MealType, Profile, Restriction, Store } from "@/lib/types";
-import SmartImage from "../SmartImage";
+import type { Allergen, CookTime, Diet, MealType, Profile, Restriction, Store } from "@/lib/types";
+import StoreLogo from "../StoreLogo";
 
-const GOALS: { id: Goal; title: string; text: string; photo: string; emoji: string }[] = [
-  { id: "sain", title: "Manger sain", text: "Perdre un peu, se sentir léger", photo: "photo-1512621776951-a57141f2eefd", emoji: "🥗" },
-  { id: "muscle", title: "Prendre du muscle", text: "Protéines & énergie", photo: "photo-1490645935967-10de6ba17061", emoji: "💪" },
-  { id: "equilibre", title: "Manger équilibré", text: "Normal, varié, simple", photo: "photo-1529042410759-befb1204b468", emoji: "🍽️" },
-  { id: "gourmand", title: "Me faire plaisir", text: "Comfort food maison", photo: "photo-1568901346375-23c9450c58cd", emoji: "🍔" },
+interface Style {
+  id: string;
+  title: string;
+  text: string;
+  emoji: string;
+  bg: string;
+  apply: Partial<Profile>;
+}
+
+/** Styles proposés : chacun règle l'objectif nutritionnel et, si besoin, le régime, le temps ou la priorité prix. */
+const STYLES: Style[] = [
+  { id: "classique", title: "Classique", text: "Je mange de tout, simplement", emoji: "🍽️", bg: "bg-cream-2", apply: { goal: "equilibre" } },
+  { id: "eco", title: "Le moins cher possible", text: "Chaque euro compte", emoji: "💰", bg: "bg-saffron/30", apply: { goal: "equilibre", priority: "eco" } },
+  { id: "rapide", title: "Vite fait", text: "Prêt en 20 minutes", emoji: "⚡", bg: "bg-sage-light", apply: { goal: "equilibre", cookTime: "express" } },
+  { id: "famille", title: "Familial", text: "Des plats que les enfants adorent", emoji: "👨‍👩‍👧", bg: "bg-tomato/15", apply: { goal: "gourmand" } },
+  { id: "gourmand", title: "Gourmand", text: "Comfort food maison", emoji: "🍔", bg: "bg-tomato/15", apply: { goal: "gourmand" } },
+  { id: "sain", title: "Healthy", text: "Léger, plein de légumes", emoji: "🥗", bg: "bg-sage-light", apply: { goal: "sain" } },
+  { id: "muscle", title: "Sportif", text: "Riche en protéines", emoji: "💪", bg: "bg-saffron/30", apply: { goal: "muscle" } },
+  { id: "veggie", title: "Végétarien", text: "Sans viande ni poisson", emoji: "🌱", bg: "bg-sage-light", apply: { goal: "equilibre", diet: "vegetarien" } },
 ];
-const ACTIVITIES: { id: Activity; label: string; hint: string }[] = [
-  { id: "sedentaire", label: "Sédentaire", hint: "Bureau, peu de sport" },
-  { id: "leger", label: "Léger", hint: "1–2 séances/sem." },
-  { id: "actif", label: "Actif", hint: "3–5 séances/sem." },
-  { id: "tres-actif", label: "Très actif", hint: "Sport quotidien" },
-];
+
+/** Applique un style en annulant les effets du style précédent (priorité prix, temps express, régime végétarien). */
+function applyStyle(p: Profile, st: Style): Profile {
+  const prev = STYLES.find((x) => x.id === p.style);
+  const next: Profile = { ...p, priority: undefined, style: st.id };
+  if (prev?.apply.cookTime && !st.apply.cookTime) next.cookTime = "normal";
+  if (prev?.apply.diet && !st.apply.diet) next.diet = "omnivore";
+  return { ...next, ...st.apply };
+}
+
 const MEALS: { id: MealType; label: string; icon: typeof Sun }[] = [
   { id: "breakfast", label: "Petit-déjeuner", icon: Coffee },
   { id: "lunch", label: "Déjeuner", icon: Sun },
@@ -58,7 +75,7 @@ const COOK: { id: CookTime; label: string; hint: string; emoji: string }[] = [
   { id: "chef", label: "J'adore cuisiner", hint: "Pas de limite", emoji: "👨‍🍳" },
 ];
 
-const STEPS = ["Objectif", "Toi & ton foyer", "Repas", "Régime", "Budget", "Cuisine"];
+const STEPS = ["Magasins", "Style", "Foyer", "Repas", "Régime", "Budget"];
 
 const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 const euro = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
@@ -73,15 +90,15 @@ export default function Wizard() {
 
   useEffect(() => {
     const saved = loadProfile();
-    const goal = params.get("objectif") as Goal | null;
+    const wanted = STYLES.find((x) => x.id === params.get("objectif"));
     const base = saved ? { ...DEFAULT_PROFILE, ...saved } : DEFAULT_PROFILE;
-    setP(goal && GOALS.some((g) => g.id === goal) ? { ...base, goal } : base);
+    setP(wanted ? applyStyle(base, wanted) : base);
   }, [params]);
 
   const set = <K extends keyof Profile>(k: K, v: Profile[K]) => setP((x) => ({ ...x, [k]: v }));
-  const targets = useMemo(() => dailyTargets(p), [p]);
-  const minBudget = useMemo(() => (step === 4 ? generatePlan({ ...p, budget: 1 }, { seed: 1 }).total : 0), [p, step]);
-  const canNext = step !== 2 || p.meals.length > 0;
+  const minBudget = useMemo(() => (step === 5 ? generatePlan({ ...p, budget: 1 }, { seed: 1 }).total : 0), [p, step]);
+  const canNext = step !== 3 || p.meals.length > 0;
+  const people = p.adults + p.children;
 
   const go = (d: number) => {
     setDir(d);
@@ -125,26 +142,27 @@ export default function Wizard() {
         >
           {step === 0 && (
             <>
-              <H>Quel est ton objectif ?</H>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {GOALS.map((g) => (
-                  <button
-                    key={g.id}
-                    onClick={() => set("goal", g.id)}
-                    className={`group relative h-48 overflow-hidden rounded-[1.75rem] text-left ring-4 transition ${p.goal === g.id ? "ring-tomato" : "ring-transparent hover:ring-line"}`}
-                  >
-                    <SmartImage photo={g.photo} emoji={g.emoji} alt="" fill sizes="(max-width: 640px) 90vw, 400px" className="object-cover transition duration-700 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute bottom-4 left-5 text-white">
-                      <p className="font-display text-2xl">{g.title}</p>
-                      <p className="text-sm text-white/80">{g.text}</p>
+              <H>Où fais-tu tes courses ?</H>
+              <p className="mt-3 text-ink-soft">Coche un ou plusieurs magasins : on calcule ta liste au prix de l&apos;enseigne la moins chère.</p>
+              <button
+                onClick={() => set("stores", [])}
+                className={`mt-8 w-full rounded-2xl border-2 p-4 text-left transition ${p.stores.length === 0 ? "border-tomato bg-tomato/5" : "border-line bg-white/60 hover:border-ink/30"}`}
+              >
+                <span className="font-semibold">🔎 Peu importe, compare les {STORES.length} enseignes</span>
+                <span className="block text-sm text-ink-soft">On te dira où ton panier coûte le moins cher.</span>
+              </button>
+              <div className="mt-6 space-y-5">
+                {(Object.keys(STORE_KIND_LABEL) as Store["kind"][]).map((kind) => (
+                  <div key={kind}>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-ink-soft">{STORE_KIND_LABEL[kind]}</p>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                      {STORES.filter((s) => s.kind === kind).map((s) => (
+                        <Chip key={s.id} active={p.stores.includes(s.id)} onClick={() => set("stores", toggle(p.stores, s.id))}>
+                          <StoreLogo store={s} size={22} compact />
+                        </Chip>
+                      ))}
                     </div>
-                    {p.goal === g.id && (
-                      <span className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-tomato text-white">
-                        <Check size={18} />
-                      </span>
-                    )}
-                  </button>
+                  </div>
                 ))}
               </div>
             </>
@@ -152,62 +170,58 @@ export default function Wizard() {
 
           {step === 1 && (
             <>
-              <H>Parle-nous un peu de toi.</H>
-              <p className="mt-3 text-ink-soft">On calcule tes besoins pour ajuster chaque portion. Rien ne quitte ton appareil.</p>
-              <div className="mt-8 grid gap-6 sm:grid-cols-2">
-                <Field label="Sexe">
-                  <Segmented value={p.sex} onChange={(v) => set("sex", v)} options={[["femme", "Femme"], ["homme", "Homme"]]} />
-                </Field>
-                <Field label={`Âge · ${p.age} ans`}>
-                  <input type="range" min={14} max={85} value={p.age} onChange={(e) => set("age", +e.target.value)} className="w-full accent-tomato" />
-                </Field>
-                <Field label={`Poids · ${p.weight} kg`}>
-                  <input type="range" min={40} max={150} value={p.weight} onChange={(e) => set("weight", +e.target.value)} className="w-full accent-tomato" />
-                </Field>
-                <Field label={`Taille · ${p.height} cm`}>
-                  <input type="range" min={140} max={210} value={p.height} onChange={(e) => set("height", +e.target.value)} className="w-full accent-tomato" />
-                </Field>
-              </div>
-              <Field label="Activité physique" className="mt-6">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {ACTIVITIES.map((a) => (
-                    <Chip key={a.id} active={p.activity === a.id} onClick={() => set("activity", a.id)}>
-                      <span className="block font-semibold">{a.label}</span>
-                      <span className="block text-xs opacity-70">{a.hint}</span>
-                    </Chip>
-                  ))}
-                </div>
-              </Field>
-              <div className="mt-6 grid gap-6 sm:grid-cols-2">
-                <Field label="Adultes dans le foyer">
-                  <Stepper value={p.adults} min={1} max={8} onChange={(v) => set("adults", v)} />
-                </Field>
-                <Field label="Enfants">
-                  <Stepper value={p.children} min={0} max={8} onChange={(v) => set("children", v)} />
-                </Field>
-              </div>
-              <div className="mt-8 rounded-3xl bg-ink p-5 text-cream">
-                <p className="text-xs uppercase tracking-widest text-cream/60">Tes besoins estimés / jour</p>
-                <div className="mt-3 grid grid-cols-4 gap-2 text-center">
-                  {[
-                    [targets.kcal, "kcal"],
-                    [`${targets.protein} g`, "protéines"],
-                    [`${targets.carbs} g`, "glucides"],
-                    [`${targets.fat} g`, "lipides"],
-                  ].map(([v, l]) => (
-                    <div key={l}>
-                      <motion.p key={String(v)} initial={{ opacity: 0.4 }} animate={{ opacity: 1 }} className="font-display text-xl sm:text-2xl">
-                        {v}
-                      </motion.p>
-                      <p className="text-[11px] uppercase tracking-wider text-cream/50">{l}</p>
-                    </div>
-                  ))}
-                </div>
+              <H>Tu veux manger comment ?</H>
+              <p className="mt-3 text-ink-soft">Pas de prise de tête : choisis ce qui te ressemble le plus.</p>
+              <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
+                {STYLES.map((st) => {
+                  const on = (p.style ?? "classique") === st.id;
+                  return (
+                    <motion.button
+                      key={st.id}
+                      whileHover={{ y: -3 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => setP((x) => applyStyle(x, st))}
+                      aria-pressed={on}
+                      className={`relative rounded-[1.5rem] p-5 text-left ring-2 transition ${st.bg} ${on ? "ring-tomato" : "ring-transparent hover:ring-line"}`}
+                    >
+                      <span className="text-4xl">{st.emoji}</span>
+                      <p className="mt-3 font-display text-lg font-bold leading-tight">{st.title}</p>
+                      <p className="mt-1 text-xs text-ink-soft">{st.text}</p>
+                      {on && (
+                        <span className="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full bg-tomato text-white">
+                          <Check size={14} />
+                        </span>
+                      )}
+                    </motion.button>
+                  );
+                })}
               </div>
             </>
           )}
 
           {step === 2 && (
+            <>
+              <H>Vous êtes combien à table ?</H>
+              <p className="mt-3 text-ink-soft">On ajuste les quantités : un enfant compte pour un peu plus d&apos;une demi-portion.</p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.75rem] border border-line bg-white/60 p-6">
+                  <p className="text-4xl">🧑</p>
+                  <p className="mt-3 font-display text-xl font-bold">Adultes & ados</p>
+                  <div className="mt-4"><Stepper value={p.adults} min={1} max={10} onChange={(v) => set("adults", v)} /></div>
+                </div>
+                <div className="rounded-[1.75rem] border border-line bg-white/60 p-6">
+                  <p className="text-4xl">🧒</p>
+                  <p className="mt-3 font-display text-xl font-bold">Enfants (moins de 12 ans)</p>
+                  <div className="mt-4"><Stepper value={p.children} min={0} max={10} onChange={(v) => set("children", v)} /></div>
+                </div>
+              </div>
+              <motion.p key={people} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-6 text-center font-display text-2xl" aria-live="polite">
+                {"🍽️".repeat(Math.min(people, 10))} <span className="text-tomato">{people}</span> personne{people > 1 ? "s" : ""} au foyer
+              </motion.p>
+            </>
+          )}
+
+          {step === 3 && (
             <>
               <H>Quels repas on prépare ?</H>
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -242,10 +256,25 @@ export default function Wizard() {
                 </Field>
               )}
               {!p.meals.length && <p className="mt-4 text-sm text-tomato">Choisis au moins un repas.</p>}
+              <Field label="Combien de temps en cuisine ? (le week-end, on s'autorise un peu plus)" className="mt-10">
+              <div className="grid gap-3 sm:grid-cols-3">
+                {COOK.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => set("cookTime", c.id)}
+                    className={`rounded-[1.75rem] border-2 p-5 text-left transition ${p.cookTime === c.id ? "border-tomato bg-tomato/5" : "border-line bg-white/60 hover:border-ink/30"}`}
+                  >
+                    <span className="text-3xl">{c.emoji}</span>
+                    <p className="mt-2 font-display text-xl">{c.label}</p>
+                    <p className="text-sm text-ink-soft">{c.hint}</p>
+                  </button>
+                ))}
+              </div>
+              </Field>
             </>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <>
               <H>Ton régime alimentaire</H>
               <div className="mt-8 flex flex-wrap gap-2">
@@ -277,12 +306,12 @@ export default function Wizard() {
             </>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <>
               <H>Ton budget courses par semaine</H>
               <div className="mt-8 rounded-[2rem] border border-line bg-white/60 p-6 sm:p-8">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-ink-soft">Pour tout le foyer</span>
+                  <span className="text-ink-soft">Pour {people} personne{people > 1 ? "s" : ""}</span>
                   <motion.span key={p.budget} initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="font-display text-5xl text-tomato">
                     {euro(p.budget)}
                   </motion.span>
@@ -290,30 +319,10 @@ export default function Wizard() {
                 <input type="range" min={15} max={250} step={5} value={p.budget} onChange={(e) => set("budget", +e.target.value)} className="mt-5 w-full accent-tomato" aria-label="Budget hebdomadaire" />
                 <p className={`mt-4 text-sm ${p.budget >= minBudget ? "text-sage" : "text-tomato"}`}>
                   {p.budget >= minBudget
-                    ? `✓ Budget réaliste pour ton profil (minimum estimé ≈ ${euro(Math.ceil(minBudget))}).`
-                    : `⚠ En dessous du minimum réaliste pour ton profil (≈ ${euro(Math.ceil(minBudget))}). On fera au mieux.`}
+                    ? `✓ Budget réaliste pour ton foyer (minimum estimé ≈ ${euro(Math.ceil(minBudget))}).`
+                    : `⚠ En dessous du minimum réaliste pour ton foyer (≈ ${euro(Math.ceil(minBudget))}). On fera au mieux.`}
                 </p>
               </div>
-              <Field label="Où fais-tu tes courses ? (laisse vide pour comparer les 16 enseignes)" className="mt-8">
-                <div className="space-y-5">
-                  {(Object.keys(STORE_KIND_LABEL) as Store["kind"][]).map((kind) => (
-                    <div key={kind}>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-ink-soft">{STORE_KIND_LABEL[kind]}</p>
-                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                        {STORES.filter((s) => s.kind === kind).map((s) => (
-                          <Chip key={s.id} active={p.stores.includes(s.id)} onClick={() => set("stores", toggle(p.stores, s.id))}>
-                            <span className="flex items-center gap-2 font-semibold">
-                              <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: s.color }} />
-                              {s.name}
-                            </span>
-                            <span className="block text-xs opacity-70">{s.tagline}</span>
-                          </Chip>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Field>
               <label className="mt-6 flex cursor-pointer items-center gap-3 rounded-2xl bg-cream-2 p-4">
                 <input type="checkbox" checked={p.hasPantry} onChange={(e) => set("hasPantry", e.target.checked)} className="h-5 w-5 accent-tomato" />
                 <span>
@@ -324,25 +333,6 @@ export default function Wizard() {
             </>
           )}
 
-          {step === 5 && (
-            <>
-              <H>Combien de temps en cuisine ?</H>
-              <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                {COOK.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => set("cookTime", c.id)}
-                    className={`rounded-[1.75rem] border-2 p-6 text-left transition ${p.cookTime === c.id ? "border-tomato bg-tomato/5" : "border-line bg-white/60 hover:border-ink/30"}`}
-                  >
-                    <span className="text-4xl">{c.emoji}</span>
-                    <p className="mt-4 font-display text-2xl">{c.label}</p>
-                    <p className="text-sm text-ink-soft">{c.hint}</p>
-                  </button>
-                ))}
-              </div>
-              <p className="mt-6 text-sm text-ink-soft">Le week-end, on s&apos;autorise des recettes un peu plus longues.</p>
-            </>
-          )}
         </motion.div>
       </AnimatePresence>
 
@@ -391,19 +381,6 @@ function Pill({ active, onClick, children, tone = "tomato" }: { active: boolean;
     <button onClick={onClick} aria-pressed={active} className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${active ? on : "border-line bg-white/60 hover:border-ink/40"}`}>
       {children}
     </button>
-  );
-}
-
-function Segmented<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: [T, string][] }) {
-  return (
-    <div className="inline-flex rounded-full bg-cream-2 p-1">
-      {options.map(([v, l]) => (
-        <button key={v} onClick={() => onChange(v)} className={`relative rounded-full px-5 py-2 text-sm font-semibold ${value === v ? "text-cream" : "text-ink-soft"}`}>
-          {value === v && <motion.span layoutId="seg" className="absolute inset-0 rounded-full bg-ink" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />}
-          <span className="relative">{l}</span>
-        </button>
-      ))}
-    </div>
   );
 }
 

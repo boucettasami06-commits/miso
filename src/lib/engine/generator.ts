@@ -13,6 +13,8 @@ const MAX_TIME = { express: 20, normal: 40, chef: 90 } as const;
 const PROTEIN_WEIGHT = { muscle: 16, sain: 7, equilibre: 3, gourmand: 1 } as const;
 /** Sensibilité au prix selon l'objectif : un profil gourmand accepte de payer un peu plus pour se faire plaisir. */
 const PRICE_WEIGHT = { muscle: 1, sain: 1, equilibre: 1.1, gourmand: 0.8 } as const;
+/** Style « le moins cher possible » : le prix pèse deux fois plus dans le choix des recettes. */
+const priceWeight = (p: Profile) => PRICE_WEIGHT[p.goal] * (p.priority === "eco" ? 2 : 1);
 
 function mulberry32(seed: number) {
   let a = seed >>> 0;
@@ -191,7 +193,7 @@ export function generatePlan(p: Profile, opts: GenerateOptions = {}): WeekPlan {
   const chosen: PlannedMeal[] = [];
   const basket: Basket = new Float64Array(Object.keys(INGREDIENTS).length);
   const perSlot = p.budget / Math.max(1, slotCount(p));
-  const lambda = (9 * PRICE_WEIGHT[p.goal]) / Math.max(0.5, perSlot);
+  const lambda = (9 * priceWeight(p)) / Math.max(0.5, perSlot);
 
   for (let day = 0; day < 7; day++) {
     for (const meal of meals) {
@@ -311,7 +313,7 @@ export function swapMeal(plan: WeekPlan, p: Profile, day: number, meal: MealType
   const pick = (slot: MealType, d: number, exclude: string[], feed: boolean, current: PlannedMeal[]) => {
     const basket = basketFromMeals(current);
     const base = bestCost(basket, ctx.stores, p.hasPantry);
-    const lambda = (9 * PRICE_WEIGHT[p.goal]) / Math.max(0.5, p.budget / Math.max(1, slotCount(p)));
+    const lambda = (9 * priceWeight(p)) / Math.max(0.5, p.budget / Math.max(1, slotCount(p)));
     const scored = pool(p, slot)
       .filter((r) => !exclude.includes(r.slug) && withinCap(r, d, slot, current, ctx))
       .map((r) => {

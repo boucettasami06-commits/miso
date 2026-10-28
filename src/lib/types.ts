@@ -97,6 +97,10 @@ export interface Profile {
   stores: string[];
   cookTime: CookTime;
   hasPantry: boolean;
+  /** style choisi dans le questionnaire (sert à le pré-sélectionner au retour) */
+  style?: string;
+  /** « eco » : priorité absolue au prix */
+  priority?: "eco";
 }
 
 export interface Store {
