@@ -22,7 +22,7 @@ PEXELS_API_KEY=xxx npm run photos   # une photo libre de droits par recette
 
 102 recettes (19 petits-déjeuners, 83 plats). Chaque recette a une photo d'illustration par défaut. `npm run photos` interroge l'API Pexels (clé gratuite, photos utilisables commercialement) et enregistre une photo dédiée par recette dans `src/lib/data/photos.json`, avec le crédit du photographe affiché sur la fiche. Vérifie visuellement le résultat, puis commite le fichier.
 
-Variable d'environnement : `NEXT_PUBLIC_SITE_URL` (URL canonique pour le SEO, par défaut `https://mijo.app`).
+Variable d'environnement : `NEXT_PUBLIC_SITE_URL` (URL canonique pour le SEO, par défaut `https://mijo-nu.vercel.app`).
 
 ## Architecture
 
