@@ -85,7 +85,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10" />
         {r.credit && (
           <a href={r.credit.url} target="_blank" rel="noopener nofollow" className="absolute right-4 top-24 rounded-full bg-black/40 px-3 py-1 text-xs text-white/80 backdrop-blur hover:text-white">
-            Photo : {r.credit.author} / Pexels
+            Photo : {r.credit.author} / {r.credit.source ?? "Pexels"}{r.credit.license ? ` · ${r.credit.license}` : ""}
           </a>
         )}
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-7xl px-4 pb-12 text-white sm:px-6">

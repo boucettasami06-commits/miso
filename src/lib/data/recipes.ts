@@ -893,7 +893,7 @@ const FROM_EXTRA: Recipe[] = EXTRA.map(([slug, title, meal, description, time, d
   };
 });
 
-type Photo = { src: string; author: string; url: string };
+type Photo = { src: string; author: string; url: string; license?: string; source?: string };
 
 /** Photos dédiées (récupérées par `npm run photos`) prioritaires sur les photos d'illustration. */
 /**
@@ -917,7 +917,7 @@ const ILLUSTRATION_MATCHES = new Set([
 
 export const RECIPES: Recipe[] = [...BASE, ...FROM_EXTRA].map((r) => {
   const photo = (PHOTOS as Record<string, Photo>)[r.slug];
-  if (photo) return { ...r, image: photo.src, credit: { author: photo.author, url: photo.url } };
+  if (photo) return { ...r, image: photo.src, credit: { author: photo.author, url: photo.url, license: photo.license, source: photo.source ?? "Pexels" } };
   return ILLUSTRATION_MATCHES.has(r.slug) ? r : { ...r, image: "" };
 });
 

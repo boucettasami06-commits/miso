@@ -18,6 +18,7 @@ export default function Footer() {
             <li><Link href="/planifier" className="hover:text-saffron">Créer mon menu</Link></li>
             <li><Link href="/ma-semaine" className="hover:text-saffron">Ma semaine</Link></li>
             <li><Link href="/recettes" className="hover:text-saffron">Toutes les recettes</Link></li>
+            <li><Link href="/credits" className="hover:text-saffron">Crédits photos</Link></li>
           </ul>
         </div>
         <div className="md:col-span-2">
