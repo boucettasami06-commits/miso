@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="relative mt-24 overflow-hidden bg-plum text-cream">
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-1">
-          <Logo className="text-cream" />
+          <Logo light />
           <p className="mt-4 max-w-xs text-sm text-cream/70">
             Des menus de la semaine pensés pour ton corps, ton budget et ton supermarché. Fait avec appétit en France.
           </p>

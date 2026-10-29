@@ -49,7 +49,7 @@ export default function Hero() {
           >
             <Link
               href="/planifier"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-tomato px-8 py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(255,90,31,0.7)] transition hover:-translate-y-0.5 hover:bg-tomato-dark"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-tomato px-8 py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(250,101,76,0.7)] transition hover:-translate-y-0.5 hover:bg-tomato-dark"
             >
               Créer ma semaine
               <ArrowRight size={20} className="transition group-hover:translate-x-1" />

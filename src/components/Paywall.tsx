@@ -90,7 +90,7 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
 
         <a
           href={`/api/whop/checkout?plan=${plan}`}
-          className="mt-7 flex items-center justify-center gap-2 rounded-full bg-tomato py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(255,90,31,0.7)] transition hover:bg-tomato-dark"
+          className="mt-7 flex items-center justify-center gap-2 rounded-full bg-tomato py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(250,101,76,0.7)] transition hover:bg-tomato-dark"
         >
           Débloquer ma semaine
         </a>

@@ -202,7 +202,7 @@ export default function PlanView() {
         <div className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream/90 p-3 backdrop-blur-xl sm:p-4">
           <div className="mx-auto flex max-w-3xl flex-col items-center gap-2 sm:flex-row sm:justify-between">
             <p className="text-center text-sm text-ink-soft sm:text-left">Ta semaine et ta liste de courses sont prêtes.</p>
-            <button onClick={askPay} className="w-full rounded-full bg-tomato px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_rgba(255,90,31,0.7)] transition hover:bg-tomato-dark sm:w-auto">
+            <button onClick={askPay} className="w-full rounded-full bg-tomato px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_rgba(250,101,76,0.7)] transition hover:bg-tomato-dark sm:w-auto">
               🔓 Débloquer ma liste de courses et mes recettes de la semaine
             </button>
           </div>
