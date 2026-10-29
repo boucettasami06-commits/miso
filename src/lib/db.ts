@@ -27,6 +27,15 @@ export function ensureSchema() {
       sub_checked_at timestamptz,
       created_at timestamptz NOT NULL DEFAULT now()
     )`;
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_logins int NOT NULL DEFAULT 0`;
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until timestamptz`;
+    await q`CREATE TABLE IF NOT EXISTS password_resets (
+      token_hash text PRIMARY KEY,
+      user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      expires_at timestamptz NOT NULL,
+      used_at timestamptz,
+      created_at timestamptz NOT NULL DEFAULT now()
+    )`;
     await q`CREATE TABLE IF NOT EXISTS user_plans (
       user_id uuid PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
       profile jsonb NOT NULL,

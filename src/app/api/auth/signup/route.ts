@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cleanName, hashPassword, normEmail, publicUser, sessionCookie, validEmail, type User } from "@/lib/auth";
 import { dbReady, ensureSchema, sql } from "@/lib/db";
+import { sendWelcome } from "@/lib/mail";
 
 export async function POST(req: Request) {
   if (!dbReady()) return NextResponse.json({ error: "Les comptes ne sont pas encore activés." }, { status: 503 });
@@ -26,6 +27,8 @@ export async function POST(req: Request) {
     RETURNING id, email, first_name, last_name, whop_membership, sub_active, sub_checked_at`) as User[];
   if (!rows[0]) return NextResponse.json({ error: "Un compte existe déjà avec cette adresse. Connecte-toi." }, { status: 409 });
 
+  // E-mail de bienvenue : un échec d'envoi ne doit jamais bloquer l'inscription
+  await sendWelcome(email, firstName).catch((err) => console.error("mail bienvenue", err));
   const res = NextResponse.json({ user: publicUser(rows[0]) });
   res.cookies.set(...sessionCookie(rows[0].id));
   return res;

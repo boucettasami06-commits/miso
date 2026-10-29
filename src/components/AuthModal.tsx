@@ -111,6 +111,13 @@ export default function AuthModal({
               </span>
             </label>
           )}
+          {mode === "login" && (
+            <p className="text-right text-sm">
+              <Link href="/mot-de-passe-oublie" onClick={onClose} className="text-ink-soft underline-offset-2 hover:text-ink hover:underline">
+                Mot de passe oublié ?
+              </Link>
+            </p>
+          )}
           {error && <p className="rounded-2xl bg-tomato/10 p-3 text-sm text-tomato-dark" role="alert">{error}</p>}
           <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-full bg-tomato py-4 text-lg font-semibold text-white transition hover:bg-tomato-dark disabled:opacity-60">
             {busy && <Loader2 size={18} className="animate-spin" />}
