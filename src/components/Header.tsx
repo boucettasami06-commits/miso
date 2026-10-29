@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Logo from "./Logo";
+import AuthModal from "./AuthModal";
+import { logout, useAuth } from "@/lib/useAuth";
 
 const NAV = [
   { href: "/#comment-ca-marche", label: "Comment ça marche" },
@@ -19,6 +21,8 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const auth = useAuth();
+  const [login, setLogin] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -46,6 +50,20 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
+          {auth.enabled && !auth.loading && (
+            auth.user ? (
+              <div className="hidden items-center gap-2 text-sm md:flex">
+                <span className="font-semibold">Bonjour {auth.user.firstName}</span>
+                <button onClick={() => logout()} className="rounded-full px-3 py-2 text-ink-soft transition hover:text-ink">
+                  Déconnexion
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => setLogin(true)} className="hidden rounded-full px-4 py-2.5 text-sm font-semibold text-ink-soft transition hover:text-ink md:inline-flex">
+                Connexion
+              </button>
+            )
+          )}
           <Link
             href="/planifier"
             className="hidden rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream transition hover:bg-tomato sm:inline-flex"
@@ -76,12 +94,26 @@ export default function Header() {
                   {n.label}
                 </Link>
               ))}
+              {auth.enabled && (
+                auth.user ? (
+                  <button onClick={() => logout()} className="rounded-xl px-3 py-3 text-left font-medium hover:bg-cream-2">
+                    Déconnexion ({auth.user.firstName})
+                  </button>
+                ) : (
+                  <button onClick={() => setLogin(true)} className="rounded-xl px-3 py-3 text-left font-medium hover:bg-cream-2">
+                    Connexion
+                  </button>
+                )
+              )}
               <Link href="/planifier" className="mt-2 rounded-full bg-tomato px-5 py-3 text-center font-semibold text-white">
                 Créer mon menu
               </Link>
             </div>
           </motion.nav>
         )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {login && <AuthModal initialMode="login" onClose={() => setLogin(false)} onSuccess={() => setLogin(false)} />}
       </AnimatePresence>
     </header>
   );

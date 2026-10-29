@@ -9,6 +9,8 @@ import { generatePlan } from "@/lib/engine/generator";
 import { COUNTRIES, COUNTRY_BY_ID, storesOf } from "@/lib/data/stores";
 import { DEFAULT_EQUIPMENT, EQUIPMENT } from "@/lib/engine/equipment";
 import { money } from "@/lib/format";
+import { useAuth } from "@/lib/useAuth";
+import AuthModal from "../AuthModal";
 import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
 import type { Allergen, CookTime, Country, Diet, MealType, Profile, Restriction } from "@/lib/types";
 import StoreLogo from "../StoreLogo";
@@ -88,6 +90,8 @@ export default function Wizard() {
   const [dir, setDir] = useState(1);
   const [p, setP] = useState<Profile>(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(false);
+  const [signup, setSignup] = useState(false);
+  const auth = useAuth();
 
   useEffect(() => {
     const saved = loadProfile();
@@ -113,15 +117,24 @@ export default function Wizard() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const finish = () => {
+  const generate = (loggedIn = !!auth.user) => {
     setLoading(true);
     saveProfile(p);
     const plan = generatePlan(p);
     savePlan(plan);
+    // Compte connecté : la semaine est aussi enregistrée côté serveur (retrouvable sur tous ses appareils)
+    if (loggedIn) fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: p, plan }) }).catch(() => {});
     setTimeout(() => router.push("/ma-semaine"), 1900);
   };
 
+  /** L'inscription intervient au moment de générer la semaine (si les comptes sont activés). */
+  const finish = () => {
+    if (auth.enabled && !auth.user) setSignup(true);
+    else generate();
+  };
+
   if (loading) return <Cooking />;
+
 
   return (
     <div className="mx-auto max-w-4xl px-4 pb-24 pt-28 sm:px-6 md:pt-32">
@@ -401,6 +414,19 @@ export default function Wizard() {
           </button>
         )}
       </div>
+      <AnimatePresence>
+        {signup && (
+          <AuthModal
+            title="Dernière étape : crée ton compte"
+            subtitle="Ta semaine, ta liste de courses et tes recettes seront enregistrées dans ton compte, sur tous tes appareils."
+            onClose={() => setSignup(false)}
+            onSuccess={() => {
+              setSignup(false);
+              generate(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { quotes, basketFromMeals, shoppingList } from "@/lib/engine/pricing";
 import { RECIPE_BY_SLUG } from "@/lib/data/recipes";
 import { INGREDIENTS } from "@/lib/data/ingredients";
 import { STORE_BY_ID } from "@/lib/data/stores";
-import { loadChecked, loadPlan, loadProfile, saveChecked, savePlan } from "@/lib/storage";
+import { loadChecked, loadPlan, loadProfile, saveChecked, savePlan, saveProfile } from "@/lib/storage";
 import { money, qty } from "@/lib/format";
 import { equipmentTip } from "@/lib/engine/equipment";
 import type { Aisle, PlannedMeal, Profile, WeekPlan } from "@/lib/types";
@@ -37,6 +37,21 @@ export default function PlanView() {
   /** null = vérification en cours ; false = aperçu (un plat visible, le reste flouté) */
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
   const [paywall, setPaywall] = useState(false);
+
+  // Nouvel appareil : on récupère la semaine enregistrée dans le compte
+  useEffect(() => {
+    if (loadPlan()) return;
+    fetch("/api/plan", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { profile: Profile | null; plan: WeekPlan | null } | null) => {
+        if (!d?.plan || !d.profile) return;
+        saveProfile(d.profile);
+        savePlan(d.plan);
+        setProfile(d.profile);
+        setPlan(d.plan);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const prof = loadProfile();
@@ -72,6 +87,8 @@ export default function PlanView() {
   const update = (next: WeekPlan) => {
     setPlan(next);
     savePlan(next);
+    // Compte connecté : on garde la semaine à jour côté serveur
+    if (profile) fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile, plan: next }) }).catch(() => {});
   };
 
   if (!ready) return <div className="min-h-screen" />;
