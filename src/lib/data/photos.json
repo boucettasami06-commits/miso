@@ -1,1 +1,121 @@
-{}
+{
+  "omelette-epinards-feta": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/346_-_Mon_Ami_Gabi.jpg/1280px-346_-_Mon_Ami_Gabi.jpg",
+    "author": "Laura H-B",
+    "url": "https://commons.wikimedia.org/wiki/File:346_-_Mon_Ami_Gabi.jpg",
+    "license": "CC BY-SA 2.0",
+    "source": "Wikimedia Commons"
+  },
+  "tartines-avocat-oeuf-mollet": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/d/db/Skinny-Fried-Egg-and-Avocado-Toast-Perfect-breakfast_%2835555668870%29.jpg",
+    "author": "Meg H",
+    "url": "https://commons.wikimedia.org/wiki/File:Skinny-Fried-Egg-and-Avocado-Toast-Perfect-breakfast_%2835555668870%29.jpg",
+    "license": "CC BY 2.0",
+    "source": "Wikimedia Commons"
+  },
+  "crepes-maison-chocolat": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Chocolate-Coconut_Cr%C3%AApe_Paris.jpg/1280px-Chocolate-Coconut_Cr%C3%AApe_Paris.jpg",
+    "author": "Reubentg",
+    "url": "https://commons.wikimedia.org/wiki/File:Chocolate-Coconut_Cr%C3%AApe_Paris.jpg",
+    "license": "CC BY-SA 3.0",
+    "source": "Wikimedia Commons"
+  },
+  "pain-perdu-brioche-miel": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/French_toast_001.jpg/1280px-French_toast_001.jpg",
+    "author": "Ocdp",
+    "url": "https://commons.wikimedia.org/wiki/File:French_toast_001.jpg",
+    "license": "CC0",
+    "source": "Wikimedia Commons"
+  },
+  "toast-oeufs-brouilles-jambon": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Scrambled_eggs_on_toast_-_Floral_Cafe_2026-02-25.jpg/1280px-Scrambled_eggs_on_toast_-_Floral_Cafe_2026-02-25.jpg",
+    "author": "Andy Li",
+    "url": "https://commons.wikimedia.org/wiki/File:Scrambled_eggs_on_toast_-_Floral_Cafe_2026-02-25.jpg",
+    "license": "CC0",
+    "source": "Wikimedia Commons"
+  },
+  "smoothie-bowl-banane-fruits-rouges": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Chocolate_Green_Smoothie_Bowl.jpg/1280px-Chocolate_Green_Smoothie_Bowl.jpg",
+    "author": "Anna Powell",
+    "url": "https://commons.wikimedia.org/wiki/File:Chocolate_Green_Smoothie_Bowl.jpg",
+    "license": "CC BY-SA 4.0",
+    "source": "Wikimedia Commons"
+  },
+  "tartines-beurre-cacahuete-banane": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Peanut_butter_and_banana_on_toasted_homemade_bread_-_Massachusetts.jpg/1280px-Peanut_butter_and_banana_on_toasted_homemade_bread_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "url": "https://commons.wikimedia.org/wiki/File:Peanut_butter_and_banana_on_toasted_homemade_bread_-_Massachusetts.jpg",
+    "license": "CC0",
+    "source": "Wikimedia Commons"
+  },
+  "poulet-curry-coco-riz-basmati": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Japanese_style_chicken_curry_with_rice_of_Nakau.JPG/1280px-Japanese_style_chicken_curry_with_rice_of_Nakau.JPG",
+    "author": "Tokumeigakarinoaoshima",
+    "url": "https://commons.wikimedia.org/wiki/File:Japanese_style_chicken_curry_with_rice_of_Nakau.JPG",
+    "license": "CC0",
+    "source": "Wikimedia Commons"
+  },
+  "bowl-poulet-teriyaki-brocoli": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Teriyaki_Chicken_Rice_Bowl_from_Botejyu_%282024-12-21%29.jpg/1280px-Teriyaki_Chicken_Rice_Bowl_from_Botejyu_%282024-12-21%29.jpg",
+    "author": "Wide Awake!",
+    "url": "https://commons.wikimedia.org/wiki/File:Teriyaki_Chicken_Rice_Bowl_from_Botejyu_%282024-12-21%29.jpg",
+    "license": "CC BY 4.0",
+    "source": "Wikimedia Commons"
+  },
+  "chili-con-carne": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Flickr_-_cyclonebill_-_Chili_con_carne_%282%29.jpg/1280px-Flickr_-_cyclonebill_-_Chili_con_carne_%282%29.jpg",
+    "author": "cyclonebill",
+    "url": "https://commons.wikimedia.org/wiki/File:Flickr_-_cyclonebill_-_Chili_con_carne_%282%29.jpg",
+    "license": "CC BY-SA 2.0",
+    "source": "Wikimedia Commons"
+  },
+  "chili-sin-carne": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Blackbeanstew.jpg/1280px-Blackbeanstew.jpg",
+    "author": "Badagnani",
+    "url": "https://commons.wikimedia.org/wiki/File:Blackbeanstew.jpg",
+    "license": "CC BY 3.0",
+    "source": "Wikimedia Commons"
+  },
+  "pates-bolognaise-maison": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Spaghetti_Bolognese_Lokal_K.jpg/1280px-Spaghetti_Bolognese_Lokal_K.jpg",
+    "author": "Superbass",
+    "url": "https://commons.wikimedia.org/wiki/File:Spaghetti_Bolognese_Lokal_K.jpg",
+    "license": "CC BY-SA 3.0",
+    "source": "Wikimedia Commons"
+  },
+  "pates-carbonara": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Spaghetti_Carbonara_von_Unico_Tauberbischofsheim.jpg/1280px-Spaghetti_Carbonara_von_Unico_Tauberbischofsheim.jpg",
+    "author": "Triplec85",
+    "url": "https://commons.wikimedia.org/wiki/File:Spaghetti_Carbonara_von_Unico_Tauberbischofsheim.jpg",
+    "license": "CC BY-SA 4.0",
+    "source": "Wikimedia Commons"
+  },
+  "burger-maison-potatoes": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Homemade_hamburger_with_french_fries_in_Argentina.jpg/1280px-Homemade_hamburger_with_french_fries_in_Argentina.jpg",
+    "author": "Horacio Cambeiro",
+    "url": "https://commons.wikimedia.org/wiki/File:Homemade_hamburger_with_french_fries_in_Argentina.jpg",
+    "license": "CC BY-SA 3.0",
+    "source": "Wikimedia Commons"
+  },
+  "pizza-maison-jambon-champignons": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Pizza_Capricciosa_on_a_wooden_rustic_table_%2849255425326%29.jpg/1280px-Pizza_Capricciosa_on_a_wooden_rustic_table_%2849255425326%29.jpg",
+    "author": "Nenad Stojkovic from Srbija",
+    "url": "https://commons.wikimedia.org/wiki/File:Pizza_Capricciosa_on_a_wooden_rustic_table_%2849255425326%29.jpg",
+    "license": "CC BY 2.0",
+    "source": "Wikimedia Commons"
+  },
+  "pizza-margherita-legumes": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Pizza_Margherita_%E3%83%94%E3%82%B6%E3%83%BB%E3%83%9E%E3%83%AB%E3%82%B2%E3%83%AA%E3%83%BC%E3%82%BF.jpg/1280px-Pizza_Margherita_%E3%83%94%E3%82%B6%E3%83%BB%E3%83%9E%E3%83%AB%E3%82%B2%E3%83%AA%E3%83%BC%E3%82%BF.jpg",
+    "author": "ノボホショコロトソ",
+    "url": "https://commons.wikimedia.org/wiki/File:Pizza_Margherita_%E3%83%94%E3%82%B6%E3%83%BB%E3%83%9E%E3%83%AB%E3%82%B2%E3%83%AA%E3%83%BC%E3%82%BF.jpg",
+    "license": "CC BY 4.0",
+    "source": "Wikimedia Commons"
+  },
+  "wok-nouilles-crevettes-legumes": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/DFC_2257_Stir-fried_seafood_spaghetti_with_mussels_shrimp_baby_corn_and_fresh_basil_on_a_white_plate.jpg/1280px-DFC_2257_Stir-fried_seafood_spaghetti_with_mussels_shrimp_baby_corn_and_fresh_basil_on_a_white_plate.jpg",
+    "author": "PattayaPatrol",
+    "url": "https://commons.wikimedia.org/wiki/File:DFC_2257_Stir-fried_seafood_spaghetti_with_mussels_shrimp_baby_corn_and_fresh_basil_on_a_white_plate.jpg",
+    "license": "CC BY-SA 4.0",
+    "source": "Wikimedia Commons"
+  }
+}
