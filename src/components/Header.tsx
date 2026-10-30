@@ -59,7 +59,7 @@ export default function Header() {
                 </button>
               </div>
             ) : (
-              <button onClick={() => setLogin(true)} className="hidden rounded-full px-4 py-2.5 text-sm font-semibold text-ink-soft transition hover:text-ink md:inline-flex">
+              <button data-no-gate onClick={() => setLogin(true)} className="hidden rounded-full px-4 py-2.5 text-sm font-semibold text-ink-soft transition hover:text-ink md:inline-flex">
                 Connexion
               </button>
             )
@@ -71,6 +71,7 @@ export default function Header() {
             Créer mon menu
           </Link>
           <button
+            data-no-gate
             className="grid h-10 w-10 place-items-center rounded-full border border-line lg:hidden"
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
@@ -100,7 +101,7 @@ export default function Header() {
                     Déconnexion ({auth.user.firstName})
                   </button>
                 ) : (
-                  <button onClick={() => setLogin(true)} className="rounded-xl px-3 py-3 text-left font-medium hover:bg-cream-2">
+                  <button data-no-gate onClick={() => setLogin(true)} className="rounded-xl px-3 py-3 text-left font-medium hover:bg-cream-2">
                     Connexion
                   </button>
                 )
