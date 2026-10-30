@@ -7,7 +7,7 @@ import sharp from "sharp";
 import { AutoProcessor, AutoTokenizer, CLIPTextModelWithProjection, CLIPVisionModelWithProjection, RawImage } from "@huggingface/transformers";
 
 const OUT = process.env.OUT ?? "photo-review";
-const UA = "BudgemyPhotoBot/1.0 (https://mijo-nu.vercel.app)";
+const UA = "BudgemyPhotoBot/1.0 (https://www.budgemy.com)";
 const MODEL = "Xenova/clip-vit-base-patch32";
 const QUERIES = JSON.parse(readFileSync(new URL("./photo-queries.json", import.meta.url), "utf8"));
 const candidates = JSON.parse(readFileSync(`${OUT}/candidates.json`, "utf8"));

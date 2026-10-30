@@ -3,7 +3,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import sharp from "sharp";
 
-const UA = "BudgemyPhotoBot/1.0 (https://mijo-nu.vercel.app)";
+const UA = "BudgemyPhotoBot/1.0 (https://www.budgemy.com)";
 const QUERIES = JSON.parse(readFileSync(new URL("./photo-queries.json", import.meta.url), "utf8"));
 const OUT = process.env.OUT ?? "photo-review";
 const PER = 6;
