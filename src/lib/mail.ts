@@ -30,7 +30,7 @@ function layout(title: string, body: string, cta?: { label: string; url: string 
 <table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px"><tr><td align="center">
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:20px;padding:32px">
 <tr><td>
-<p style="margin:0 0 24px;font-size:22px;font-weight:800">budgemy<span style="color:#fa654c">.</span></p>
+<p style="margin:0 0 24px"><img src="${SITE.url}/brand/budgemy-logo-email.png" width="180" height="56" alt="budgemy." style="display:block;border:0;height:auto;max-width:180px;font-size:22px;font-weight:800;color:#10231c"></p>
 <h1 style="margin:0 0 16px;font-size:24px;line-height:1.25">${esc(title)}</h1>
 <div style="font-size:16px;line-height:1.6;color:#4b5b53">${body}</div>
 ${cta ? `<p style="margin:28px 0 8px"><a href="${cta.url}" style="display:inline-block;background:#fa654c;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:999px">${esc(cta.label)}</a></p>` : ""}
@@ -75,5 +75,17 @@ export function sendPasswordReset(to: string, firstName: string, url: string) {
       { label: "Choisir un nouveau mot de passe", url },
     ),
     `Bonjour ${firstName}, pour réinitialiser ton mot de passe Budgemy (lien valable 1 heure) : ${url}`,
+  );
+}
+
+export function sendClaimCode(to: string, code: string) {
+  return send(
+    to,
+    `${code} est ton code Budgemy`,
+    layout(
+      "Relie ton abonnement à ton compte",
+      `<p>Voici ton code de confirmation, valable <strong>15 minutes</strong> :</p><p style="font-size:32px;font-weight:800;letter-spacing:6px;color:#10231c;margin:16px 0">${code}</p><p>Saisis-le sur Budgemy pour débloquer ta semaine et ta liste de courses. Si tu n'es pas à l'origine de cette demande, ignore cet e-mail.</p>`,
+    ),
+    `Ton code Budgemy (valable 15 minutes) : ${code}`,
   );
 }

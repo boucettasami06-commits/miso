@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Lock, X } from "lucide-react";
 import { track } from "@vercel/analytics";
+import { useAuth } from "@/lib/useAuth";
 
 /** Tarifs affichés : 9,99 €/mois ou 107,89 €/an (= 12 × 9,99 € avec 10 % de réduction). */
 const PLANS = [
@@ -22,6 +23,7 @@ const PERKS = [
 
 export default function Paywall({ onClose }: { onClose: () => void }) {
   const [plan, setPlan] = useState<"yearly" | "monthly">("yearly");
+  const auth = useAuth();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -89,6 +91,14 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
           ))}
         </ul>
 
+        {auth.user && (
+          <div className="mt-6 rounded-2xl border-2 border-saffron bg-saffron/15 p-4 text-sm">
+            <p className="font-semibold">Important : au paiement, utilise exactement cette adresse e-mail</p>
+            <p className="mt-1 break-all font-display text-lg font-bold">{auth.user.email}</p>
+            <p className="mt-1 text-ink-soft">C&apos;est grâce à elle que ta semaine se débloque automatiquement.</p>
+          </div>
+        )}
+
         <a
           href={`/api/whop/checkout?plan=${plan}`}
           onClick={() => track("Clic paiement", { formule: plan })}
@@ -96,7 +106,7 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
         >
           Débloquer ma semaine
         </a>
-        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Utilise la même adresse e-mail que ton compte Budgemy. Résiliable à tout moment. En t&apos;abonnant, tu acceptes nos{" "}
+        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Résiliable à tout moment. En t&apos;abonnant, tu acceptes nos{" "}
           <Link href="/cgv" className="underline">CGV</Link>.
         </p>
         <p className="mt-4 text-center text-sm">

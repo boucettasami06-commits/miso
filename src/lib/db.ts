@@ -42,6 +42,16 @@ export function ensureSchema() {
       plan jsonb NOT NULL,
       updated_at timestamptz NOT NULL DEFAULT now()
     )`;
+    await q`CREATE TABLE IF NOT EXISTS whop_claims (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      email text NOT NULL,
+      membership text NOT NULL,
+      code_hash text NOT NULL,
+      attempts int NOT NULL DEFAULT 0,
+      expires_at timestamptz NOT NULL,
+      used_at timestamptz,
+      created_at timestamptz NOT NULL DEFAULT now()
+    )`;
   })().catch((e) => {
     schema = null;
     throw e;
