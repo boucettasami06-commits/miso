@@ -1,9 +1,6 @@
 /**
  * Identité légale de l'éditeur, affichée dans les mentions légales, les CGV et la politique de confidentialité.
- * Les champs « À compléter » doivent être renseignés avant le lancement commercial.
  */
-const TODO = "[À compléter]";
-
 export const LEGAL = {
   /** Nom et prénom (entrepreneur individuel) ou raison sociale (société). */
   publisher: "Sami Boucetta EI — MIMO DIGITAL SERVICE",
