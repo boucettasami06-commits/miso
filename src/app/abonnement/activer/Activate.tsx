@@ -38,8 +38,15 @@ export default function Activate() {
     if (fromWhop) {
       setValue(fromWhop);
       submit(fromWhop);
+      return;
     }
-  }, [params, submit]);
+    // Compte connecté : l'abonnement est retrouvé automatiquement grâce à l'e-mail utilisé chez Whop
+    setState("loading");
+    fetch("/api/subscription", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d: { active?: boolean }) => (d.active ? router.replace("/ma-semaine?bienvenue=1") : setState("idle")))
+      .catch(() => setState("idle"));
+  }, [params, submit, router]);
 
   return (
     <div className="mx-auto max-w-lg px-4 pb-24 pt-32 sm:px-6">

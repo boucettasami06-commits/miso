@@ -51,7 +51,8 @@ export const billingReady = () => !!(process.env.WHOP_API_KEY && secret());
 
 /**
  * Vérifie auprès de l'API Whop qu'un abonnement (ou une clé de licence) est valide,
- * et qu'il appartient bien au produit Budgemy si WHOP_PRODUCT_ID est défini.
+ * et qu'il appartient bien à un produit Budgemy si WHOP_PRODUCT_ID est défini
+ * (plusieurs identifiants séparés par des virgules : un produit par formule).
  */
 export async function checkMembership(id: string): Promise<boolean> {
   const key = process.env.WHOP_API_KEY;
@@ -63,9 +64,35 @@ export async function checkMembership(id: string): Promise<boolean> {
   if (!res.ok) return false;
   const m = (await res.json()) as { valid?: boolean; status?: string; product?: string | { id?: string } };
   const product = typeof m.product === "string" ? m.product : m.product?.id;
-  const wanted = process.env.WHOP_PRODUCT_ID;
-  if (wanted && product && product !== wanted) return false;
+  const wanted = productIds();
+  if (wanted.length && product && !wanted.includes(product)) return false;
   return m.valid === true || ["active", "trialing", "completed"].includes(m.status ?? "");
+}
+
+/** Produits Budgemy autorisés (WHOP_PRODUCT_ID, séparés par des virgules). */
+const productIds = () =>
+  (process.env.WHOP_PRODUCT_ID ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+/**
+ * Retrouve l'abonnement actif d'un client à partir de l'e-mail utilisé chez Whop,
+ * pour débloquer l'accès sans qu'il ait à recopier d'identifiant après le paiement.
+ */
+export async function findMembershipByEmail(email: string): Promise<string | null> {
+  const key = process.env.WHOP_API_KEY;
+  const products = productIds();
+  if (!key || !products.length) return null;
+  const url = new URL("https://api.whop.com/api/v1/memberships");
+  products.forEach((p) => url.searchParams.append("product_ids", p));
+  ["active", "trialing", "completed"].forEach((st) => url.searchParams.append("statuses", st));
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${key}` }, cache: "no-store" });
+  if (!res.ok) return null;
+  const { data } = (await res.json()) as { data?: { id: string; status?: string; user?: { email?: string | null } | null; email?: string | null }[] };
+  const wanted = email.trim().toLowerCase();
+  const hit = data?.find((m) => (m.user?.email ?? m.email ?? "").toLowerCase() === wanted);
+  return hit?.id ?? null;
 }
 
 export function token(membership: string): SubToken {

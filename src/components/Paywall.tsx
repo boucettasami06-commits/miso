@@ -96,7 +96,7 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
         >
           Débloquer ma semaine
         </a>
-        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Résiliable à tout moment. En t&apos;abonnant, tu acceptes nos{" "}
+        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Utilise la même adresse e-mail que ton compte Budgemy. Résiliable à tout moment. En t&apos;abonnant, tu acceptes nos{" "}
           <Link href="/cgv" className="underline">CGV</Link>.
         </p>
         <p className="mt-4 text-center text-sm">
