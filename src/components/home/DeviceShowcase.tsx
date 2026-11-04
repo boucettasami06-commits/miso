@@ -14,7 +14,7 @@ const WEEK = [
   ["omelette-epinards-feta", "lasagnes-bolognaise", "wok-nouilles-crevettes-legumes"],
   ["tartines-avocat-oeuf-mollet", "buddha-bowl-pois-chiches-quinoa", "pizza-maison-jambon-champignons"],
   ["crepes-maison-chocolat", "burger-maison-potatoes", "poke-bowl-saumon"],
-  ["pain-perdu-brioche-miel", "poulet-roti-pommes-de-terre", "tartiflette"],
+  ["pain-perdu-brioche-miel", "poulet-roti-pommes-de-terre", "chili-con-carne"],
 ];
 const LIST = [
   ["Filets de poulet", "5,14 €"],

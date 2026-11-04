@@ -26,6 +26,10 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
   const auth = useAuth();
 
   useEffect(() => {
+    fetch("/api/paywall-seen", { method: "POST" }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";

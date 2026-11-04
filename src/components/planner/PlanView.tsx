@@ -70,6 +70,8 @@ export default function PlanView() {
       .then((r) => r.json())
       .then((d: { active?: boolean }) => {
         setUnlocked(!!d.active);
+        // Aperçu verrouillé affiché : on le note pour l'e-mail de relance (compte connecté uniquement)
+        if (!d.active && saved) fetch("/api/paywall-seen", { method: "POST" }).catch(() => {});
         // En aperçu, on ouvre sur le jour du plat dévoilé
         const first = saved?.meals.find((m) => !m.leftoverOf);
         if (!d.active && first) setDay(first.day);

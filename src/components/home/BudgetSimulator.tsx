@@ -30,7 +30,10 @@ export default function BudgetSimulator() {
     () => generatePlan({ ...DEFAULT_PROFILE, budget, adults: people, goal }, { seed: 7 }),
     [budget, people, goal],
   );
-  const dinners = plan.meals.filter((m) => m.meal === "dinner").slice(0, 4);
+  // Vitrine : uniquement des plats avec une vraie photo (jamais d'illustration de secours sur la page d'accueil)
+  const dinners = [...plan.meals.filter((m) => m.meal === "dinner"), ...plan.meals.filter((m) => m.meal !== "dinner")]
+    .filter((m, i, all) => !!RECIPE_BY_SLUG[m.slug]?.image && all.findIndex((x) => x.slug === m.slug) === i)
+    .slice(0, 4);
   const meals = plan.meals.length * people;
   const perMeal = plan.total / Math.max(1, meals);
   const fits = plan.total <= budget;

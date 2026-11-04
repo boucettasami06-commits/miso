@@ -29,6 +29,8 @@ export function ensureSchema() {
     )`;
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_logins int NOT NULL DEFAULT 0`;
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until timestamptz`;
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS paywall_seen_at timestamptz`;
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS reminder_sent_at timestamptz`;
     await q`CREATE TABLE IF NOT EXISTS password_resets (
       token_hash text PRIMARY KEY,
       user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,

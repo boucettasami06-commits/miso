@@ -89,3 +89,17 @@ export function sendClaimCode(to: string, code: string) {
     `Ton code Budgemy (valable 15 minutes) : ${code}`,
   );
 }
+
+export function sendPaywallReminder(to: string, firstName: string) {
+  const url = `${SITE.url}/ma-semaine`;
+  return send(
+    to,
+    `${firstName}, ta semaine de repas t'attend 🛒`,
+    layout(
+      `Ta semaine est prête, ${firstName} !`,
+      `<p>Tu as généré ta semaine de repas sur Budgemy, calculée pour ton budget et tes magasins. Il ne manque plus qu'une étape pour débloquer :</p><ul style="padding-left:20px;margin:12px 0"><li>toutes tes recettes détaillées, du petit-déj au dîner ;</li><li>ta liste de courses complète, rangée par rayon ;</li><li>le remplacement d'un plat en un clic.</li></ul><p>Résiliable à tout moment. Pense à payer avec cette adresse e-mail (${esc(to)}) pour que ta semaine se débloque automatiquement.</p><p style="font-size:13px;color:#8a958f">C'est le seul rappel que tu recevras.</p>`,
+      { label: "Débloquer ma liste de courses et mes recettes", url },
+    ),
+    `${firstName}, ta semaine Budgemy est prête. Débloque ta liste de courses et tes recettes : ${url}`,
+  );
+}
