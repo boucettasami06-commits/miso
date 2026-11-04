@@ -4,7 +4,8 @@ import PHOTOS from "./photos.json";
 
 /** Identifiants de photos Unsplash (licence libre). Servies en haute définition via next/image. */
 export const IMG = {
-  porridge: "photo-1517673132405-a56a62b18caf",
+  /** Ancienne photo retirée : elle montrait des livres, pas un porridge. */
+  porridge: "",
   yogurtBowl: "photo-1488477181946-6428a0291777",
   eggsBreakfast: "photo-1525351484163-7529414344d8",
   avocadoToast: "photo-1482049016688-2d3e1b311543",
