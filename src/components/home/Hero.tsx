@@ -4,10 +4,12 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import DeviceShowcase from "./DeviceShowcase";
+import HeroBackdrop from "./HeroBackdrop";
 
 export default function Hero() {
   return (
     <section className="relative overflow-hidden pt-28 pb-16 md:pt-36 md:pb-24">
+      <HeroBackdrop />
       <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-saffron/25 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -left-40 top-1/2 h-[28rem] w-[28rem] rounded-full bg-sage/25 blur-3xl" />
 
