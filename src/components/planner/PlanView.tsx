@@ -9,7 +9,8 @@ import {
 import { DAYS, MEAL_LABEL, dayNutrition, generatePlan, swapMeal } from "@/lib/engine/generator";
 import { recipeNutrition } from "@/lib/engine/nutrition";
 import { quotes, basketFromMeals, shoppingList } from "@/lib/engine/pricing";
-import { RECIPE_BY_SLUG } from "@/lib/data/recipes";
+import { RECIPE_BY_SLUG, photoRank } from "@/lib/data/recipes";
+
 import { INGREDIENTS } from "@/lib/data/ingredients";
 import { STORE_BY_ID } from "@/lib/data/stores";
 import { loadChecked, loadPlan, loadProfile, saveChecked, savePlan, saveProfile } from "@/lib/storage";
@@ -18,6 +19,12 @@ import { equipmentTip } from "@/lib/engine/equipment";
 import type { Aisle, PlannedMeal, Profile, WeekPlan } from "@/lib/types";
 import SmartImage from "../SmartImage";
 import Paywall from "../Paywall";
+
+/** Plat dévoilé en aperçu : celui qui a la plus belle photo parmi les plats cuisinés de la semaine. */
+const revealed = (meals: PlannedMeal[]) =>
+  meals
+    .filter((m) => !m.leftoverOf)
+    .reduce<PlannedMeal | undefined>((best, m) => (!best || photoRank(RECIPE_BY_SLUG[m.slug] ?? { image: "" }) > photoRank(RECIPE_BY_SLUG[best.slug] ?? { image: "" }) ? m : best), undefined);
 
 const AISLES: Aisle[] = [
   "Fruits & légumes", "Boulangerie", "Boucherie & volaille", "Poissonnerie", "Crèmerie & frais", "Épicerie salée", "Épicerie sucrée", "Surgelés", "Placard",
@@ -73,7 +80,7 @@ export default function PlanView() {
         // Aperçu verrouillé affiché : on le note pour l'e-mail de relance (compte connecté uniquement)
         if (!d.active && saved) fetch("/api/paywall-seen", { method: "POST" }).catch(() => {});
         // En aperçu, on ouvre sur le jour du plat dévoilé
-        const first = saved?.meals.find((m) => !m.leftoverOf);
+        const first = saved ? revealed(saved.meals) : undefined;
         if (!d.active && first) setDay(first.day);
       })
       .catch(() => setUnlocked(false));
@@ -97,8 +104,8 @@ export default function PlanView() {
   if (!plan || !profile) return <Empty />;
 
   const locked = unlocked !== true;
-  // En aperçu, un seul plat est dévoilé : le premier cuisiné de la semaine
-  const first = plan.meals.find((m) => !m.leftoverOf);
+  // En aperçu, un seul plat est dévoilé : celui qui a la plus belle photo
+  const first = revealed(plan.meals);
   const revealKey = first ? `${first.day}-${first.meal}` : "";
   const askPay = () => setPaywall(true);
 

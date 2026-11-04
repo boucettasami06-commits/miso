@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import RecipeCard from "@/components/RecipeCard";
 import Reveal from "@/components/Reveal";
-import { RECIPES } from "@/lib/data/recipes";
+import { RECIPES, byPhoto } from "@/lib/data/recipes";
 import type { Goal } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ const FILTERS: { id: "all" | Goal | "breakfast"; label: string }[] = [
 export default async function Page({ searchParams }: { searchParams: Promise<{ f?: string; q?: string }> }) {
   const { f = "all", q = "" } = await searchParams;
   const term = q.trim().toLowerCase();
-  const list = RECIPES.filter((r) => {
+  const list = byPhoto(RECIPES).filter((r) => {
     if (f === "breakfast" && r.meal !== "breakfast") return false;
     if (["sain", "muscle", "equilibre", "gourmand"].includes(f) && r.fit[f as Goal] < 3) return false;
     if (term && !`${r.title} ${r.description} ${r.cuisine}`.toLowerCase().includes(term)) return false;

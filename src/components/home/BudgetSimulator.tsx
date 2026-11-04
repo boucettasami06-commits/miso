@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Minus, Plus } from "lucide-react";
 import { generatePlan } from "@/lib/engine/generator";
 import { DEFAULT_PROFILE } from "@/lib/defaults";
-import { RECIPE_BY_SLUG } from "@/lib/data/recipes";
+import { RECIPE_BY_SLUG, photoRank } from "@/lib/data/recipes";
 import { STORE_BY_ID } from "@/lib/data/stores";
 import type { Goal } from "@/lib/types";
 import SmartImage from "../SmartImage";
@@ -33,6 +33,7 @@ export default function BudgetSimulator() {
   // Vitrine : uniquement des plats avec une vraie photo (jamais d'illustration de secours sur la page d'accueil)
   const dinners = [...plan.meals.filter((m) => m.meal === "dinner"), ...plan.meals.filter((m) => m.meal !== "dinner")]
     .filter((m, i, all) => !!RECIPE_BY_SLUG[m.slug]?.image && all.findIndex((x) => x.slug === m.slug) === i)
+    .sort((a, b) => photoRank(RECIPE_BY_SLUG[b.slug]) - photoRank(RECIPE_BY_SLUG[a.slug]))
     .slice(0, 4);
   const meals = plan.meals.length * people;
   const perMeal = plan.total / Math.max(1, meals);

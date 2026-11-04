@@ -924,6 +924,15 @@ export const RECIPES: Recipe[] = [...BASE, ...FROM_EXTRA].map((r) => {
 
 export const RECIPE_BY_SLUG: Record<string, Recipe> = Object.fromEntries(RECIPES.map((r) => [r.slug, r]));
 
+/**
+ * Qualité de la photo, pour mettre en avant les plus belles :
+ * 2 = photo culinaire professionnelle (Unsplash), 1 = photo libre (Wikimedia), 0 = pas de photo (vignette illustrée).
+ */
+export const photoRank = (r: Pick<Recipe, "image">) => (!r.image ? 0 : r.image.startsWith("http") ? 1 : 2);
+
+/** Trie des recettes de la plus belle photo à l'absence de photo (ordre d'origine conservé à qualité égale). */
+export const byPhoto = <T extends Pick<Recipe, "image">>(list: T[]) => [...list].sort((a, b) => photoRank(b) - photoRank(a));
+
 /** Accepte un identifiant Unsplash ou une URL complète (ex. photo Pexels). */
 export function unsplash(id: string, width = 1600) {
   if (!id) return "";

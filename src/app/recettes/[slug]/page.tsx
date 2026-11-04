@@ -5,7 +5,7 @@ import { ArrowRight, ChefHat, Clock, Flame, Wallet } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import RecipeCard from "@/components/RecipeCard";
 import Reveal from "@/components/Reveal";
-import { RECIPES, RECIPE_BY_SLUG, unsplash } from "@/lib/data/recipes";
+import { RECIPES, RECIPE_BY_SLUG, byPhoto, unsplash } from "@/lib/data/recipes";
 import { INGREDIENTS } from "@/lib/data/ingredients";
 import { packPrice } from "@/lib/data/stores";
 import { recipeNutrition } from "@/lib/engine/nutrition";
@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!r) notFound();
   const n = recipeNutrition(r);
   const cost = portionCost(r.slug);
-  const related = RECIPES.filter((x) => x.slug !== r.slug && x.meal === r.meal && (x.cuisine === r.cuisine || x.protein === r.protein)).slice(0, 4);
+  const related = byPhoto(RECIPES).filter((x) => x.slug !== r.slug && x.meal === r.meal && (x.cuisine === r.cuisine || x.protein === r.protein)).slice(0, 4);
 
   const ld = {
     "@context": "https://schema.org",
