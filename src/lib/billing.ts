@@ -84,15 +84,23 @@ export async function findMembershipByEmail(email: string): Promise<string | nul
   const key = process.env.WHOP_API_KEY;
   const products = productIds();
   if (!key || !products.length) return null;
-  const url = new URL("https://api.whop.com/api/v1/memberships");
-  products.forEach((p) => url.searchParams.append("product_ids", p));
-  ["active", "trialing", "completed"].forEach((st) => url.searchParams.append("statuses", st));
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${key}` }, cache: "no-store" });
-  if (!res.ok) return null;
-  const { data } = (await res.json()) as { data?: { id: string; status?: string; user?: { email?: string | null } | null; email?: string | null }[] };
   const wanted = email.trim().toLowerCase();
-  const hit = data?.find((m) => (m.user?.email ?? m.email ?? "").toLowerCase() === wanted);
-  return hit?.id ?? null;
+  // L'API v2 renvoie l'e-mail de l'acheteur sur chaque abonnement ; on parcourt les abonnements valides page par page.
+  for (let page = 1; page <= 20; page++) {
+    const res = await fetch(`https://api.whop.com/api/v2/memberships?valid=true&per=50&page=${page}`, {
+      headers: { Authorization: `Bearer ${key}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const { data, pagination } = (await res.json()) as {
+      data?: { id: string; email?: string | null; product?: string | null }[];
+      pagination?: { total_page?: number };
+    };
+    const hit = data?.find((m) => (m.email ?? "").toLowerCase() === wanted && (!m.product || products.includes(m.product)));
+    if (hit) return hit.id;
+    if (!pagination?.total_page || page >= pagination.total_page) break;
+  }
+  return null;
 }
 
 export function token(membership: string): SubToken {
