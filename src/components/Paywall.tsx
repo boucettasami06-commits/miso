@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Lock, X } from "lucide-react";
+import { track } from "@vercel/analytics";
 
 /** Tarifs affichés : 9,99 €/mois ou 107,89 €/an (= 12 × 9,99 € avec 10 % de réduction). */
 const PLANS = [
@@ -90,11 +91,14 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
 
         <a
           href={`/api/whop/checkout?plan=${plan}`}
+          onClick={() => track("Clic paiement", { formule: plan })}
           className="mt-7 flex items-center justify-center gap-2 rounded-full bg-tomato py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(250,101,76,0.7)] transition hover:bg-tomato-dark"
         >
           Débloquer ma semaine
         </a>
-        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Résiliable à tout moment.</p>
+        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Résiliable à tout moment. En t&apos;abonnant, tu acceptes nos{" "}
+          <Link href="/cgv" className="underline">CGV</Link>.
+        </p>
         <p className="mt-4 text-center text-sm">
           Déjà abonné ? <Link href="/abonnement/activer" className="font-semibold text-tomato underline-offset-2 hover:underline">Activer mon accès</Link>
         </p>

@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE.url}/planifier`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE.url}/menus`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE.url}/recettes`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    ...["/mentions-legales", "/cgv", "/confidentialite"].map((p) => ({ url: `${SITE.url}${p}`, lastModified: now, changeFrequency: "yearly" as const, priority: 0.2 })),
     ...MENUS.map((m) => ({ url: `${SITE.url}/menus/${m.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),
     ...RECIPES.map((r) => ({ url: `${SITE.url}/recettes/${r.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.6 })),
   ];

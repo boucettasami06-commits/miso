@@ -7,7 +7,7 @@ import AuthModal from "./AuthModal";
 import { useAuth } from "@/lib/useAuth";
 
 /** Pages laissées accessibles sans compte (obligations légales, récupération d'accès). */
-const OPEN_PATHS = ["/confidentialite", "/credits", "/mot-de-passe-oublie", "/reinitialiser"];
+const OPEN_PATHS = ["/confidentialite", "/mentions-legales", "/cgv", "/credits", "/mot-de-passe-oublie", "/reinitialiser"];
 
 /**
  * Sur la page d'accueil, tout clic sur un lien ou un bouton d'un visiteur non connecté

@@ -20,6 +20,8 @@ export default function Footer() {
             <li><Link href="/recettes" className="hover:text-saffron">Toutes les recettes</Link></li>
             <li><Link href="/credits" className="hover:text-saffron">Crédits photos</Link></li>
             <li><Link href="/confidentialite" className="hover:text-saffron">Confidentialité</Link></li>
+            <li><Link href="/mentions-legales" className="hover:text-saffron">Mentions légales</Link></li>
+            <li><Link href="/cgv" className="hover:text-saffron">CGV</Link></li>
           </ul>
         </div>
         <div className="md:col-span-2">

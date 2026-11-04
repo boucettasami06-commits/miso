@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
@@ -6,12 +7,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/confidentialite" },
 };
 
-/** Base RGPD à faire relire et compléter (identité légale de l'éditeur, contact) avant le lancement commercial. */
 export default function Page() {
   return (
     <article className="mx-auto max-w-3xl px-4 pb-16 pt-28 leading-relaxed sm:px-6 md:pt-36">
       <h1 className="font-display text-5xl font-extrabold">Politique de confidentialité</h1>
-      <p className="mt-4 text-ink-soft">Dernière mise à jour : octobre 2026.</p>
+      <p className="mt-4 text-ink-soft">Dernière mise à jour : {LEGAL.updated}.</p>
+
+      <h2 className="mt-10 font-display text-2xl font-bold">Responsable du traitement</h2>
+      <p className="mt-3">{LEGAL.publisher}, {LEGAL.address}. Contact : <a href={`mailto:${LEGAL.email}`} className="text-tomato underline">{LEGAL.email}</a>.</p>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Données collectées</h2>
       <ul className="mt-3 list-disc space-y-1 pl-6">
@@ -21,19 +24,19 @@ export default function Page() {
       </ul>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Pourquoi</h2>
-      <p className="mt-3">Uniquement pour te fournir le service : générer ta semaine, la retrouver sur tous tes appareils et vérifier ton abonnement. Aucune revente, aucune publicité ciblée.</p>
+      <p className="mt-3">Pour te fournir le service (exécution du contrat) : générer ta semaine, la retrouver sur tous tes appareils, vérifier ton abonnement et t&apos;envoyer les e-mails liés à ton compte (bienvenue, mot de passe oublié). Et, sur la base de notre intérêt légitime, mesurer de façon anonyme la fréquentation du site pour l&apos;améliorer. Aucune revente, aucune publicité ciblée.</p>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Où et combien de temps</h2>
-      <p className="mt-3">Les données sont hébergées dans l&apos;Union européenne (base de données à Francfort) et conservées tant que ton compte existe. Elles sont supprimées sur simple demande.</p>
+      <p className="mt-3">Nos prestataires : hébergement du site par {LEGAL.host} ; base de données : {LEGAL.database} ; paiement : {LEGAL.payment} ; e-mails : {LEGAL.mail}. Certaines données sont donc hébergées aux États-Unis ; ces transferts sont encadrés par le cadre de protection des données UE–États-Unis (Data Privacy Framework) ou par les clauses contractuelles types de la Commission européenne. Tes données sont conservées tant que ton compte existe, puis supprimées ; tu peux demander leur suppression à tout moment. Les données de facturation sont conservées par Whop selon ses propres obligations légales.</p>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Tes droits</h2>
       <p className="mt-3">Tu peux accéder à tes données, les corriger, les exporter ou les supprimer, et t&apos;opposer à leur traitement, en écrivant au contact indiqué ci-dessous. Tu peux aussi saisir la CNIL (cnil.fr).</p>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Cookies</h2>
-      <p className="mt-3">Nous utilisons uniquement des cookies techniques indispensables (session de connexion, accès à l&apos;abonnement). Aucun cookie publicitaire ni de mesure d&apos;audience tierce.</p>
+      <p className="mt-3">Nous utilisons uniquement des cookies techniques indispensables (session de connexion, accès à l&apos;abonnement). La mesure d&apos;audience (Vercel Web Analytics) fonctionne sans cookie et sans identifier les visiteurs : elle ne compte que des visites et des actions anonymes. Aucun cookie publicitaire.</p>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Contact</h2>
-      <p className="mt-3">Éditeur et contact : à compléter avant le lancement (nom ou raison sociale, adresse, e-mail de contact).</p>
+      <p className="mt-3">Pour toute question ou pour exercer tes droits : <a href={`mailto:${LEGAL.email}`} className="text-tomato underline">{LEGAL.email}</a>. Réponse sous 30 jours maximum.</p>
     </article>
   );
 }
