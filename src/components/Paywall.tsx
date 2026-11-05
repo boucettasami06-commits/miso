@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Lock, X } from "lucide-react";
+import { Check, Lock, ShieldCheck, X } from "lucide-react";
+import { money } from "@/lib/format";
 import { event } from "@/lib/funnel";
 import { useAuth } from "@/lib/useAuth";
 
 /** Tarifs affichés : 9,99 €/mois ou 107,89 €/an (= 12 × 9,99 € avec 10 % de réduction). */
 const PLANS = [
-  { id: "yearly", name: "Annuel", price: "107,89 €", per: "/ an", sub: "soit 8,99 € par mois", badge: "-10 %" },
-  { id: "monthly", name: "Mensuel", price: "9,99 €", per: "/ mois", sub: "sans engagement" },
+  { id: "yearly", name: "Annuel", price: "107,89 €", per: "/ an", sub: "soit 8,99 €/mois · 2,07 € par semaine", badge: "-10 %" },
+  { id: "monthly", name: "Mensuel", price: "9,99 €", per: "/ mois", sub: "≈ 2,30 € par semaine · sans engagement" },
 ] as const;
 
 const PERKS = [
@@ -21,7 +22,10 @@ const PERKS = [
   "Une nouvelle semaine quand tu veux",
 ];
 
-export default function Paywall({ onClose }: { onClose: () => void }) {
+/** Prix ramené à la semaine : 9,99 € × 12 / 52 ≈ 2,30 €. */
+const WEEKLY = 2.3;
+
+export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { onClose: () => void; savings?: number; currency?: "EUR" | "CHF" }) {
   const [plan, setPlan] = useState<"yearly" | "monthly">("yearly");
   const auth = useAuth();
 
@@ -62,6 +66,28 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
         <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight">Ta semaine est prête 🎉</h2>
         <p className="mt-2 text-ink-soft">Pour générer ta semaine et ta liste de courses, choisis ta formule.</p>
 
+        <div className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-sage/40 bg-sage/10 p-4">
+          <ShieldCheck size={28} className="shrink-0 text-sage" />
+          <p className="text-sm">
+            <b className="block text-base">Sans engagement, annulable en 1 clic</b>
+            Tu arrêtes quand tu veux depuis ton espace Whop, sans frais ni justification.
+          </p>
+        </div>
+
+        <div className="mt-3 rounded-2xl bg-ink p-4 text-cream">
+          <p className="font-display text-2xl font-extrabold">≈ 2,30 € par semaine</p>
+          <p className="mt-1 text-sm text-cream/80">
+            {savings >= WEEKLY + 0.5 ? (
+              <>
+                Ta semaine coûte <b className="text-saffron">{money(savings, currency)} de moins</b> que la moyenne des autres enseignes : Budgemy se
+                rembourse dès tes premières courses.
+              </>
+            ) : (
+              <>Moins qu&apos;un café par semaine, pour des courses calculées au centime et zéro gaspillage.</>
+            )}
+          </p>
+        </div>
+
         <div className="mt-6 grid gap-3">
           {PLANS.map((p) => (
             <button
@@ -82,7 +108,7 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
                   <span className="block text-xs text-ink-soft">{p.sub}</span>
                 </span>
               </span>
-              <span className="text-right">
+              <span className="shrink-0 whitespace-nowrap text-right">
                 <span className="font-display text-2xl font-extrabold">{p.price}</span>
                 <span className="text-sm text-ink-soft"> {p.per}</span>
               </span>
@@ -114,7 +140,7 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
         >
           Débloquer ma semaine
         </a>
-        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Résiliable à tout moment. En t&apos;abonnant, tu acceptes nos{" "}
+        <p className="mt-3 text-center text-xs text-ink-soft">Paiement sécurisé via Whop. Sans engagement, annulable en 1 clic. En t&apos;abonnant, tu acceptes nos{" "}
           <Link href="/cgv" className="underline">CGV</Link>.
         </p>
         <p className="mt-4 text-center text-sm">

@@ -114,6 +114,9 @@ export default function PlanView() {
   if (!plan || !profile) return <Empty />;
 
   const locked = unlocked !== true;
+  // Économie de la semaine par rapport au prix moyen des autres enseignes du pays (argument du paiement)
+  const others = plan.quotes.filter((q) => q.storeId !== plan.storeId);
+  const savings = others.length ? others.reduce((a, q) => a + q.total, 0) / others.length - plan.total : 0;
   // En aperçu, un seul plat est dévoilé : celui qui a la plus belle photo
   const first = revealed(plan.meals);
   const revealKey = first ? `${first.day}-${first.meal}` : "";
@@ -247,7 +250,7 @@ export default function PlanView() {
           </div>
         </div>
       )}
-      <AnimatePresence>{paywall && !mustSignup && <Paywall onClose={() => setPaywall(false)} />}</AnimatePresence>
+      <AnimatePresence>{paywall && !mustSignup && <Paywall savings={savings} currency={plan.currency} onClose={() => setPaywall(false)} />}</AnimatePresence>
       <AnimatePresence>
         {mustSignup && (
           <AuthModal
@@ -359,7 +362,17 @@ function MenuTab({ plan, day, setDay, onOpen, onSwap, swapping, isLocked, onUnlo
 
 function LockedMeal({ label, photo, emoji, onUnlock, delay }: { label: string; photo: string; emoji: string; onUnlock: () => void; delay: number }) {
   return (
-    <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="relative flex flex-col overflow-hidden rounded-[2rem] border border-line bg-white/70">
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      onClick={onUnlock}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onUnlock()}
+      aria-label={`${label} verrouillé : débloquer ma semaine`}
+      className="relative flex cursor-pointer flex-col overflow-hidden rounded-[2rem] border border-line bg-white/70 transition hover:-translate-y-1 hover:shadow-xl"
+    >
       <div className="relative aspect-[4/3] overflow-hidden">
         <SmartImage photo={photo} emoji={emoji} alt="" fill sizes="(max-width: 768px) 92vw, 30vw" className="scale-110 object-cover blur-xl" />
         <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-wider">{label}</span>
@@ -370,9 +383,9 @@ function LockedMeal({ label, photo, emoji, onUnlock, delay }: { label: string; p
       <div className="flex flex-1 flex-col p-5">
         <p aria-hidden className="select-none font-display text-2xl leading-tight blur-[7px]">Recette de la semaine</p>
         <p aria-hidden className="mt-3 select-none text-sm text-ink-soft blur-[5px]">25 min · 640 kcal · 38 g prot.</p>
-        <button onClick={onUnlock} className="mt-auto rounded-full bg-ink py-2.5 text-sm font-semibold text-cream transition hover:bg-tomato">
-          Débloquer
-        </button>
+        <span className="mt-auto rounded-full bg-ink py-2.5 text-center text-sm font-semibold text-cream transition hover:bg-tomato">
+          🔓 Voir cette recette
+        </span>
       </div>
     </motion.article>
   );
@@ -414,7 +427,7 @@ function ShoppingTab({ plan, profile, notify, locked, onUnlock }: { plan: WeekPl
     return (
       <div className="mx-auto mt-6 max-w-2xl">
         <h2 className="font-display text-3xl">Ta liste de courses · {lines.length} articles</h2>
-        <ul className="mt-4 divide-y divide-line rounded-[1.75rem] border border-line bg-white/70 px-4">
+        <ul onClick={onUnlock} className="mt-4 cursor-pointer divide-y divide-line rounded-[1.75rem] border border-line bg-white/70 px-4">
           {preview.map((l) => (
             <li key={l.id} className="flex items-center justify-between gap-4 py-3">
               <span>
