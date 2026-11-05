@@ -15,12 +15,15 @@ export default function AuthModal({
   subtitle,
   onClose,
   onSuccess,
+  dismissible = true,
 }: {
   initialMode?: Mode;
   title?: string;
   subtitle?: string;
   onClose: () => void;
   onSuccess: (u: PublicUser) => void;
+  /** false : inscription obligatoire, la fenêtre ne peut pas être fermée. */
+  dismissible?: boolean;
 }) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", consent: false });
@@ -28,14 +31,14 @@ export default function AuthModal({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => dismissible && e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, [onClose, dismissible]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +63,7 @@ export default function AuthModal({
   const input = "w-full rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-ink";
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[95] flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center sm:p-6" onClick={onClose}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[95] flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center sm:p-6" onClick={dismissible ? onClose : undefined}>
       <motion.div
         role="dialog"
         aria-modal="true"
@@ -72,9 +75,11 @@ export default function AuthModal({
         onClick={(e) => e.stopPropagation()}
         className="relative max-h-[94vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] bg-cream p-6 sm:rounded-[2rem] sm:p-8"
       >
-        <button onClick={onClose} className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-cream-2" aria-label="Fermer">
-          <X size={18} />
-        </button>
+        {dismissible && (
+          <button onClick={onClose} className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-cream-2" aria-label="Fermer">
+            <X size={18} />
+          </button>
+        )}
         <h2 className="pr-8 font-display text-3xl font-extrabold leading-tight">
           {mode === "signup" ? title ?? "Crée ton compte" : "Content de te revoir"}
         </h2>

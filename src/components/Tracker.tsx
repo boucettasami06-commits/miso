@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { event } from "@/lib/funnel";
 
-/** Une vue de page à chaque navigation, et la profondeur de défilement (25/50/75/100 %) sur la page d'accueil. */
+/** Une vue de page à chaque navigation ; sur la page d'accueil, la profondeur de défilement (25/50/75/100 %) et les clics sur les boutons et liens. */
 export default function Tracker() {
   const pathname = usePathname();
 
@@ -23,8 +23,17 @@ export default function Tracker() {
         }
       }
     };
+    const onClick = (e: MouseEvent) => {
+      const el = (e.target as HTMLElement | null)?.closest<HTMLElement>("a, button");
+      if (!el || el.closest("[role=dialog]")) return;
+      event("cta_click", { label: (el.textContent ?? "").trim().slice(0, 60), href: el.getAttribute("href") ?? "" });
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    document.addEventListener("click", onClick, true);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("click", onClick, true);
+    };
   }, [pathname]);
 
   return null;

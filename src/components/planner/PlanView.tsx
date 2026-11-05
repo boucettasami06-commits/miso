@@ -20,6 +20,8 @@ import { equipmentTip } from "@/lib/engine/equipment";
 import type { Aisle, PlannedMeal, Profile, WeekPlan } from "@/lib/types";
 import SmartImage from "../SmartImage";
 import Paywall from "../Paywall";
+import AuthModal from "../AuthModal";
+import { useAuth } from "@/lib/useAuth";
 
 /** Plat dévoilé en aperçu : celui qui a la plus belle photo parmi les plats cuisinés de la semaine. */
 const revealed = (meals: PlannedMeal[]) =>
@@ -45,6 +47,12 @@ export default function PlanView() {
   /** null = vérification en cours ; false = aperçu (un plat visible, le reste flouté) */
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
   const [paywall, setPaywall] = useState(false);
+  const auth = useAuth();
+  // Inscription obligatoire au moment où la semaine (recettes + liste de courses) s'affiche
+  const mustSignup = auth.enabled && !auth.loading && !auth.user && !!plan;
+  useEffect(() => {
+    if (mustSignup) event("signup_open", { from: "semaine" });
+  }, [mustSignup]);
 
   // Nouvel appareil : on récupère la semaine enregistrée dans le compte
   useEffect(() => {
@@ -239,7 +247,28 @@ export default function PlanView() {
           </div>
         </div>
       )}
-      <AnimatePresence>{paywall && <Paywall onClose={() => setPaywall(false)} />}</AnimatePresence>
+      <AnimatePresence>{paywall && !mustSignup && <Paywall onClose={() => setPaywall(false)} />}</AnimatePresence>
+      <AnimatePresence>
+        {mustSignup && (
+          <AuthModal
+            dismissible={false}
+            title="Ta semaine est prête 🎉"
+            subtitle="Crée ton compte pour découvrir tes recettes et ta liste de courses. Elles seront enregistrées sur tous tes appareils."
+            onClose={() => {}}
+            onSuccess={() => {
+              // La semaine générée sans compte est rattachée au nouveau compte
+              if (profile && plan) fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile, plan }) }).catch(() => {});
+              fetch("/api/subscription", { cache: "no-store" })
+                .then((r) => r.json())
+                .then((d: { active?: boolean }) => {
+                  setUnlocked(!!d.active);
+                  if (!d.active) fetch("/api/paywall-seen", { method: "POST" }).catch(() => {});
+                })
+                .catch(() => {});
+            }}
+          />
+        )}
+      </AnimatePresence>
       <AnimatePresence>{open && <RecipeModal meal={open} profile={profile} onClose={() => setOpen(null)} />}</AnimatePresence>
       <AnimatePresence>
         {toast && (

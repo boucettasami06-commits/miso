@@ -8,10 +8,10 @@ export const PERIODS: Record<Period, string> = { "3h": "3 hours", "24h": "24 hou
 export const FUNNEL = [
   { key: "visit", label: "Visite du site", where: "name = 'page_view'" },
   { key: "cta", label: "Clic sur un bouton de l'accueil", where: "name = 'cta_click'" },
-  { key: "signup", label: "Inscription", where: "name = 'signup_ok'" },
   { key: "wizard", label: "Questionnaire commencé", where: "name = 'wizard_step' AND props->>'step' = '1'" },
   { key: "wizard_done", label: "Questionnaire terminé", where: "name = 'wizard_done'" },
   { key: "plan", label: "Semaine générée", where: "name = 'plan_generated'" },
+  { key: "signup", label: "Inscription (à l'affichage de la semaine)", where: "name = 'signup_ok'" },
   { key: "paywall", label: "Page de paiement vue", where: "name = 'paywall_view'" },
   { key: "checkout", label: "Clic « Débloquer » (vers Whop)", where: "name = 'checkout_click'" },
   { key: "paid", label: "Abonnement activé", where: "name = 'activation_ok'" },

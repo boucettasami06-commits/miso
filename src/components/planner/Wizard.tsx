@@ -11,7 +11,6 @@ import { COUNTRIES, COUNTRY_BY_ID, storesOf } from "@/lib/data/stores";
 import { DEFAULT_EQUIPMENT, EQUIPMENT } from "@/lib/engine/equipment";
 import { money } from "@/lib/format";
 import { useAuth } from "@/lib/useAuth";
-import AuthModal from "../AuthModal";
 import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
 import type { Allergen, CookTime, Country, Diet, MealType, Profile, Restriction } from "@/lib/types";
 import StoreLogo from "../StoreLogo";
@@ -91,7 +90,6 @@ export default function Wizard() {
   const [dir, setDir] = useState(1);
   const [p, setP] = useState<Profile>(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(false);
-  const [signup, setSignup] = useState(false);
   const auth = useAuth();
 
   useEffect(() => {
@@ -134,14 +132,10 @@ export default function Wizard() {
     setTimeout(() => router.push("/ma-semaine"), 1900);
   };
 
-  /** L'inscription intervient au moment de générer la semaine (si les comptes sont activés). */
+  /** La semaine est générée sans compte : l'inscription est demandée à son affichage (voir PlanView). */
   const finish = () => {
     event("wizard_done");
-    if (auth.enabled && !auth.user) {
-      event("signup_open", { from: "questionnaire" });
-      setSignup(true);
-    }
-    else generate();
+    generate();
   };
 
   if (loading) return <Cooking />;
@@ -425,19 +419,6 @@ export default function Wizard() {
           </button>
         )}
       </div>
-      <AnimatePresence>
-        {signup && (
-          <AuthModal
-            title="Dernière étape : crée ton compte"
-            subtitle="Ta semaine, ta liste de courses et tes recettes seront enregistrées dans ton compte, sur tous tes appareils."
-            onClose={() => setSignup(false)}
-            onSuccess={() => {
-              setSignup(false);
-              generate(true);
-            }}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
