@@ -10,6 +10,7 @@ import { DAYS, MEAL_LABEL, dayNutrition, generatePlan, swapMeal } from "@/lib/en
 import { recipeNutrition } from "@/lib/engine/nutrition";
 import { quotes, basketFromMeals, shoppingList } from "@/lib/engine/pricing";
 import { RECIPE_BY_SLUG, photoRank } from "@/lib/data/recipes";
+import { event } from "@/lib/funnel";
 
 import { INGREDIENTS } from "@/lib/data/ingredients";
 import { STORE_BY_ID } from "@/lib/data/stores";
@@ -77,6 +78,7 @@ export default function PlanView() {
       .then((r) => r.json())
       .then((d: { active?: boolean }) => {
         setUnlocked(!!d.active);
+        if (saved) event("plan_view", { verrouille: !d.active });
         // Aperçu verrouillé affiché : on le note pour l'e-mail de relance (compte connecté uniquement)
         if (!d.active && saved) fetch("/api/paywall-seen", { method: "POST" }).catch(() => {});
         // En aperçu, on ouvre sur le jour du plat dévoilé
@@ -107,7 +109,10 @@ export default function PlanView() {
   // En aperçu, un seul plat est dévoilé : celui qui a la plus belle photo
   const first = revealed(plan.meals);
   const revealKey = first ? `${first.day}-${first.meal}` : "";
-  const askPay = () => setPaywall(true);
+  const askPay = () => {
+    event("locked_click");
+    setPaywall(true);
+  };
 
   const onSwap = (m: PlannedMeal) => {
     if (locked) return askPay();

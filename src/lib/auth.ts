@@ -63,6 +63,11 @@ export const sessionCookie = (uid: string) =>
     { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const, path: "/", maxAge: SESSION_DAYS * 86400 },
   ] as const;
 
+/** Identifiant du compte connecté d'après le cookie de session, sans requête en base. */
+export async function sessionUid(): Promise<string | null> {
+  return readSession((await cookies()).get(SESSION_COOKIE)?.value);
+}
+
 export async function currentUser(): Promise<User | null> {
   const uid = readSession((await cookies()).get(SESSION_COOKIE)?.value);
   if (!uid) return null;

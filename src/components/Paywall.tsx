@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Lock, X } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { event } from "@/lib/funnel";
 import { useAuth } from "@/lib/useAuth";
 
 /** Tarifs affichés : 9,99 €/mois ou 107,89 €/an (= 12 × 9,99 € avec 10 % de réduction). */
@@ -27,6 +27,7 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     fetch("/api/paywall-seen", { method: "POST" }).catch(() => {});
+    event("paywall_view");
   }, []);
 
   useEffect(() => {
@@ -65,7 +66,10 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
           {PLANS.map((p) => (
             <button
               key={p.id}
-              onClick={() => setPlan(p.id)}
+              onClick={() => {
+                setPlan(p.id);
+                event("plan_select", { formule: p.id });
+              }}
               aria-pressed={plan === p.id}
               className={`relative flex items-center justify-between rounded-2xl border-2 p-4 text-left transition ${plan === p.id ? "border-tomato bg-white shadow-lg" : "border-line bg-white/60"}`}
             >
@@ -105,7 +109,7 @@ export default function Paywall({ onClose }: { onClose: () => void }) {
 
         <a
           href={`/api/whop/checkout?plan=${plan}`}
-          onClick={() => track("Clic paiement", { formule: plan })}
+          onClick={() => event("checkout_click", { formule: plan })}
           className="mt-7 flex items-center justify-center gap-2 rounded-full bg-tomato py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(250,101,76,0.7)] transition hover:bg-tomato-dark"
         >
           Débloquer ma semaine

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2, X } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { event } from "@/lib/funnel";
 import { notifyAuthChange, type PublicUser } from "@/lib/useAuth";
 
 type Mode = "signup" | "login";
@@ -49,7 +49,7 @@ export default function AuthModal({
     const data = (await res?.json().catch(() => null)) as { user?: PublicUser; error?: string } | null;
     setBusy(false);
     if (res?.ok && data?.user) {
-      track(mode === "signup" ? "Inscription" : "Connexion");
+      event(mode === "signup" ? "signup_ok" : "login_ok");
       notifyAuthChange();
       onSuccess(data.user);
     } else setError(data?.error ?? "Une erreur est survenue, réessaie.");

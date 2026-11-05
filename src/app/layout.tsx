@@ -3,6 +3,7 @@ import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SignupGate from "@/components/SignupGate";
+import Tracker from "@/components/Tracker";
 import { Analytics } from "@vercel/analytics/next";
 import { SITE } from "@/lib/site";
 import "./globals.css";
@@ -96,6 +97,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <main id="contenu">{children}</main>
         <Footer />
         <SignupGate />
+        <Tracker />
         <Analytics />
       </body>
     </html>

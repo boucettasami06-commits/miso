@@ -33,7 +33,7 @@ export default function Page() {
       <p className="mt-3">Tu peux accéder à tes données, les corriger, les exporter ou les supprimer, et t&apos;opposer à leur traitement, en écrivant au contact indiqué ci-dessous. Tu peux aussi saisir la CNIL (cnil.fr).</p>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Cookies</h2>
-      <p className="mt-3">Nous utilisons uniquement des cookies techniques indispensables (session de connexion, accès à l&apos;abonnement). La mesure d&apos;audience (Vercel Web Analytics) fonctionne sans cookie et sans identifier les visiteurs : elle ne compte que des visites et des actions anonymes. Aucun cookie publicitaire.</p>
+      <p className="mt-3">Nous utilisons uniquement des cookies techniques indispensables (session de connexion, accès à l&apos;abonnement). La mesure d&apos;audience (Vercel Web Analytics et notre propre outil statistique) sert uniquement à comprendre comment le site est utilisé : pages vues, étapes du questionnaire, provenance de la visite, type d&apos;appareil et pays. Un identifiant aléatoire, conservé 13 mois au maximum dans ton navigateur, permet de compter les visiteurs sans les identifier ; il n&apos;est jamais partagé ni utilisé à des fins publicitaires. Aucun cookie publicitaire.</p>
 
       <h2 className="mt-10 font-display text-2xl font-bold">Contact</h2>
       <p className="mt-3">Pour toute question ou pour exercer tes droits : <a href={`mailto:${LEGAL.email}`} className="text-tomato underline">{LEGAL.email}</a>. Réponse sous 30 jours maximum.</p>

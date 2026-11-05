@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import AuthModal from "./AuthModal";
 import { useAuth } from "@/lib/useAuth";
+import { event } from "@/lib/funnel";
 
 /** Pages laissées accessibles sans compte (obligations légales, récupération d'accès). */
 const OPEN_PATHS = ["/confidentialite", "/mentions-legales", "/cgv", "/credits", "/mot-de-passe-oublie", "/reinitialiser"];
@@ -31,6 +32,8 @@ export default function SignupGate() {
       if (href && OPEN_PATHS.some((p) => href.startsWith(p))) return;
       e.preventDefault();
       e.stopPropagation();
+      event("cta_click", { label: (el.textContent ?? "").trim().slice(0, 60), href: href ?? "" });
+      event("signup_open", { from: "accueil" });
       next.current = href;
       setOpen(true);
     };

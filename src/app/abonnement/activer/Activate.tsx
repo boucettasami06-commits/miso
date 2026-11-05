@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Loader2, MailCheck } from "lucide-react";
 import { useAuth } from "@/lib/useAuth";
+import { event } from "@/lib/funnel";
 
 /** Identifiant transmis par Whop au retour du paiement (selon la configuration de la redirection). */
 const PARAMS = ["membership_id", "membership", "license_key", "id"];
@@ -30,7 +31,10 @@ export default function Activate() {
   const [code, setCode] = useState("");
   const [membership, setMembership] = useState("");
 
-  const done = useCallback(() => router.replace("/ma-semaine?bienvenue=1"), [router]);
+  const done = useCallback(() => {
+    event("activation_ok");
+    router.replace("/ma-semaine?bienvenue=1");
+  }, [router]);
 
   const activateId = useCallback(
     async (id: string) => {

@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Coffee, Moon, Sun } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { event } from "@/lib/funnel";
 import { DEFAULT_PROFILE } from "@/lib/defaults";
 import { generatePlan } from "@/lib/engine/generator";
 import { COUNTRIES, COUNTRY_BY_ID, storesOf } from "@/lib/data/stores";
@@ -112,6 +112,11 @@ export default function Wizard() {
   const setCountry = (c: Country) =>
     setP((x) => (x.country === c ? x : { ...x, country: c, stores: [], budget: COUNTRY_BY_ID[c].budget.default }));
 
+  // Chaque étape affichée du questionnaire (pour repérer où les visiteurs décrochent)
+  useEffect(() => {
+    event("wizard_step", { step: step + 1, name: STEPS[step] });
+  }, [step]);
+
   const go = (d: number) => {
     setDir(d);
     setStep((s) => Math.min(STEPS.length - 1, Math.max(0, s + d)));
@@ -123,7 +128,7 @@ export default function Wizard() {
     saveProfile(p);
     const plan = generatePlan(p);
     savePlan(plan);
-    track("Semaine générée", { pays: p.country ?? "FR", budget: p.budget });
+    event("plan_generated", { pays: p.country ?? "FR", budget: p.budget, foyer: p.adults + p.children });
     // Compte connecté : la semaine est aussi enregistrée côté serveur (retrouvable sur tous ses appareils)
     if (loggedIn) fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: p, plan }) }).catch(() => {});
     setTimeout(() => router.push("/ma-semaine"), 1900);
@@ -131,7 +136,11 @@ export default function Wizard() {
 
   /** L'inscription intervient au moment de générer la semaine (si les comptes sont activés). */
   const finish = () => {
-    if (auth.enabled && !auth.user) setSignup(true);
+    event("wizard_done");
+    if (auth.enabled && !auth.user) {
+      event("signup_open", { from: "questionnaire" });
+      setSignup(true);
+    }
     else generate();
   };
 

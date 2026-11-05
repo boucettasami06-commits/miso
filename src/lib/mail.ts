@@ -52,7 +52,7 @@ async function send(to: string, subject: string, html: string, text: string) {
 }
 
 export function sendWelcome(to: string, firstName: string) {
-  const url = `${SITE.url}/ma-semaine`;
+  const url = `${SITE.url}/ma-semaine?utm_source=bienvenue&utm_medium=email`;
   return send(
     to,
     "Bienvenue sur Budgemy 🍽️",
@@ -91,7 +91,7 @@ export function sendClaimCode(to: string, code: string) {
 }
 
 export function sendPaywallReminder(to: string, firstName: string) {
-  const url = `${SITE.url}/ma-semaine`;
+  const url = `${SITE.url}/ma-semaine?utm_source=relance&utm_medium=email`;
   return send(
     to,
     `${firstName}, ta semaine de repas t'attend 🛒`,

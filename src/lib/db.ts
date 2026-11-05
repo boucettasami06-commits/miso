@@ -44,6 +44,29 @@ export function ensureSchema() {
       plan jsonb NOT NULL,
       updated_at timestamptz NOT NULL DEFAULT now()
     )`;
+    await q`CREATE TABLE IF NOT EXISTS events (
+      id bigserial PRIMARY KEY,
+      ts timestamptz NOT NULL DEFAULT now(),
+      vid text NOT NULL,
+      sid text NOT NULL,
+      uid uuid,
+      name text NOT NULL,
+      path text,
+      props jsonb,
+      source text,
+      referrer text,
+      device text,
+      country text
+    )`;
+    await q`CREATE INDEX IF NOT EXISTS events_ts ON events (ts)`;
+    await q`CREATE INDEX IF NOT EXISTS events_name_ts ON events (name, ts)`;
+    await q`CREATE TABLE IF NOT EXISTS agent_reports (
+      id bigserial PRIMARY KEY,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      period text,
+      summary text NOT NULL,
+      body text NOT NULL
+    )`;
     await q`CREATE TABLE IF NOT EXISTS whop_claims (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       email text NOT NULL,
