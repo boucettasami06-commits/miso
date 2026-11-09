@@ -72,8 +72,8 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
         <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight">Ta semaine est prête 🎉</h2>
         <p className="mt-2 text-ink-soft">Pour générer ta semaine et ta liste de courses, choisis ta formule.</p>
 
-        <div className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-sage/40 bg-sage/10 p-4">
-          <ShieldCheck size={28} className="shrink-0 text-sage" />
+        <div className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-tomato/30 bg-tomato/5 p-4">
+          <ShieldCheck size={28} className="shrink-0 text-tomato" />
           <p className="text-sm">
             <b className="block text-base">Sans engagement, annulable en 1 clic</b>
             Tu arrêtes quand tu veux depuis ton espace Whop, sans frais ni justification.
@@ -85,7 +85,7 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
           <p className="mt-1 text-sm text-cream/80">
             {savings >= WEEKLY + 0.5 ? (
               <>
-                Ta semaine coûte <b className="text-saffron">{money(savings, currency)} de moins</b> que la moyenne des autres enseignes : Budgemy se
+                Ta semaine coûte <b className="text-tomato">{money(savings, currency)} de moins</b> que la moyenne des autres enseignes : Budgemy se
                 rembourse dès tes premières courses.
               </>
             ) : (
@@ -94,7 +94,7 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
           </p>
           {yearlyGain >= 20 && (
             <p className="mt-3 border-t border-cream/15 pt-3 text-sm">
-              Soit environ <b className="font-display text-xl text-saffron">{money(yearlyGain, currency, 0)} gagnés par an</b>, abonnement déduit.
+              Soit environ <b className="font-display text-xl text-tomato">{money(yearlyGain, currency, 0)} gagnés par an</b>, abonnement déduit.
             </p>
           )}
         </div>
@@ -123,14 +123,14 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
                 <span className="font-display text-2xl font-extrabold">{p.price}</span>
                 <span className="text-sm text-ink-soft"> {p.per}</span>
               </span>
-              {"badge" in p && <span className="absolute -top-2.5 right-4 rounded-full bg-saffron px-2.5 py-0.5 text-xs font-bold">{p.badge}</span>}
+              {"badge" in p && <span className="absolute -top-2.5 right-4 rounded-full bg-tomato px-2.5 text-white py-0.5 text-xs font-bold">{p.badge}</span>}
             </button>
           ))}
         </div>
 
 
         {auth.user && (
-          <div className="mt-6 rounded-2xl border-2 border-saffron bg-saffron/15 p-4 text-sm">
+          <div className="mt-6 rounded-2xl border-2 border-tomato/40 bg-cream-2 p-4 text-sm">
             <p className="font-semibold">Important : au paiement, utilise exactement cette adresse e-mail</p>
             <p className="mt-1 break-all font-display text-lg font-bold">{auth.user.email}</p>
             <p className="mt-1 text-ink-soft">C&apos;est grâce à elle que ta semaine se débloque automatiquement.</p>
@@ -148,7 +148,7 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
         <ul className="mt-4 space-y-3 rounded-2xl border border-line bg-white/70 p-4">
           {PERKS.map(([title, text]) => (
             <li key={title} className="flex gap-3 text-sm">
-              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-sage text-white">
+              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-tomato text-white">
                 <Check size={13} strokeWidth={3} />
               </span>
               <span>
