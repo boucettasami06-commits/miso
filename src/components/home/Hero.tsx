@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import DeviceShowcase from "./DeviceShowcase";
+import { STORES } from "@/lib/data/stores";
 import HeroBackdrop from "./HeroBackdrop";
 
 export default function Hero() {
@@ -70,7 +71,7 @@ export default function Hero() {
             transition={{ delay: 0.6 }}
             className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft"
           >
-            {["🇫🇷 🇧🇪 🇨🇭 🇩🇪 45 enseignes", "102 recettes faciles", "Adapté à ton matériel"].map((t) => (
+            {[`🇫🇷 🇧🇪 🇨🇭 🇩🇪 ${STORES.length} enseignes`, "102 recettes faciles", "Adapté à ton matériel"].map((t) => (
               <li key={t} className="flex items-center gap-2">
                 <Check size={16} className="text-sage" /> {t}
               </li>

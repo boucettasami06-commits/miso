@@ -143,7 +143,7 @@ export default function Home() {
             {[
               { icon: ListChecks, t: "Rangée par rayon", d: "Ta liste suit le parcours du magasin. Tu coches, tu avances, tu sors." },
               { icon: Recycle, t: "Anti-gaspi natif", d: "Budgemy choisit des recettes qui partagent leurs ingrédients : le reste du paquet de lundi sert jeudi." },
-              { icon: Wallet, t: "45 enseignes, 4 pays", d: "Leclerc, Carrefour, Lidl, Aldi, Colruyt, Delhaize, Migros, Coop, REWE, EDEKA… : tu vois où ton panier coûte le moins." },
+              { icon: Wallet, t: `${STORES.length} enseignes, 4 pays`, d: "Leclerc, Carrefour, Lidl, Aldi, Colruyt, Delhaize, Migros, Coop, REWE, EDEKA… : tu vois où ton panier coûte le moins." },
             ].map((f) => (
               <li key={f.t} className="flex gap-4">
                 <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sage-light text-ink">

@@ -26,7 +26,7 @@ function write(key: string, value: unknown) {
 
 export function loadProfile(): Profile | null {
   const p = read<Profile>(PROFILE_KEY);
-  return p && { ...p, stores: p.stores.map(normalizeStoreId).filter((id) => STORE_BY_ID[id]) };
+  return p && { ...p, stores: [...new Set(p.stores.map(normalizeStoreId))].filter((id) => STORE_BY_ID[id]) };
 }
 export const saveProfile = (p: Profile) => write(PROFILE_KEY, p);
 /** Un plan enregistré avec une ancienne liste d'enseignes est ignoré : il sera régénéré. */

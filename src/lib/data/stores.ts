@@ -34,11 +34,9 @@ export const STORES: Store[] = [
   { id: "leader-price", country: "FR", name: "Leader Price", kind: "discount", index: 0.9, color: "#e30613", tagline: "Discount", logo: "leaderprice" },
   { id: "leclerc", country: "FR", name: "E.Leclerc", kind: "hyper", index: 0.92, color: "#0066b3", tagline: "Hypermarché le moins cher", logo: "edotleclerc" },
   { id: "auchan", country: "FR", name: "Auchan", kind: "hyper", index: 0.95, color: "#e2001a", tagline: "Hypermarché", logo: "auchan" },
-  { id: "hyper-u", country: "FR", name: "Hyper U", kind: "hyper", index: 0.95, color: "#e30613", tagline: "Hypermarché Coopérative U" },
-  { id: "carrefour", country: "FR", name: "Carrefour", kind: "hyper", index: 1.0, color: "#004e9f", tagline: "Hypermarché", logo: "carrefour" },
+  { id: "u", country: "FR", name: "U", kind: "hyper", index: 0.96, color: "#e30613", tagline: "Hyper U, Super U, U Express" },
+  { id: "carrefour", country: "FR", name: "Carrefour", kind: "hyper", index: 1.02, color: "#004e9f", tagline: "Carrefour, Market, City, Express", logo: "carrefour" },
   { id: "intermarche", country: "FR", name: "Intermarché", kind: "super", index: 0.96, color: "#e2231a", tagline: "Supermarché", logo: "intermarche" },
-  { id: "super-u", country: "FR", name: "Super U", kind: "super", index: 0.98, color: "#e30613", tagline: "Supermarché" },
-  { id: "carrefour-market", country: "FR", name: "Carrefour Market", kind: "super", index: 1.04, color: "#004e9f", tagline: "Supermarché", logo: "carrefour" },
   { id: "casino", country: "FR", name: "Casino", kind: "super", index: 1.12, color: "#c8102e", tagline: "Supermarché" },
   { id: "franprix", country: "FR", name: "Franprix", kind: "proxi", index: 1.22, color: "#ea5a0c", tagline: "Proximité", logo: "franprix" },
   { id: "monoprix", country: "FR", name: "Monoprix", kind: "proxi", index: 1.24, color: "#111111", tagline: "Centre-ville", logo: "monoprix" },
@@ -56,10 +54,9 @@ export const STORES: Store[] = [
   { id: "be-lidl", country: "BE", name: "Lidl", kind: "discount", index: 0.87, color: "#0050aa", tagline: "Hard-discount", logo: "lidl" },
   { id: "be-colruyt", country: "BE", name: "Colruyt", kind: "super", index: 0.9, color: "#e5530f", tagline: "Meilleurs prix" },
   { id: "be-cora", country: "BE", name: "Cora", kind: "hyper", index: 0.97, color: "#e61845", tagline: "Hypermarché", logo: "cora" },
-  { id: "be-carrefour", country: "BE", name: "Carrefour", kind: "hyper", index: 1.0, color: "#004e9f", tagline: "Hypermarché", logo: "carrefour" },
+  { id: "be-carrefour", country: "BE", name: "Carrefour", kind: "hyper", index: 1.01, color: "#004e9f", tagline: "Carrefour, Market, Express", logo: "carrefour" },
   { id: "be-intermarche", country: "BE", name: "Intermarché", kind: "super", index: 0.98, color: "#e2231a", tagline: "Supermarché", logo: "intermarche" },
   { id: "be-albert-heijn", country: "BE", name: "Albert Heijn", kind: "super", index: 1.02, color: "#04ace6", tagline: "Supermarché", logo: "albertheijn" },
-  { id: "be-carrefour-market", country: "BE", name: "Carrefour Market", kind: "super", index: 1.03, color: "#004e9f", tagline: "Supermarché", logo: "carrefour" },
   { id: "be-delhaize", country: "BE", name: "Delhaize", kind: "super", index: 1.06, color: "#d6001c", tagline: "Supermarché" },
   { id: "be-okay", country: "BE", name: "Okay", kind: "proxi", index: 0.95, color: "#e30613", tagline: "Proximité (Colruyt)" },
   { id: "be-spar", country: "BE", name: "Spar", kind: "proxi", index: 1.1, color: "#00843d", tagline: "Proximité" },
@@ -99,8 +96,14 @@ export const STORE_BY_ID: Record<string, Store> = Object.fromEntries(STORES.map(
 
 export const storesOf = (country: Country = "FR") => STORES.filter((s) => s.country === country);
 
-/** Anciens identifiants conservés pour les profils déjà enregistrés. */
-const LEGACY: Record<string, string> = { superu: "super-u" };
+/** Anciens identifiants conservés pour les profils déjà enregistrés (formats d'une même enseigne regroupés). */
+const LEGACY: Record<string, string> = {
+  superu: "u",
+  "super-u": "u",
+  "hyper-u": "u",
+  "carrefour-market": "carrefour",
+  "be-carrefour-market": "be-carrefour",
+};
 export const normalizeStoreId = (id: string) => LEGACY[id] ?? id;
 
 function hash(str: string): number {

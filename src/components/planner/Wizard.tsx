@@ -12,8 +12,8 @@ import { DEFAULT_EQUIPMENT, EQUIPMENT } from "@/lib/engine/equipment";
 import { money } from "@/lib/format";
 import { useAuth } from "@/lib/useAuth";
 import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
-import type { Allergen, CookTime, Country, Diet, MealType, Profile, Restriction } from "@/lib/types";
-import StoreLogo from "../StoreLogo";
+import type { Allergen, CookTime, Country, Diet, MealType, Profile, Restriction, WeekPlan } from "@/lib/types";
+import { CompareScreen, SavingsScreen } from "./Interludes";
 
 interface Style {
   id: string;
@@ -90,6 +90,9 @@ export default function Wizard() {
   const [dir, setDir] = useState(1);
   const [p, setP] = useState<Profile>(DEFAULT_PROFILE);
   const [loading, setLoading] = useState(false);
+  /** Écrans intermédiaires : comparaison après l'étape Foyer, économies après la génération. */
+  const [compare, setCompare] = useState<"pending" | "showing" | "done">("pending");
+  const [result, setResult] = useState<WeekPlan | null>(null);
   const auth = useAuth();
 
   useEffect(() => {
@@ -129,7 +132,10 @@ export default function Wizard() {
     event("plan_generated", { pays: p.country ?? "FR", budget: p.budget, foyer: p.adults + p.children });
     // Compte connecté : la semaine est aussi enregistrée côté serveur (retrouvable sur tous ses appareils)
     if (loggedIn) fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ profile: p, plan }) }).catch(() => {});
-    setTimeout(() => router.push("/ma-semaine"), 1900);
+    setTimeout(() => {
+      setResult(plan);
+      event("savings_view");
+    }, 1900);
   };
 
   /** La semaine est générée sans compte : l'inscription est demandée à son affichage (voir PlanView). */
@@ -138,7 +144,29 @@ export default function Wizard() {
     generate();
   };
 
+  /** Avant l'étape Équipement, on montre une fois ce que Budgemy change au quotidien. */
+  const next = () => {
+    if (step === 2 && compare === "pending") {
+      setCompare("showing");
+      event("compare_view");
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    go(1);
+  };
+
+  if (result) return <SavingsScreen plan={result} onContinue={() => router.push("/ma-semaine")} />;
   if (loading) return <Cooking />;
+  if (compare === "showing")
+    return (
+      <CompareScreen
+        people={people}
+        onContinue={() => {
+          setCompare("done");
+          go(1);
+        }}
+      />
+    );
 
 
   return (
@@ -194,9 +222,12 @@ export default function Wizard() {
                       aria-pressed={on}
                       aria-label={s.name}
                       title={s.name}
-                      className={`relative grid aspect-[4/3] place-items-center rounded-2xl border-2 bg-white p-3 transition ${on ? "border-tomato shadow-lg" : "border-line hover:border-ink/30"}`}
+                      className={`relative grid min-h-24 place-items-center rounded-2xl border-2 bg-white px-2 py-3 transition ${on ? "border-tomato shadow-lg" : "border-line hover:border-ink/30"}`}
                     >
-                      <StoreLogo store={s} size={44} logoOnly />
+                      <span className="text-center">
+                        <span className="block break-words font-display text-[15px] font-bold leading-tight sm:text-lg">{s.name}</span>
+                        <span className="mt-1 block text-[11px] leading-tight text-ink-soft">{s.tagline}</span>
+                      </span>
                       {on && (
                         <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-tomato text-white">
                           <Check size={12} />
@@ -410,7 +441,7 @@ export default function Wizard() {
           <ArrowLeft size={18} /> Retour
         </button>
         {step < STEPS.length - 1 ? (
-          <button onClick={() => go(1)} disabled={!canNext} className="group inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-semibold text-cream transition hover:bg-tomato disabled:opacity-40">
+          <button onClick={next} disabled={!canNext} className="group inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-semibold text-cream transition hover:bg-tomato disabled:opacity-40">
             Continuer <ArrowRight size={18} className="transition group-hover:translate-x-1" />
           </button>
         ) : (
