@@ -14,18 +14,24 @@ const PLANS = [
   { id: "monthly", name: "Mensuel", price: "9,99 €", per: "/ mois", sub: "≈ 2,30 € par semaine · sans engagement" },
 ] as const;
 
+/** Ce que l'abonnement change concrètement (uniquement des fonctions réellement disponibles). */
 const PERKS = [
-  "Ton menu complet sur 7 jours",
-  "Ta liste de courses par rayon, au meilleur prix",
-  "Toutes les recettes détaillées, portions calculées",
-  "Remplacements de plats illimités",
-  "Une nouvelle semaine quand tu veux",
-];
+  ["Fini le « on mange quoi ce soir ? »", "tes 7 jours de repas sont prêts, du petit-déj au dîner"],
+  ["Un seul passage en magasin", "avec ta liste de courses triée par rayon"],
+  ["Tes courses restent dans ton budget", "semaine après semaine, au centime près"],
+  ["Moins de gaspillage", "les ingrédients sont réutilisés d'un repas à l'autre, en paquets entiers"],
+  ["Un plat ne te dit rien ?", "tu le remplaces en un clic, ta liste suit automatiquement"],
+  ["L'enseigne la moins chère pour ta liste", "comparée en un coup d'œil"],
+  ["Recettes détaillées, portions calculées", "pour ton foyer, ton objectif et ton matériel"],
+  ["Une nouvelle semaine quand tu veux", "avec de nouvelles recettes à chaque fois"],
+] as const;
 
 /** Prix ramené à la semaine : 9,99 € × 12 / 52 ≈ 2,30 €. */
 const WEEKLY = 2.3;
 
 export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { onClose: () => void; savings?: number; currency?: "EUR" | "CHF" }) {
+  /** Gain annuel net : économie hebdomadaire moins le prix de l'abonnement ramené à la semaine. */
+  const yearlyGain = Math.round((savings - WEEKLY) * 52);
   const [plan, setPlan] = useState<"yearly" | "monthly">("yearly");
   const auth = useAuth();
 
@@ -86,6 +92,11 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
               <>Moins qu&apos;un café par semaine, pour des courses calculées au centime et zéro gaspillage.</>
             )}
           </p>
+          {yearlyGain >= 20 && (
+            <p className="mt-3 border-t border-cream/15 pt-3 text-sm">
+              Soit environ <b className="font-display text-xl text-saffron">{money(yearlyGain, currency, 0)} gagnés par an</b>, abonnement déduit.
+            </p>
+          )}
         </div>
 
         <div className="mt-6 grid gap-3">
@@ -117,13 +128,6 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
           ))}
         </div>
 
-        <ul className="mt-6 space-y-2 text-sm">
-          {PERKS.map((t) => (
-            <li key={t} className="flex items-center gap-2">
-              <Check size={16} className="shrink-0 text-sage" /> {t}
-            </li>
-          ))}
-        </ul>
 
         {auth.user && (
           <div className="mt-6 rounded-2xl border-2 border-saffron bg-saffron/15 p-4 text-sm">
@@ -137,6 +141,33 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
           href={`/api/whop/checkout?plan=${plan}`}
           onClick={() => event("checkout_click", { formule: plan })}
           className="mt-7 flex items-center justify-center gap-2 rounded-full bg-tomato py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(250,101,76,0.7)] transition hover:bg-tomato-dark"
+        >
+          Débloquer ma semaine
+        </a>
+        <h3 className="mt-8 text-center font-display text-xl font-extrabold">Ce qui change pour toi dès cette semaine</h3>
+        <ul className="mt-4 space-y-3 rounded-2xl border border-line bg-white/70 p-4">
+          {PERKS.map(([title, text]) => (
+            <li key={title} className="flex gap-3 text-sm">
+              <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-sage text-white">
+                <Check size={13} strokeWidth={3} />
+              </span>
+              <span>
+                <b>{title}</b> : {text}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-xs">
+          <span className="rounded-xl bg-cream-2 p-3"><b className="block text-base">🔓</b>Accès immédiat</span>
+          <span className="rounded-xl bg-cream-2 p-3"><b className="block text-base">↩️</b>Annulable à tout moment</span>
+          <span className="rounded-xl bg-cream-2 p-3"><b className="block text-base">🔒</b>Paiement sécurisé</span>
+        </div>
+
+        <a
+          href={`/api/whop/checkout?plan=${plan}`}
+          onClick={() => event("checkout_click", { formule: plan, position: "bas" })}
+          className="mt-6 flex items-center justify-center gap-2 rounded-full bg-tomato py-4 text-lg font-semibold text-white shadow-[0_12px_30px_-10px_rgba(250,101,76,0.7)] transition hover:bg-tomato-dark"
         >
           Débloquer ma semaine
         </a>
