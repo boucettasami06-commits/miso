@@ -259,7 +259,11 @@ export default function Wizard() {
                       key={st.id}
                       whileHover={{ y: -3 }}
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => setP((x) => applyStyle(x, st))}
+                      onClick={() => {
+                        setP((x) => applyStyle(x, st));
+                        // Choix unique : on passe à l'étape suivante dès que la case est cochée
+                        setTimeout(next, 350);
+                      }}
                       aria-pressed={on}
                       className={`relative rounded-[1.5rem] p-5 text-left ring-2 transition ${st.bg} ${on ? "ring-tomato" : "ring-transparent hover:ring-line"}`}
                     >
