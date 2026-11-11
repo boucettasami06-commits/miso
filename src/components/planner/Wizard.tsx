@@ -79,7 +79,9 @@ const COOK: { id: CookTime; label: string; hint: string; emoji: string }[] = [
   { id: "chef", label: "J'adore cuisiner", hint: "Pas de limite", emoji: "👨‍🍳" },
 ];
 
-const STEPS = ["Pays & magasins", "Style", "Foyer", "Équipement", "Repas", "Régime", "Budget"];
+const STEPS = ["Pays & magasins", "Style", "Foyer", "Équipement", "Repas", "Midi", "Temps en cuisine", "Régime", "Préférences", "Budget"];
+/** Index des étapes, pour la lisibilité. */
+const S = { stores: 0, style: 1, household: 2, equipment: 3, meals: 4, lunch: 5, cook: 6, diet: 7, prefs: 8, budget: 9 } as const;
 
 const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
@@ -103,8 +105,13 @@ export default function Wizard() {
   }, [params]);
 
   const set = <K extends keyof Profile>(k: K, v: Profile[K]) => setP((x) => ({ ...x, [k]: v }));
-  const minBudget = useMemo(() => (step === 6 ? generatePlan({ ...p, budget: 1 }, { seed: 1 }).total : 0), [p, step]);
-  const canNext = step !== 4 || p.meals.length > 0;
+  /** Question à choix unique : la réponse est enregistrée et on passe à l'étape suivante. */
+  const pick = <K extends keyof Profile>(k: K, v: Profile[K]) => {
+    set(k, v);
+    setTimeout(() => go(1), 350);
+  };
+  const minBudget = useMemo(() => (step === S.budget ? generatePlan({ ...p, budget: 1 }, { seed: 1 }).total : 0), [p, step]);
+  const canNext = step !== S.meals || p.meals.length > 0;
   const people = p.adults + p.children;
   const country = COUNTRY_BY_ID[p.country ?? "FR"];
   const stores = storesOf(country.id);
@@ -118,9 +125,16 @@ export default function Wizard() {
     event("wizard_step", { step: step + 1, name: STEPS[step] });
   }, [step]);
 
+  /** L'étape « Midi » n'a de sens que si l'on prépare à la fois le déjeuner et le dîner. */
+  const applies = (i: number, prof: Profile) => i !== S.lunch || (prof.meals.includes("lunch") && prof.meals.includes("dinner"));
+
   const go = (d: number) => {
     setDir(d);
-    setStep((s) => Math.min(STEPS.length - 1, Math.max(0, s + d)));
+    setStep((cur) => {
+      let n = cur + d;
+      while (n > 0 && n < STEPS.length - 1 && !applies(n, p)) n += d;
+      return Math.min(STEPS.length - 1, Math.max(0, n));
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -146,7 +160,7 @@ export default function Wizard() {
 
   /** Avant l'étape Équipement, on montre une fois ce que Budgemy change au quotidien. */
   const next = () => {
-    if (step === 2 && compare === "pending") {
+    if (step === S.household && compare === "pending") {
       setCompare("showing");
       event("compare_view");
       window.scrollTo({ top: 0 });
@@ -345,27 +359,38 @@ export default function Wizard() {
                   );
                 })}
               </div>
-              {p.meals.includes("lunch") && p.meals.includes("dinner") && (
-                <Field label="Le midi, tu préfères…" className="mt-8">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Chip active={p.lunchMode === "leftovers"} onClick={() => set("lunchMode", "leftovers")}>
-                      <span className="block font-semibold">♻️ Les restes du dîner</span>
-                      <span className="block text-xs opacity-70">On cuisine en double le soir. Économique & rapide.</span>
-                    </Chip>
-                    <Chip active={p.lunchMode === "fresh"} onClick={() => set("lunchMode", "fresh")}>
-                      <span className="block font-semibold">✨ Un plat différent</span>
-                      <span className="block text-xs opacity-70">Plus de variété, un peu plus de cuisine.</span>
-                    </Chip>
-                  </div>
-                </Field>
-              )}
               {!p.meals.length && <p className="mt-4 text-sm text-tomato">Choisis au moins un repas.</p>}
-              <Field label="Combien de temps en cuisine ? (le week-end, on s'autorise un peu plus)" className="mt-10">
-              <div className="grid gap-3 sm:grid-cols-3">
+            </>
+          )}
+
+          {step === S.lunch && (
+            <>
+              <H>Le midi, tu préfères…</H>
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                <Chip active={p.lunchMode === "leftovers"} onClick={() => pick("lunchMode", "leftovers")}>
+                  <span className="block text-3xl">♻️</span>
+                  <span className="mt-2 block font-display text-xl">Les restes du dîner</span>
+                  <span className="block text-sm opacity-70">On cuisine en double le soir. Économique & rapide.</span>
+                </Chip>
+                <Chip active={p.lunchMode === "fresh"} onClick={() => pick("lunchMode", "fresh")}>
+                  <span className="block text-3xl">✨</span>
+                  <span className="mt-2 block font-display text-xl">Un plat différent</span>
+                  <span className="block text-sm opacity-70">Plus de variété, un peu plus de cuisine.</span>
+                </Chip>
+              </div>
+            </>
+          )}
+
+          {step === S.cook && (
+            <>
+              <H>Combien de temps en cuisine ?</H>
+              <p className="mt-3 text-ink-soft">Le week-end, on s&apos;autorise un peu plus.</p>
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {COOK.map((c) => (
                   <button
                     key={c.id}
-                    onClick={() => set("cookTime", c.id)}
+                    onClick={() => pick("cookTime", c.id)}
+                    aria-pressed={p.cookTime === c.id}
                     className={`rounded-[1.75rem] border-2 p-5 text-left transition ${p.cookTime === c.id ? "border-tomato bg-tomato/5" : "border-line bg-white/60 hover:border-ink/30"}`}
                   >
                     <span className="text-3xl">{c.emoji}</span>
@@ -374,18 +399,26 @@ export default function Wizard() {
                   </button>
                 ))}
               </div>
-              </Field>
             </>
           )}
 
-          {step === 5 && (
+          {step === S.diet && (
             <>
               <H>Ton régime alimentaire</H>
-              <div className="mt-8 flex flex-wrap gap-2">
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 {DIETS.map((d) => (
-                  <Pill key={d.id} active={p.diet === d.id} onClick={() => set("diet", d.id)}>{d.label}</Pill>
+                  <Chip key={d.id} active={p.diet === d.id} onClick={() => pick("diet", d.id)}>
+                    <span className="block font-display text-xl">{d.label}</span>
+                  </Chip>
                 ))}
               </div>
+            </>
+          )}
+
+          {step === S.prefs && (
+            <>
+              <H>Des choses à éviter ?</H>
+              <p className="mt-3 text-ink-soft">Coche ce qui te concerne, ou passe directement à la suite.</p>
               <Field label="Restrictions" className="mt-8">
                 <div className="flex flex-wrap gap-2">
                   {RESTRICTIONS.map((r) => (
@@ -410,7 +443,7 @@ export default function Wizard() {
             </>
           )}
 
-          {step === 6 && (
+          {step === S.budget && (
             <>
               <H>Ton budget courses par semaine</H>
               <div className="mt-8 rounded-[2rem] border border-line bg-white/60 p-6 sm:p-8">
