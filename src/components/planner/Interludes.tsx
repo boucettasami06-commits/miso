@@ -15,7 +15,7 @@ const ROWS = [
 /** Écran intermédiaire du questionnaire : ce que Budgemy change au quotidien. */
 export function CompareScreen({ people, onContinue }: { people: number; onContinue: () => void }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl px-4 pb-24 pt-28 sm:px-6 md:pt-32">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl px-4 pb-40 pt-28 sm:px-6 md:pt-32">
       <h1 className="text-center font-display text-4xl font-extrabold leading-tight sm:text-5xl">
         Fini le casse-tête
         <br />
@@ -29,9 +29,11 @@ export function CompareScreen({ people, onContinue }: { people: number; onContin
           <Row key={r.afterText} row={r} delay={0.15 + i * 0.12} />
         ))}
       </div>
-      <button onClick={onContinue} className="group mx-auto mt-10 flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-ink py-4 text-lg font-semibold text-cream transition hover:bg-tomato">
-        Continuer <ArrowRight size={20} className="transition group-hover:translate-x-1" />
-      </button>
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream/90 px-4 py-3 backdrop-blur-xl" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+        <button onClick={onContinue} className="group mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-ink py-4 text-lg font-semibold text-cream transition hover:bg-tomato">
+          Continuer <ArrowRight size={20} className="transition group-hover:translate-x-1" />
+        </button>
+      </div>
     </motion.div>
   );
 }

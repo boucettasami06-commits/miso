@@ -184,7 +184,7 @@ export default function Wizard() {
 
 
   return (
-    <div className="mx-auto max-w-4xl px-4 pb-24 pt-28 sm:px-6 md:pt-32">
+    <div className="mx-auto max-w-4xl px-4 pb-40 pt-28 sm:px-6 md:pt-32">
       {/* Progression */}
       <div className="flex items-center gap-2" aria-label={`Étape ${step + 1} sur ${STEPS.length}`}>
         {STEPS.map((s, i) => (
@@ -473,7 +473,9 @@ export default function Wizard() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-12 flex items-center justify-between">
+      {/* Barre de navigation toujours visible en bas de l'écran */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-cream/90 px-4 py-3 backdrop-blur-xl sm:px-6" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+        <div className="mx-auto flex max-w-4xl items-center justify-between">
         <button onClick={() => go(-1)} disabled={step === 0} className="inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold text-ink-soft transition hover:text-ink disabled:opacity-0">
           <ArrowLeft size={18} /> Retour
         </button>
@@ -486,6 +488,7 @@ export default function Wizard() {
             Générer ma semaine <ArrowRight size={20} className="transition group-hover:translate-x-1" />
           </button>
         )}
+        </div>
       </div>
     </div>
   );
