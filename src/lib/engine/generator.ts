@@ -378,3 +378,35 @@ export function dayNutrition(plan: WeekPlan, day: number) {
   }
   return { kcal: Math.round(n.kcal), protein: Math.round(n.protein), carbs: Math.round(n.carbs), fat: Math.round(n.fat) };
 }
+
+/**
+ * Budget minimum réellement atteignable pour ce profil (foyer, repas, régime, magasins) :
+ * la semaine la moins chère trouvée parmi quelques tirages.
+ */
+const MIN_SEEDS = 2;
+
+export function minimumBudget(p: Profile): number {
+  let best = Infinity;
+  for (let seed = 1; seed <= MIN_SEEDS; seed++) best = Math.min(best, generatePlan({ ...p, budget: 1 }, { seed }).total);
+  return best;
+}
+
+/**
+ * Génère une semaine qui respecte le budget : plusieurs tirages sont essayés et le premier qui tient
+ * dans le budget est retenu (sinon le moins cher). Un budget réglé au minimum donne donc bien une semaine au minimum.
+ */
+export function generatePlanWithinBudget(p: Profile, tries = 3): WeekPlan {
+  let cheapest: WeekPlan | null = null;
+  const start = Math.floor(Math.random() * 1e9);
+  for (let i = 0; i < tries; i++) {
+    const plan = generatePlan(p, { seed: start + i });
+    if (plan.total <= p.budget + 0.01) return plan;
+    if (!cheapest || plan.total < cheapest.total) cheapest = plan;
+  }
+  // Aucun tirage ne tient : on retente avec les tirages qui ont donné le minimum affiché
+  for (let seed = 1; seed <= MIN_SEEDS; seed++) {
+    const plan = generatePlan(p, { seed });
+    if (plan.total < cheapest!.total) cheapest = plan;
+  }
+  return cheapest!;
+}

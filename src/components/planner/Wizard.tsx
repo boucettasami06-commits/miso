@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Coffee, Moon, Sun } from "lucide-react";
 import { event } from "@/lib/funnel";
 import { DEFAULT_PROFILE } from "@/lib/defaults";
-import { generatePlan } from "@/lib/engine/generator";
+import { generatePlanWithinBudget, minimumBudget } from "@/lib/engine/generator";
 import { COUNTRIES, COUNTRY_BY_ID, storesOf } from "@/lib/data/stores";
 import { DEFAULT_EQUIPMENT, EQUIPMENT } from "@/lib/engine/equipment";
 import EQUIPMENT_PHOTOS from "@/lib/data/equipment-photos.json";
@@ -113,10 +113,30 @@ export default function Wizard() {
     set(k, v);
     setTimeout(() => go(1), 350);
   };
-  const minBudget = useMemo(() => (step === S.budget ? generatePlan({ ...p, budget: 1 }, { seed: 1 }).total : 0), [p, step]);
-  const canNext = step !== S.meals || p.meals.length > 0;
   const people = p.adults + p.children;
   const country = COUNTRY_BY_ID[p.country ?? "FR"];
+
+  /**
+   * Budget minimum réellement atteignable pour ce foyer (personnes, repas, régime, magasins, placard) :
+   * le curseur ne descend pas en dessous, et une semaine générée à ce budget le respecte.
+   */
+  const profileKey = useMemo(() => JSON.stringify({ ...p, budget: 0 }), [p]);
+  const [minInfo, setMinInfo] = useState<{ key: string; value: number } | null>(null);
+  const minReady = minInfo?.key === profileKey;
+  useEffect(() => {
+    if (step !== S.budget || minReady) return;
+    const t = setTimeout(() => {
+      const prof = JSON.parse(profileKey) as Profile;
+      const b = COUNTRY_BY_ID[prof.country ?? "FR"].budget;
+      const min = Math.max(b.min, Math.ceil(minimumBudget(prof) / b.step) * b.step);
+      setMinInfo({ key: profileKey, value: min });
+      setP((x) => (x.budget < min ? { ...x, budget: min } : x));
+    }, 60);
+    return () => clearTimeout(t);
+  }, [step, profileKey, minReady]);
+  const canNext = (step !== S.meals || p.meals.length > 0) && (step !== S.budget || minReady);
+  const sliderMin = minReady ? minInfo!.value : country.budget.min;
+  const sliderMax = Math.max(country.budget.max, Math.ceil((sliderMin * 2.5) / country.budget.step) * country.budget.step);
   const stores = storesOf(country.id);
   const euro = (n: number) => money(n, country.currency, 0);
   const equipment = p.equipment ?? DEFAULT_EQUIPMENT;
@@ -144,7 +164,7 @@ export default function Wizard() {
   const generate = (loggedIn = !!auth.user) => {
     setLoading(true);
     saveProfile(p);
-    const plan = generatePlan(p);
+    const plan = generatePlanWithinBudget(p);
     savePlan(plan);
     event("plan_generated", { pays: p.country ?? "FR", budget: p.budget, foyer: p.adults + p.children });
     // Compte connecté : la semaine est aussi enregistrée côté serveur (retrouvable sur tous ses appareils)
@@ -467,11 +487,25 @@ export default function Wizard() {
                     {euro(p.budget)}
                   </motion.span>
                 </div>
-                <input type="range" min={country.budget.min} max={country.budget.max} step={country.budget.step} value={p.budget} onChange={(e) => set("budget", +e.target.value)} className="mt-5 w-full accent-tomato" aria-label="Budget hebdomadaire" />
-                <p className={`mt-4 text-sm ${p.budget >= minBudget ? "text-sage" : "text-tomato"}`}>
-                  {p.budget >= minBudget
-                    ? `✓ Budget réaliste pour ton foyer (minimum estimé ≈ ${euro(Math.ceil(minBudget))}).`
-                    : `⚠ En dessous du minimum réaliste pour ton foyer (≈ ${euro(Math.ceil(minBudget))}). On fera au mieux.`}
+                <input
+                  type="range"
+                  min={sliderMin}
+                  max={sliderMax}
+                  step={country.budget.step}
+                  value={Math.max(p.budget, sliderMin)}
+                  disabled={!minReady}
+                  onChange={(e) => set("budget", +e.target.value)}
+                  className="mt-5 w-full accent-tomato disabled:opacity-40"
+                  aria-label="Budget hebdomadaire"
+                />
+                <div className="mt-1 flex justify-between text-xs font-semibold text-ink-soft">
+                  <span>{euro(sliderMin)}</span>
+                  <span>{euro(sliderMax)}</span>
+                </div>
+                <p className="mt-4 text-sm text-ink-soft">
+                  {minReady
+                    ? `Minimum pour ton foyer : ${euro(sliderMin)} par semaine (${people} personne${people > 1 ? "s" : ""}, ${p.meals.length} repas par jour, 7 jours). Même au minimum, ta semaine respecte ce budget.`
+                    : "Calcul du budget minimum pour ton foyer…"}
                 </p>
               </div>
               <label className="mt-6 flex cursor-pointer items-center gap-3 rounded-2xl bg-cream-2 p-4">
