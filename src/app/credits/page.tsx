@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { RECIPES } from "@/lib/data/recipes";
+import { EQUIPMENT } from "@/lib/engine/equipment";
+import EQUIPMENT_PHOTOS from "@/lib/data/equipment-photos.json";
 
 export const metadata: Metadata = {
   title: "Crédits photos",
@@ -25,6 +27,14 @@ export default function Page() {
             <Link href={`/recettes/${r.slug}`} className="font-semibold hover:text-tomato">{r.title}</Link>
             <a href={r.credit!.url} target="_blank" rel="noopener nofollow" className="text-sm text-ink-soft hover:text-ink">
               {r.credit!.author} · {r.credit!.source}{r.credit!.license ? ` · ${r.credit!.license}` : ""}
+            </a>
+          </li>
+        ))}
+        {Object.entries(EQUIPMENT_PHOTOS).map(([id, ph]) => (
+          <li key={id} className="flex flex-col gap-1 py-3 sm:flex-row sm:justify-between">
+            <span className="font-semibold">Questionnaire · {EQUIPMENT.find((e) => e.id === id)?.label}</span>
+            <a href={ph.url} target="_blank" rel="noopener nofollow" className="text-sm text-ink-soft hover:text-ink">
+              {ph.author} · Wikimedia Commons · {ph.license}
             </a>
           </li>
         ))}

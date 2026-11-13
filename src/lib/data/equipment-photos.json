@@ -1,0 +1,38 @@
+{
+ "plaques": {
+  "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Cooking_stir_fry_beef%2C_Terrytown%2C_Louisiana%2C_February_2016_Skillet.jpg/1280px-Cooking_stir_fry_beef%2C_Terrytown%2C_Louisiana%2C_February_2016_Skillet.jpg",
+  "author": "Infrogmation of New Orleans",
+  "url": "https://commons.wikimedia.org/wiki/File:Cooking_stir_fry_beef,_Terrytown,_Louisiana,_February_2016_Skillet.jpg",
+  "license": "CC BY-SA 4.0"
+ },
+ "four": {
+  "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/Pretzel_rolls_in_New_Orleans_kitchen%2C_28_Sept_2024.jpg/1280px-Pretzel_rolls_in_New_Orleans_kitchen%2C_28_Sept_2024.jpg",
+  "author": "Infrogmation of New Orleans",
+  "url": "https://commons.wikimedia.org/wiki/File:Pretzel_rolls_in_New_Orleans_kitchen,_28_Sept_2024.jpg",
+  "license": "CC BY-SA 2.0"
+ },
+ "micro-ondes": {
+  "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Hotel_room_kitchen_at_St._Marie_Hotel%2C_New_Orleans.jpg/1280px-Hotel_room_kitchen_at_St._Marie_Hotel%2C_New_Orleans.jpg",
+  "author": "Michael Neel",
+  "url": "https://commons.wikimedia.org/wiki/File:Hotel_room_kitchen_at_St._Marie_Hotel,_New_Orleans.jpg",
+  "license": "CC BY 2.0"
+ },
+ "air-fryer": {
+  "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Air_Fryer_2020.jpg/1280px-Air_Fryer_2020.jpg",
+  "author": "I am R.",
+  "url": "https://commons.wikimedia.org/wiki/File:Air_Fryer_2020.jpg",
+  "license": "CC BY 2.0"
+ },
+ "plancha": {
+  "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Grill_Out_%28Unsplash%29.jpg/1280px-Grill_Out_%28Unsplash%29.jpg",
+  "author": "Declan Rex d3c1an",
+  "url": "https://commons.wikimedia.org/wiki/File:Grill_Out_(Unsplash).jpg",
+  "license": "CC0"
+ },
+ "wok": {
+  "src": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Cooking_with_a_wok_on_an_outdoor_stove_5.jpg",
+  "author": "Mx. Granger",
+  "url": "https://commons.wikimedia.org/wiki/File:Cooking_with_a_wok_on_an_outdoor_stove_5.jpg",
+  "license": "CC0"
+ }
+}

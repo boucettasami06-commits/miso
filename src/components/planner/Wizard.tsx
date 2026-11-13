@@ -9,6 +9,8 @@ import { DEFAULT_PROFILE } from "@/lib/defaults";
 import { generatePlan } from "@/lib/engine/generator";
 import { COUNTRIES, COUNTRY_BY_ID, storesOf } from "@/lib/data/stores";
 import { DEFAULT_EQUIPMENT, EQUIPMENT } from "@/lib/engine/equipment";
+import EQUIPMENT_PHOTOS from "@/lib/data/equipment-photos.json";
+import SmartImage from "../SmartImage";
 import { money } from "@/lib/format";
 import { useAuth } from "@/lib/useAuth";
 import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
@@ -323,21 +325,31 @@ export default function Wizard() {
           {step === 3 && (
             <>
               <H>Ton équipement de cuisine</H>
-              <p className="mt-3 text-ink-soft">On ne te proposera que des recettes faisables chez toi, avec des astuces pour ton air fryer ou ton robot.</p>
-              {(["Cuisson", "Appareils", "Pâtisserie"] as const).map((group) => (
-                <Field key={group} label={group} className="mt-8">
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {EQUIPMENT.filter((e) => e.group === group).map((e) => (
-                      <Chip key={e.id} active={equipment.includes(e.id)} onClick={() => set("equipment", toggle(equipment, e.id))}>
-                        <span className="flex items-center gap-2 font-semibold">
-                          <span className="text-xl">{e.emoji}</span>
-                          {e.label}
-                        </span>
-                      </Chip>
-                    ))}
-                  </div>
-                </Field>
-              ))}
+              <p className="mt-3 text-ink-soft">Coche ce que tu as chez toi : on ne te proposera que des recettes faisables avec.</p>
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {EQUIPMENT.filter((e) => e.group === "Cuisson").map((e) => {
+                  const on = equipment.includes(e.id);
+                  const photo = EQUIPMENT_PHOTOS[e.id as keyof typeof EQUIPMENT_PHOTOS];
+                  return (
+                    <button
+                      key={e.id}
+                      onClick={() => set("equipment", toggle(equipment, e.id))}
+                      aria-pressed={on}
+                      className={`relative overflow-hidden rounded-2xl border-2 bg-white text-left transition ${on ? "border-tomato shadow-lg" : "border-line hover:border-ink/30"}`}
+                    >
+                      <span className="relative block aspect-[4/3]">
+                        <SmartImage photo={photo?.src ?? ""} emoji={e.emoji} alt={e.label} fill sizes="(max-width: 640px) 45vw, 30vw" className="object-cover" />
+                        {on && (
+                          <span className="absolute right-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-tomato text-white shadow">
+                            <Check size={14} />
+                          </span>
+                        )}
+                      </span>
+                      <span className="block px-3 py-2.5 font-display text-base font-bold leading-tight">{e.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </>
           )}
 

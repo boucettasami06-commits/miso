@@ -21,7 +21,8 @@ export const EQUIPMENT: { id: Equipment; label: string; emoji: string; group: "C
   { id: "gaufrier", label: "Gaufrier", emoji: "🧇", group: "Pâtisserie" },
 ];
 
-export const DEFAULT_EQUIPMENT: Equipment[] = ["plaques", "four", "micro-ondes"];
+/** Le questionnaire ne demande plus que les appareils de cuisson : on suppose un mixeur, présent dans la plupart des foyers. */
+export const DEFAULT_EQUIPMENT: Equipment[] = ["plaques", "four", "micro-ondes", "mixeur"];
 
 /** Recettes « au four » qui se réussissent aussi très bien à l'air fryer (rôtis, frites, petites portions). */
 const AIR_FRYER_OK = new Set([
