@@ -18,6 +18,7 @@ export type FunnelEvent =
   | "wizard_done"
   | "compare_view"
   | "savings_view"
+  | "client_error"
   | "plan_generated"
   | "plan_view"
   | "locked_click"

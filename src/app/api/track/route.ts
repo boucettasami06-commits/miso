@@ -3,7 +3,7 @@ import { sessionUid } from "@/lib/auth";
 import { dbReady, ensureSchema, sql } from "@/lib/db";
 
 const NAMES = new Set([
-  "page_view", "scroll", "cta_click", "signup_open", "signup_ok", "login_ok", "wizard_step", "wizard_done", "compare_view", "savings_view",
+  "page_view", "scroll", "cta_click", "signup_open", "signup_ok", "login_ok", "wizard_step", "wizard_done", "compare_view", "savings_view", "client_error",
   "plan_generated", "plan_view", "locked_click", "paywall_view", "plan_select", "checkout_click", "activation_ok",
 ]);
 const BOTS = /bot|crawl|spider|slurp|preview|lighthouse|headless|curl|wget|python|node-fetch/i;
