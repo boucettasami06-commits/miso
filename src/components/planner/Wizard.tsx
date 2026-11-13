@@ -240,10 +240,9 @@ export default function Wizard() {
                       className={`relative grid min-h-24 place-items-center rounded-2xl border-2 bg-white px-2 py-3 transition ${on ? "border-tomato shadow-lg" : "border-line hover:border-ink/30"}`}
                     >
                       <span className="flex flex-col items-center text-center">
-                        <span className="grid h-10 max-w-full place-items-center">
-                          <StoreLogo store={s} height={34} />
+                        <span className="grid h-12 max-w-full place-items-center">
+                          <StoreLogo store={s} height={42} />
                         </span>
-                        <span className="mt-1.5 block text-[11px] leading-tight text-ink-soft">{s.tagline}</span>
                       </span>
                       {on && (
                         <span className="absolute right-2 top-2 grid h-5 w-5 place-items-center rounded-full bg-tomato text-white">
