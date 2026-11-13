@@ -1,4 +1,7 @@
-import { STORE_LOGOS } from "@/lib/data/store-logos";
+"use client";
+
+/* eslint-disable @next/next/no-img-element -- logos SVG statiques, aucune optimisation nécessaire */
+import { useState } from "react";
 import type { Store } from "@/lib/types";
 
 /** Les couleurs trop claires (ex. jaune Netto) passent en encre pour rester lisibles sur fond crème. */
@@ -8,54 +11,41 @@ function readable(hex: string) {
   return lum > 0.7 ? "var(--color-ink)" : hex;
 }
 
-/** Logo officiel de l'enseigne quand il est disponible, sinon une pastille à ses couleurs. */
-export default function StoreLogo({
-  store,
-  size = 36,
-  compact = false,
-  logoOnly = false,
-}: {
-  store: Store;
-  size?: number;
-  compact?: boolean;
-  /** vignette : uniquement le logo (ou le nom stylisé pour les logotypes horizontaux) */
-  logoOnly?: boolean;
-}) {
-  const logo = store.logo ? STORE_LOGOS[store.logo] : undefined;
-  // Ces logos sont des logotypes horizontaux : illisibles en vignette carrée, on garde le nom seul
-  const wordmarkOnly = store.logo === "intermarche" || store.logo === "leaderprice";
-  if (logoOnly) {
-    if (logo && !wordmarkOnly) {
-      return (
-        <svg viewBox="0 0 24 24" width={size} height={size} role="img" aria-label={store.name} fill={logo.hex}>
-          <path d={logo.path} />
-        </svg>
-      );
-    }
+/**
+ * Logo officiel de l'enseigne (fichiers issus de Wikimedia, voir public/brand/stores/SOURCES.md),
+ * ou son nom à ses couleurs quand aucun logo libre n'existe.
+ */
+/** Logos pas encore copiés sur le site : servis directement depuis Wikimedia Commons. */
+const REMOTE: Record<string, string> = {
+  auchan: "https://upload.wikimedia.org/wikipedia/commons/6/67/Auchan_wordmark.svg",
+  colruyt: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Colruyt_logo.svg",
+  delhaize: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Delhaize_wordmark.svg",
+  denner: "https://upload.wikimedia.org/wikipedia/commons/2/23/Denner-Logo.svg",
+  franprix: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Logo_Franprix_-_2015.svg",
+  globus: "https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_of_Globus_%282009%29.svg",
+  manor: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Logo_Manor_2017.svg",
+  spar: "https://upload.wikimedia.org/wikipedia/commons/7/71/SPAR_Logo.svg",
+  volg: "https://upload.wikimedia.org/wikipedia/commons/e/eb/Volg-Logo.svg",
+};
+
+export default function StoreLogo({ store, height = 40 }: { store: Store; height?: number }) {
+  const [failed, setFailed] = useState(false);
+  if (store.brand && !failed) {
+    const src = REMOTE[store.brand] ?? `/brand/stores/${store.brand}.svg`;
     return (
-      <span className="text-center font-display text-lg font-extrabold leading-tight" style={{ color: readable(logo?.hex ?? store.color) }}>
-        {store.name}
-      </span>
+      <img
+        src={src}
+        alt={store.name}
+        height={height}
+        onError={() => setFailed(true)}
+        style={{ height, width: "auto", maxWidth: "100%", objectFit: "contain" }}
+        loading="lazy"
+      />
     );
   }
   return (
-    <span className={`inline-flex items-center whitespace-nowrap ${compact ? "max-w-full gap-2" : "gap-3"}`}>
-      {wordmarkOnly ? null : logo ? (
-        <svg viewBox="0 0 24 24" width={size} height={size} role="img" aria-label={`Logo ${store.name}`} fill={logo.hex}>
-          <path d={logo.path} />
-        </svg>
-      ) : (
-        <span
-          aria-hidden
-          className="grid shrink-0 place-items-center rounded-lg font-display font-extrabold"
-          style={{ width: size, height: size, background: store.color, color: readable(store.color) === store.color ? "#fff" : "var(--color-ink)", fontSize: size * 0.5 }}
-        >
-          {store.name.replace(/^(Hyper|Super) /, "").charAt(0)}
-        </span>
-      )}
-      <span className={compact ? "truncate font-display text-base font-bold" : "font-display text-xl font-bold sm:text-2xl"} style={{ color: readable(logo?.hex ?? store.color) }}>
-        {store.name}
-      </span>
+    <span className="whitespace-nowrap font-display font-extrabold" style={{ color: readable(store.color), fontSize: Math.round(height * 0.55) }}>
+      {store.name}
     </span>
   );
 }

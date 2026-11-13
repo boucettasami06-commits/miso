@@ -23,25 +23,25 @@ export const COUNTRY_BY_ID = Object.fromEntries(COUNTRIES.map((c) => [c.id, c]))
 /**
  * Enseignes alimentaires les plus fréquentées par pays.
  * `index` = niveau de prix de l'enseigne par rapport à un hyper de référence du pays ; `aisles` = écarts propres à un rayon.
- * `logo` = identifiant du logo dans `store-logos.ts` quand il est disponible.
+ * `brand` = logo officiel dans public/brand/stores/ (voir SOURCES.md).
  * Estimations calibrées sur les comparatifs publics de paniers, à remplacer par un flux de prix réel en production.
  */
 export const STORES: Store[] = [
   // ───── France ─────
-  { id: "aldi", country: "FR", name: "Aldi", kind: "discount", index: 0.86, color: "#00205b", tagline: "Hard-discount", logo: "aldinord" },
-  { id: "lidl", country: "FR", name: "Lidl", kind: "discount", index: 0.87, color: "#0050aa", tagline: "Hard-discount", logo: "lidl" },
-  { id: "netto", country: "FR", name: "Netto", kind: "discount", index: 0.89, color: "#ffd200", tagline: "Discount Les Mousquetaires" },
-  { id: "leader-price", country: "FR", name: "Leader Price", kind: "discount", index: 0.9, color: "#e30613", tagline: "Discount", logo: "leaderprice" },
-  { id: "leclerc", country: "FR", name: "E.Leclerc", kind: "hyper", index: 0.92, color: "#0066b3", tagline: "Hypermarché le moins cher", logo: "edotleclerc" },
-  { id: "auchan", country: "FR", name: "Auchan", kind: "hyper", index: 0.95, color: "#e2001a", tagline: "Hypermarché", logo: "auchan" },
-  { id: "u", country: "FR", name: "U", kind: "hyper", index: 0.96, color: "#e30613", tagline: "Hyper U, Super U, U Express" },
-  { id: "carrefour", country: "FR", name: "Carrefour", kind: "hyper", index: 1.02, color: "#004e9f", tagline: "Carrefour, Market, City, Express", logo: "carrefour" },
-  { id: "intermarche", country: "FR", name: "Intermarché", kind: "super", index: 0.96, color: "#e2231a", tagline: "Supermarché", logo: "intermarche" },
-  { id: "casino", country: "FR", name: "Casino", kind: "super", index: 1.12, color: "#c8102e", tagline: "Supermarché" },
-  { id: "franprix", country: "FR", name: "Franprix", kind: "proxi", index: 1.22, color: "#ea5a0c", tagline: "Proximité", logo: "franprix" },
-  { id: "monoprix", country: "FR", name: "Monoprix", kind: "proxi", index: 1.24, color: "#111111", tagline: "Centre-ville", logo: "monoprix" },
+  { id: "aldi", country: "FR", name: "Aldi", brand: "aldinord", kind: "discount", index: 0.86, color: "#00205b", tagline: "Hard-discount" },
+  { id: "lidl", country: "FR", name: "Lidl", brand: "lidl", kind: "discount", index: 0.87, color: "#0050aa", tagline: "Hard-discount" },
+  { id: "netto", country: "FR", name: "Netto", brand: "netto-fr", kind: "discount", index: 0.89, color: "#ffd200", tagline: "Discount Les Mousquetaires" },
+  { id: "leader-price", country: "FR", name: "Leader Price", brand: "leaderprice", kind: "discount", index: 0.9, color: "#e30613", tagline: "Discount" },
+  { id: "leclerc", country: "FR", name: "E.Leclerc", brand: "leclerc", kind: "hyper", index: 0.92, color: "#0066b3", tagline: "Hypermarché le moins cher" },
+  { id: "auchan", country: "FR", name: "Auchan", brand: "auchan", kind: "hyper", index: 0.95, color: "#e2001a", tagline: "Hypermarché" },
+  { id: "u", country: "FR", name: "U", brand: "u", kind: "hyper", index: 0.96, color: "#e30613", tagline: "Hyper U, Super U, U Express" },
+  { id: "carrefour", country: "FR", name: "Carrefour", brand: "carrefour", kind: "hyper", index: 1.02, color: "#004e9f", tagline: "Carrefour, Market, City, Express" },
+  { id: "intermarche", country: "FR", name: "Intermarché", brand: "intermarche", kind: "super", index: 0.96, color: "#e2231a", tagline: "Supermarché" },
+  { id: "casino", country: "FR", name: "Casino", brand: "casino", kind: "super", index: 1.12, color: "#c8102e", tagline: "Supermarché" },
+  { id: "franprix", country: "FR", name: "Franprix", brand: "franprix", kind: "proxi", index: 1.22, color: "#ea5a0c", tagline: "Proximité" },
+  { id: "monoprix", country: "FR", name: "Monoprix", brand: "monoprix", kind: "proxi", index: 1.24, color: "#111111", tagline: "Centre-ville" },
   {
-    id: "grand-frais", country: "FR", name: "Grand Frais", kind: "special", index: 1.02, color: "#7ab929", tagline: "Spécialiste du frais", logo: "grandfrais",
+    id: "grand-frais", country: "FR", name: "Grand Frais", brand: "grandfrais", kind: "special", index: 1.02, color: "#7ab929", tagline: "Spécialiste du frais",
     aisles: { "Fruits & légumes": 0.8, "Boucherie & volaille": 0.95, Poissonnerie: 0.95, "Crèmerie & frais": 0.98 },
   },
   {
@@ -50,38 +50,38 @@ export const STORES: Store[] = [
   },
 
   // ───── Belgique ─────
-  { id: "be-aldi", country: "BE", name: "Aldi", kind: "discount", index: 0.86, color: "#00205b", tagline: "Hard-discount", logo: "aldinord" },
-  { id: "be-lidl", country: "BE", name: "Lidl", kind: "discount", index: 0.87, color: "#0050aa", tagline: "Hard-discount", logo: "lidl" },
-  { id: "be-colruyt", country: "BE", name: "Colruyt", kind: "super", index: 0.9, color: "#e5530f", tagline: "Meilleurs prix" },
-  { id: "be-cora", country: "BE", name: "Cora", kind: "hyper", index: 0.97, color: "#e61845", tagline: "Hypermarché", logo: "cora" },
-  { id: "be-carrefour", country: "BE", name: "Carrefour", kind: "hyper", index: 1.01, color: "#004e9f", tagline: "Carrefour, Market, Express", logo: "carrefour" },
-  { id: "be-intermarche", country: "BE", name: "Intermarché", kind: "super", index: 0.98, color: "#e2231a", tagline: "Supermarché", logo: "intermarche" },
-  { id: "be-albert-heijn", country: "BE", name: "Albert Heijn", kind: "super", index: 1.02, color: "#04ace6", tagline: "Supermarché", logo: "albertheijn" },
-  { id: "be-delhaize", country: "BE", name: "Delhaize", kind: "super", index: 1.06, color: "#d6001c", tagline: "Supermarché" },
+  { id: "be-aldi", country: "BE", name: "Aldi", brand: "aldinord", kind: "discount", index: 0.86, color: "#00205b", tagline: "Hard-discount" },
+  { id: "be-lidl", country: "BE", name: "Lidl", brand: "lidl", kind: "discount", index: 0.87, color: "#0050aa", tagline: "Hard-discount" },
+  { id: "be-colruyt", country: "BE", name: "Colruyt", brand: "colruyt", kind: "super", index: 0.9, color: "#e5530f", tagline: "Meilleurs prix" },
+  { id: "be-cora", country: "BE", name: "Cora", brand: "cora", kind: "hyper", index: 0.97, color: "#e61845", tagline: "Hypermarché" },
+  { id: "be-carrefour", country: "BE", name: "Carrefour", brand: "carrefour", kind: "hyper", index: 1.01, color: "#004e9f", tagline: "Carrefour, Market, Express" },
+  { id: "be-intermarche", country: "BE", name: "Intermarché", brand: "intermarche", kind: "super", index: 0.98, color: "#e2231a", tagline: "Supermarché" },
+  { id: "be-albert-heijn", country: "BE", name: "Albert Heijn", brand: "albertheijn", kind: "super", index: 1.02, color: "#04ace6", tagline: "Supermarché" },
+  { id: "be-delhaize", country: "BE", name: "Delhaize", brand: "delhaize", kind: "super", index: 1.06, color: "#d6001c", tagline: "Supermarché" },
   { id: "be-okay", country: "BE", name: "Okay", kind: "proxi", index: 0.95, color: "#e30613", tagline: "Proximité (Colruyt)" },
-  { id: "be-spar", country: "BE", name: "Spar", kind: "proxi", index: 1.1, color: "#00843d", tagline: "Proximité" },
+  { id: "be-spar", country: "BE", name: "Spar", brand: "spar", kind: "proxi", index: 1.1, color: "#00843d", tagline: "Proximité" },
 
   // ───── Suisse ─────
-  { id: "ch-aldi", country: "CH", name: "Aldi Suisse", kind: "discount", index: 0.84, color: "#00005f", tagline: "Hard-discount", logo: "aldisud" },
-  { id: "ch-lidl", country: "CH", name: "Lidl", kind: "discount", index: 0.85, color: "#0050aa", tagline: "Hard-discount", logo: "lidl" },
-  { id: "ch-denner", country: "CH", name: "Denner", kind: "discount", index: 0.88, color: "#e30613", tagline: "Discount" },
-  { id: "ch-migros", country: "CH", name: "Migros", kind: "super", index: 1.0, color: "#ff6600", tagline: "Supermarché" },
-  { id: "ch-coop", country: "CH", name: "Coop", kind: "super", index: 1.04, color: "#e2001a", tagline: "Supermarché" },
-  { id: "ch-manor", country: "CH", name: "Manor Food", kind: "hyper", index: 1.12, color: "#c8102e", tagline: "Grand magasin" },
-  { id: "ch-volg", country: "CH", name: "Volg", kind: "proxi", index: 1.1, color: "#d10019", tagline: "Proximité" },
-  { id: "ch-spar", country: "CH", name: "Spar", kind: "proxi", index: 1.1, color: "#00843d", tagline: "Proximité" },
+  { id: "ch-aldi", country: "CH", name: "Aldi Suisse", brand: "aldisud", kind: "discount", index: 0.84, color: "#00005f", tagline: "Hard-discount" },
+  { id: "ch-lidl", country: "CH", name: "Lidl", brand: "lidl", kind: "discount", index: 0.85, color: "#0050aa", tagline: "Hard-discount" },
+  { id: "ch-denner", country: "CH", name: "Denner", brand: "denner", kind: "discount", index: 0.88, color: "#e30613", tagline: "Discount" },
+  { id: "ch-migros", country: "CH", name: "Migros", brand: "migros", kind: "super", index: 1.0, color: "#ff6600", tagline: "Supermarché" },
+  { id: "ch-coop", country: "CH", name: "Coop", brand: "coop", kind: "super", index: 1.04, color: "#e2001a", tagline: "Supermarché" },
+  { id: "ch-manor", country: "CH", name: "Manor Food", brand: "manor", kind: "hyper", index: 1.12, color: "#c8102e", tagline: "Grand magasin" },
+  { id: "ch-volg", country: "CH", name: "Volg", brand: "volg", kind: "proxi", index: 1.1, color: "#d10019", tagline: "Proximité" },
+  { id: "ch-spar", country: "CH", name: "Spar", brand: "spar", kind: "proxi", index: 1.1, color: "#00843d", tagline: "Proximité" },
 
   // ───── Allemagne ─────
-  { id: "de-aldi-nord", country: "DE", name: "Aldi Nord", kind: "discount", index: 0.82, color: "#2490d7", tagline: "Discounter", logo: "aldinord" },
-  { id: "de-aldi-sued", country: "DE", name: "Aldi Süd", kind: "discount", index: 0.82, color: "#00005f", tagline: "Discounter", logo: "aldisud" },
-  { id: "de-lidl", country: "DE", name: "Lidl", kind: "discount", index: 0.83, color: "#0050aa", tagline: "Discounter", logo: "lidl" },
-  { id: "de-netto", country: "DE", name: "Netto", kind: "discount", index: 0.84, color: "#ffe500", tagline: "Marken-Discount", logo: "netto" },
-  { id: "de-norma", country: "DE", name: "Norma", kind: "discount", index: 0.84, color: "#e30613", tagline: "Discounter" },
-  { id: "de-penny", country: "DE", name: "Penny", kind: "discount", index: 0.85, color: "#cd1414", tagline: "Discounter", logo: "penny" },
-  { id: "de-kaufland", country: "DE", name: "Kaufland", kind: "hyper", index: 0.9, color: "#e10915", tagline: "Hypermarché", logo: "kaufland" },
-  { id: "de-globus", country: "DE", name: "Globus", kind: "hyper", index: 0.92, color: "#ca6201", tagline: "Hypermarché", logo: "globus" },
-  { id: "de-rewe", country: "DE", name: "REWE", kind: "super", index: 1.0, color: "#cc071e", tagline: "Supermarché", logo: "rewe" },
-  { id: "de-edeka", country: "DE", name: "EDEKA", kind: "super", index: 1.02, color: "#1b66b3", tagline: "Supermarché", logo: "edeka" },
+  { id: "de-aldi-nord", country: "DE", name: "Aldi Nord", brand: "aldinord", kind: "discount", index: 0.82, color: "#2490d7", tagline: "Discounter" },
+  { id: "de-aldi-sued", country: "DE", name: "Aldi Süd", brand: "aldisud", kind: "discount", index: 0.82, color: "#00005f", tagline: "Discounter" },
+  { id: "de-lidl", country: "DE", name: "Lidl", brand: "lidl", kind: "discount", index: 0.83, color: "#0050aa", tagline: "Discounter" },
+  { id: "de-netto", country: "DE", name: "Netto", brand: "netto-de", kind: "discount", index: 0.84, color: "#ffe500", tagline: "Marken-Discount" },
+  { id: "de-norma", country: "DE", name: "Norma", brand: "norma", kind: "discount", index: 0.84, color: "#e30613", tagline: "Discounter" },
+  { id: "de-penny", country: "DE", name: "Penny", brand: "penny", kind: "discount", index: 0.85, color: "#cd1414", tagline: "Discounter" },
+  { id: "de-kaufland", country: "DE", name: "Kaufland", brand: "kaufland", kind: "hyper", index: 0.9, color: "#e10915", tagline: "Hypermarché" },
+  { id: "de-globus", country: "DE", name: "Globus", brand: "globus", kind: "hyper", index: 0.92, color: "#ca6201", tagline: "Hypermarché" },
+  { id: "de-rewe", country: "DE", name: "REWE", brand: "rewe", kind: "super", index: 1.0, color: "#cc071e", tagline: "Supermarché" },
+  { id: "de-edeka", country: "DE", name: "EDEKA", brand: "edeka", kind: "super", index: 1.02, color: "#1b66b3", tagline: "Supermarché" },
 ];
 
 export const STORE_KIND_LABEL: Record<Store["kind"], string> = {

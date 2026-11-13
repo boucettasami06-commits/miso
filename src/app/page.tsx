@@ -32,7 +32,7 @@ const FAQ = [
 ];
 
 /** Une seule fois chaque marque dans le bandeau (Aldi, Lidl, Carrefour… existent dans plusieurs pays). */
-const BRANDS = STORES.filter((s, i, all) => all.findIndex((x) => (x.logo ?? x.name) === (s.logo ?? s.name)) === i);
+const BRANDS = STORES.filter((s, i, all) => all.findIndex((x) => (x.brand ?? x.name) === (s.brand ?? s.name)) === i);
 
 export default function Home() {
   const showcase = ["poulet-curry-coco-riz-basmati", "saumon-roti-patate-douce-haricots-verts", "burger-maison-potatoes", "buddha-bowl-pois-chiches-quinoa", "pancakes-banane-avoine", "chili-con-carne", "pizza-maison-jambon-champignons", "wok-nouilles-crevettes-legumes"]

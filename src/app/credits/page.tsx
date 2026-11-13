@@ -16,7 +16,8 @@ export default function Page() {
       <h1 className="font-display text-5xl font-extrabold">Crédits photos</h1>
       <p className="mt-4 text-ink-soft">
         Merci aux photographes qui partagent leur travail sous licence libre. Les autres images proviennent d&apos;Unsplash (licence
-        Unsplash).
+        Unsplash). Les logos des enseignes proviennent de Wikimedia Commons et de Wikipédia : ce sont des marques déposées de leurs
+        propriétaires, affichées uniquement pour identifier les magasins comparés.
       </p>
       <ul className="mt-10 divide-y divide-line">
         {credited.map((r) => (

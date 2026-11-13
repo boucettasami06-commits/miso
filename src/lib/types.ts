@@ -131,8 +131,8 @@ export interface Store {
   id: string;
   country: Country;
   name: string;
-  /** identifiant du logo dans store-logos.ts */
-  logo?: string;
+  /** Fichier du logo officiel : public/brand/stores/<brand>.svg */
+  brand?: string;
   kind: "discount" | "hyper" | "super" | "proxi" | "special";
   index: number;
   aisles?: Partial<Record<Aisle, number>>;
