@@ -1,5 +1,6 @@
 import type { Recipe } from "../types";
-import { EXTRA } from "./recipes-extra";
+import { EXTRA, type RawRecipe } from "./recipes-extra";
+import MORE from "./recipes-more.json";
 import PHOTOS from "./photos.json";
 
 /** Identifiants de photos Unsplash (licence libre). Servies en haute définition via next/image. */
@@ -879,7 +880,10 @@ const BASE: Recipe[] = [
   },
 ];
 
-const FROM_EXTRA: Recipe[] = EXTRA.map(([slug, title, meal, description, time, difficulty, fit, protein, cuisine, img, emoji, ings, steps, batch]) => {
+/** Recettes supplémentaires (même format compact), voir scripts/validate-raw.ts pour le contrôle. */
+const ALL_RAW: RawRecipe[] = [...EXTRA, ...(MORE as RawRecipe[])];
+
+const FROM_EXTRA: Recipe[] = ALL_RAW.map(([slug, title, meal, description, time, difficulty, fit, protein, cuisine, img, emoji, ings, steps, batch]) => {
   const [sain, muscle, equilibre, gourmand] = fit.split("").map(Number) as Recipe["fit"][keyof Recipe["fit"]][];
   return {
     slug, title, description, time, difficulty, protein, cuisine, emoji, steps,

@@ -51,15 +51,16 @@ export function isAllowed(r: Recipe, p: Profile): boolean {
   return canCook(r, p.equipment);
 }
 
-const MEAT = new Set<Recipe["protein"]>(["volaille", "boeuf", "porc"]);
+/** Protéines animales acceptées pour un profil « je mange de tout » : viande ou poisson, en alternance. */
+const MEAT_OR_FISH = new Set<Recipe["protein"]>(["volaille", "boeuf", "porc", "poisson"]);
 
 export function pool(p: Profile, meal: MealType): Recipe[] {
   const kind = meal === "breakfast" ? "breakfast" : "main";
   const all = RECIPES.filter((r) => r.meal === kind && isAllowed(r, p));
-  // Profil « je mange de tout » : chaque déjeuner et dîner est un plat avec de la viande
+  // Profil « je mange de tout » : chaque déjeuner et dîner contient de la viande ou du poisson
   // (sauf si les restrictions et l'équipement en laissent trop peu pour composer une semaine variée).
   if (kind === "main" && (p.diet ?? "omnivore") === "omnivore") {
-    const meat = all.filter((r) => MEAT.has(r.protein));
+    const meat = all.filter((r) => MEAT_OR_FISH.has(r.protein));
     if (meat.length >= 10) return meat;
   }
   return all;

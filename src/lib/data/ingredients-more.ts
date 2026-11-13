@@ -1,0 +1,103 @@
+import type { Ingredient } from "../types";
+
+/**
+ * Ingrédients complémentaires (élargissement du catalogue pour les recettes de recipes-more.ts).
+ * Prix de référence moyens en hypermarché, valeurs nutritionnelles arrondies (CIQUAL / Open Food Facts).
+ */
+export const MORE_INGREDIENTS: Ingredient[] = [
+  // Boucherie & volaille
+  { id: "porc-echine", name: "Échine de porc", aisle: "Boucherie & volaille", unit: "g", pack: 600, price: 6.3, macros: [210, 18, 0, 15], flags: ["meat", "pork"] },
+  { id: "cotes-porc", name: "Côtes de porc", aisle: "Boucherie & volaille", unit: "g", pack: 500, price: 5.2, macros: [190, 20, 0, 12], flags: ["meat", "pork"] },
+  { id: "filet-mignon-porc", name: "Filet mignon de porc", aisle: "Boucherie & volaille", unit: "g", pack: 500, price: 8.9, macros: [120, 22, 0, 3.5], flags: ["meat", "pork"] },
+  { id: "poulet-entier", name: "Poulet entier", aisle: "Boucherie & volaille", unit: "g", pack: 1400, packLabel: "pièce", price: 8.5, macros: [190, 19, 0, 12], flags: ["meat"] },
+  { id: "pilons-poulet", name: "Pilons de poulet", aisle: "Boucherie & volaille", unit: "g", pack: 1000, price: 5.9, macros: [170, 19, 0, 10], flags: ["meat"] },
+  { id: "steak", name: "Steaks de bœuf", aisle: "Boucherie & volaille", unit: "g", pack: 300, packLabel: "2 steaks", price: 6.9, macros: [140, 22, 0, 5.5], flags: ["meat"] },
+  { id: "veau", name: "Sauté de veau", aisle: "Boucherie & volaille", unit: "g", pack: 600, price: 11.5, macros: [130, 21, 0, 5], flags: ["meat"] },
+  { id: "agneau", name: "Épaule d'agneau en morceaux", aisle: "Boucherie & volaille", unit: "g", pack: 600, price: 10.9, macros: [230, 18, 0, 17], flags: ["meat"] },
+  { id: "canard", name: "Cuisses de canard", aisle: "Boucherie & volaille", unit: "g", pack: 500, price: 7.5, macros: [200, 18, 0, 14], flags: ["meat"] },
+  { id: "saucisse-fumee", name: "Saucisses fumées", aisle: "Boucherie & volaille", unit: "g", pack: 300, price: 3.4, macros: [290, 13, 1, 26], flags: ["meat", "pork"] },
+  { id: "bacon", name: "Bacon en tranches", aisle: "Boucherie & volaille", unit: "g", pack: 150, price: 2.6, macros: [160, 21, 1, 8], flags: ["meat", "pork"] },
+  { id: "jambon-cru", name: "Jambon cru", aisle: "Boucherie & volaille", unit: "g", pack: 100, packLabel: "6 tranches", price: 2.9, macros: [240, 27, 0, 15], flags: ["meat", "pork"] },
+  { id: "blanc-poulet-tranches", name: "Blanc de poulet en tranches", aisle: "Boucherie & volaille", unit: "g", pack: 160, price: 2.6, macros: [105, 21, 1, 2], flags: ["meat"] },
+
+  // Poissonnerie & surgelés
+  { id: "sardines", name: "Sardines à l'huile", aisle: "Épicerie salée", unit: "g", pack: 135, packLabel: "boîte", price: 1.6, macros: [220, 24, 0, 14], flags: ["fish"] },
+  { id: "maquereau", name: "Filets de maquereau", aisle: "Épicerie salée", unit: "g", pack: 169, packLabel: "boîte", price: 1.9, macros: [200, 15, 3, 14], flags: ["fish"] },
+  { id: "truite", name: "Filets de truite", aisle: "Poissonnerie", unit: "g", pack: 250, price: 5.5, macros: [150, 20, 0, 7.5], flags: ["fish"] },
+  { id: "moules", name: "Moules", aisle: "Poissonnerie", unit: "g", pack: 1000, packLabel: "filet de 1 kg", price: 4.9, macros: [85, 12, 3, 2], flags: ["shellfish"] },
+  { id: "poisson-pane", name: "Poisson pané", aisle: "Surgelés", unit: "g", pack: 400, price: 3.9, macros: [200, 13, 18, 8], flags: ["fish", "gluten"] },
+  { id: "surimi", name: "Surimi", aisle: "Crèmerie & frais", unit: "g", pack: 250, price: 2.3, macros: [110, 8, 15, 2], flags: ["fish", "egg"] },
+  { id: "petits-legumes-wok", name: "Légumes pour wok", aisle: "Surgelés", unit: "g", pack: 750, price: 2.6, macros: [35, 2, 5, 0.3] },
+  { id: "poelee-legumes", name: "Poêlée de légumes", aisle: "Surgelés", unit: "g", pack: 1000, price: 2.9, macros: [45, 2, 6, 1] },
+  { id: "frites-four", name: "Frites au four", aisle: "Surgelés", unit: "g", pack: 1000, price: 2.4, macros: [150, 2.5, 23, 5] },
+
+  // Crèmerie & frais
+  { id: "yaourt-grec", name: "Yaourt à la grecque", aisle: "Crèmerie & frais", unit: "g", pack: 500, price: 2.2, macros: [120, 6, 4, 9], flags: ["dairy"] },
+  { id: "chevre", name: "Bûche de chèvre", aisle: "Crèmerie & frais", unit: "g", pack: 180, price: 2.3, macros: [300, 18, 1, 25], flags: ["dairy"] },
+  { id: "comte", name: "Comté", aisle: "Crèmerie & frais", unit: "g", pack: 200, price: 3.6, macros: [410, 28, 0, 33], flags: ["dairy"] },
+  { id: "raclette-fromage", name: "Fromage à raclette", aisle: "Crèmerie & frais", unit: "g", pack: 400, price: 5.6, macros: [350, 23, 0, 28], flags: ["dairy"] },
+  { id: "ricotta", name: "Ricotta", aisle: "Crèmerie & frais", unit: "g", pack: 250, price: 2.2, macros: [150, 9, 3, 11], flags: ["dairy"] },
+  { id: "creme-liquide", name: "Crème liquide légère", aisle: "Crèmerie & frais", unit: "ml", pack: 200, price: 1.1, macros: [150, 2.5, 4, 15], flags: ["dairy"] },
+  { id: "tofu-fume", name: "Tofu fumé", aisle: "Crèmerie & frais", unit: "g", pack: 200, price: 2.4, macros: [160, 16, 2, 9] },
+  { id: "houmous", name: "Houmous", aisle: "Crèmerie & frais", unit: "g", pack: 200, price: 2.1, macros: [300, 7, 13, 24] },
+  { id: "gruyere", name: "Gruyère râpé", aisle: "Crèmerie & frais", unit: "g", pack: 200, price: 2.6, macros: [400, 29, 0, 32], flags: ["dairy"] },
+
+  // Épicerie salée & céréales
+  { id: "boulgour", name: "Boulgour", aisle: "Épicerie salée", unit: "g", pack: 500, price: 1.9, macros: [350, 12, 70, 1.5], flags: ["gluten"] },
+  { id: "polenta", name: "Polenta", aisle: "Épicerie salée", unit: "g", pack: 500, price: 1.6, macros: [360, 8, 77, 1.5] },
+  { id: "riz-complet", name: "Riz complet", aisle: "Épicerie salée", unit: "g", pack: 1000, price: 2.4, macros: [355, 7.5, 74, 2.5] },
+  { id: "spaghetti-complets", name: "Spaghetti complets", aisle: "Épicerie salée", unit: "g", pack: 500, price: 1.4, macros: [350, 13, 64, 2.5], flags: ["gluten"] },
+  { id: "vermicelles-riz", name: "Vermicelles de riz", aisle: "Épicerie salée", unit: "g", pack: 250, price: 1.6, macros: [360, 6, 80, 0.5] },
+  { id: "flageolets", name: "Flageolets (égouttés)", aisle: "Épicerie salée", unit: "g", pack: 265, packLabel: "boîte", price: 1.2, macros: [95, 6.5, 13, 0.6] },
+  { id: "lentilles-beluga", name: "Lentilles noires", aisle: "Épicerie salée", unit: "g", pack: 500, price: 2.9, macros: [345, 25, 50, 1.5] },
+  { id: "pois-casses", name: "Pois cassés", aisle: "Épicerie salée", unit: "g", pack: 500, price: 1.7, macros: [340, 22, 52, 1.5] },
+  { id: "olives", name: "Olives noires", aisle: "Épicerie salée", unit: "g", pack: 150, price: 1.9, macros: [250, 1.5, 3, 25] },
+  { id: "tomates-sechees", name: "Tomates séchées", aisle: "Épicerie salée", unit: "g", pack: 150, price: 2.9, macros: [210, 5, 20, 13] },
+  { id: "sauce-tomate", name: "Sauce tomate basilic", aisle: "Épicerie salée", unit: "g", pack: 400, packLabel: "bocal", price: 1.6, macros: [55, 1.5, 8, 1.5] },
+  { id: "curry-pate", name: "Pâte de curry", aisle: "Épicerie salée", unit: "g", pack: 110, packLabel: "pot", price: 2.5, macros: [150, 3, 15, 8], pantry: true },
+  { id: "cacahuetes", name: "Cacahuètes grillées", aisle: "Épicerie salée", unit: "g", pack: 200, price: 1.9, macros: [600, 26, 12, 49], flags: ["peanut"] },
+  { id: "noix", name: "Cerneaux de noix", aisle: "Épicerie sucrée", unit: "g", pack: 125, price: 2.9, macros: [690, 15, 7, 65], flags: ["nuts"] },
+  { id: "graines-courge", name: "Graines de courge", aisle: "Épicerie salée", unit: "g", pack: 150, price: 2.3, macros: [580, 30, 10, 47] },
+  { id: "tortillas-chips", name: "Chips de maïs", aisle: "Épicerie salée", unit: "g", pack: 200, price: 1.9, macros: [490, 7, 60, 24] },
+  { id: "pain-baguette", name: "Baguette", aisle: "Boulangerie", unit: "g", pack: 250, packLabel: "pièce", price: 1.0, macros: [270, 9, 55, 1.5], flags: ["gluten"] },
+  { id: "pain-mie-complet", name: "Pain de mie complet", aisle: "Boulangerie", unit: "g", pack: 500, price: 1.9, macros: [250, 10, 41, 4], flags: ["gluten"] },
+  { id: "brioche", name: "Brioche tranchée", aisle: "Boulangerie", unit: "g", pack: 500, price: 2.3, macros: [360, 8, 52, 13], flags: ["gluten", "dairy", "egg"] },
+
+  // Épicerie sucrée & petit-déjeuner
+  { id: "granola", name: "Granola", aisle: "Épicerie sucrée", unit: "g", pack: 500, price: 3.4, macros: [450, 9, 63, 17], flags: ["gluten"] },
+  { id: "cereales", name: "Céréales complètes", aisle: "Épicerie sucrée", unit: "g", pack: 375, price: 2.6, macros: [370, 10, 70, 3], flags: ["gluten"] },
+  { id: "pate-a-tartiner", name: "Pâte à tartiner", aisle: "Épicerie sucrée", unit: "g", pack: 400, price: 3.2, macros: [540, 6, 57, 31], flags: ["dairy", "nuts"] },
+  { id: "sirop-erable", name: "Sirop d'érable", aisle: "Épicerie sucrée", unit: "ml", pack: 250, price: 4.5, macros: [260, 0, 67, 0], pantry: true },
+  { id: "compote", name: "Compote de pommes", aisle: "Épicerie sucrée", unit: "g", pack: 400, packLabel: "4 gourdes", price: 1.9, macros: [70, 0.3, 16, 0.2] },
+  { id: "raisins-secs", name: "Raisins secs", aisle: "Épicerie sucrée", unit: "g", pack: 250, price: 2.1, macros: [300, 3, 70, 0.5] },
+  { id: "levure", name: "Levure chimique", aisle: "Placard", unit: "g", pack: 66, packLabel: "6 sachets", price: 0.9, macros: [100, 0, 25, 0], pantry: true },
+  { id: "cacao", name: "Cacao en poudre", aisle: "Épicerie sucrée", unit: "g", pack: 250, price: 3.2, macros: [380, 20, 15, 21], pantry: true },
+
+  // Fruits & légumes
+  { id: "kiwi", name: "Kiwis", aisle: "Fruits & légumes", unit: "pc", pack: 6, packLabel: "barquette de 6", price: 2.2, macros: [45, 0.9, 10, 0.5] },
+  { id: "orange", name: "Oranges", aisle: "Fruits & légumes", unit: "pc", pack: 6, packLabel: "filet de 6", price: 2.6, macros: [70, 1.3, 15, 0.2] },
+  { id: "poire", name: "Poires", aisle: "Fruits & légumes", unit: "pc", pack: 6, packLabel: "barquette de 6", price: 2.8, macros: [90, 0.6, 22, 0.2] },
+  { id: "mangue", name: "Mangue", aisle: "Fruits & légumes", unit: "pc", pack: 1, packLabel: "pièce", price: 1.9, macros: [200, 2.5, 45, 1] },
+  { id: "ananas", name: "Ananas", aisle: "Fruits & légumes", unit: "g", pack: 1000, packLabel: "pièce", price: 2.5, macros: [50, 0.5, 12, 0.1] },
+  { id: "potimarron", name: "Potimarron", aisle: "Fruits & légumes", unit: "g", pack: 1200, packLabel: "pièce", price: 2.9, macros: [40, 1.2, 8, 0.2] },
+  { id: "butternut", name: "Courge butternut", aisle: "Fruits & légumes", unit: "g", pack: 1200, packLabel: "pièce", price: 2.6, macros: [45, 1, 10, 0.1] },
+  { id: "chou", name: "Chou vert", aisle: "Fruits & légumes", unit: "g", pack: 1000, packLabel: "pièce", price: 1.9, macros: [25, 1.5, 4, 0.2] },
+  { id: "chou-rouge", name: "Chou rouge", aisle: "Fruits & légumes", unit: "g", pack: 1000, packLabel: "pièce", price: 1.9, macros: [30, 1.4, 6, 0.2] },
+  { id: "navet", name: "Navets", aisle: "Fruits & légumes", unit: "g", pack: 1000, price: 2.2, macros: [25, 1, 5, 0.1] },
+  { id: "celeri", name: "Céleri branche", aisle: "Fruits & légumes", unit: "g", pack: 500, packLabel: "pied", price: 1.6, macros: [15, 0.7, 3, 0.2] },
+  { id: "betterave", name: "Betteraves cuites", aisle: "Fruits & légumes", unit: "g", pack: 500, price: 1.4, macros: [40, 1.5, 8, 0.1] },
+  { id: "radis", name: "Radis", aisle: "Fruits & légumes", unit: "g", pack: 250, packLabel: "botte", price: 1.2, macros: [15, 0.8, 3, 0.1] },
+  { id: "asperges", name: "Asperges vertes", aisle: "Fruits & légumes", unit: "g", pack: 500, packLabel: "botte", price: 4.5, macros: [25, 2.5, 3, 0.2] },
+  { id: "haricots-plats", name: "Haricots plats", aisle: "Surgelés", unit: "g", pack: 1000, price: 2.4, macros: [30, 1.8, 6, 0.2] },
+  { id: "petit-pois-carottes", name: "Petits pois carottes", aisle: "Épicerie salée", unit: "g", pack: 530, packLabel: "boîte", price: 1.5, macros: [60, 3.5, 9, 0.5] },
+  { id: "echalote", name: "Échalotes", aisle: "Fruits & légumes", unit: "g", pack: 250, packLabel: "filet", price: 1.6, macros: [70, 2.5, 15, 0.1] },
+  { id: "gingembre", name: "Gingembre frais", aisle: "Fruits & légumes", unit: "g", pack: 100, price: 1.2, macros: [80, 1.8, 18, 0.8], pantry: true },
+  { id: "persil", name: "Herbes fraîches (persil, coriandre…)", aisle: "Fruits & légumes", unit: "g", pack: 30, packLabel: "botte", price: 0.99, macros: [35, 3, 6, 0.8] },
+  { id: "citron-vert", name: "Citrons verts", aisle: "Fruits & légumes", unit: "pc", pack: 4, packLabel: "filet de 4", price: 1.6, macros: [20, 0.5, 6, 0.1] },
+  { id: "pousses-epinards", name: "Pousses d'épinards", aisle: "Fruits & légumes", unit: "g", pack: 150, packLabel: "sachet", price: 1.8, macros: [23, 2.9, 3.6, 0.4] },
+  { id: "tomates-cerises", name: "Tomates cerises", aisle: "Fruits & légumes", unit: "g", pack: 250, packLabel: "barquette", price: 1.9, macros: [20, 0.9, 3.5, 0.2] },
+  { id: "mais-epi", name: "Maïs doux en épi", aisle: "Fruits & légumes", unit: "pc", pack: 2, packLabel: "barquette de 2", price: 1.8, macros: [130, 4, 25, 1.5] },
+  { id: "sauce-pesto-rouge", name: "Pesto rouge", aisle: "Épicerie salée", unit: "g", pack: 190, packLabel: "pot", price: 2.6, macros: [340, 5, 8, 32], flags: ["dairy", "nuts"] },
+  { id: "vinaigre", name: "Vinaigre balsamique", aisle: "Placard", unit: "ml", pack: 500, price: 2.2, macros: [100, 0.5, 17, 0], pantry: true },
+  { id: "sauce-nuoc-mam", name: "Sauce nuoc-mâm", aisle: "Placard", unit: "ml", pack: 200, price: 2.1, macros: [35, 5, 4, 0], flags: ["fish"], pantry: true },
+];

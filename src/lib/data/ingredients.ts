@@ -1,4 +1,5 @@
 import type { Ingredient } from "../types";
+import { MORE_INGREDIENTS } from "./ingredients-more";
 
 /**
  * Catalogue d'ingrédients. Prix de référence = prix moyen constaté en hypermarché
@@ -122,7 +123,7 @@ const list: Ingredient[] = [
   { id: "bouillon", name: "Bouillon de légumes", aisle: "Placard", unit: "pc", pack: 10, packLabel: "boîte de 10", price: 1.2, macros: [10, 0.5, 1, 0.5], pantry: true },
 ];
 
-export const INGREDIENTS: Record<string, Ingredient> = Object.fromEntries(list.map((i) => [i.id, i]));
+export const INGREDIENTS: Record<string, Ingredient> = Object.fromEntries([...list, ...MORE_INGREDIENTS].map((i) => [i.id, i]));
 
 export function ingredient(id: string): Ingredient {
   const found = INGREDIENTS[id];
