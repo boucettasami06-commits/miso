@@ -29,9 +29,21 @@ const PERKS = [
 /** Prix ramené à la semaine : 9,99 € × 12 / 52 ≈ 2,30 €. */
 const WEEKLY = 2.3;
 
-export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { onClose: () => void; savings?: number; currency?: "EUR" | "CHF" }) {
+export default function Paywall({
+  onClose,
+  savings = 0,
+  totalSavings = savings,
+  currency = "EUR",
+}: {
+  onClose: () => void;
+  /** économie de la semaine due au choix de l'enseigne */
+  savings?: number;
+  /** économie totale estimée (enseigne, gaspillage, achats imprévus, repas à emporter) */
+  totalSavings?: number;
+  currency?: "EUR" | "CHF";
+}) {
   /** Gain annuel net : économie hebdomadaire moins le prix de l'abonnement ramené à la semaine. */
-  const yearlyGain = Math.round((savings - WEEKLY) * 52);
+  const yearlyGain = Math.round((totalSavings - WEEKLY) * 52);
   const [plan, setPlan] = useState<"yearly" | "monthly">("yearly");
   const auth = useAuth();
 
@@ -94,7 +106,7 @@ export default function Paywall({ onClose, savings = 0, currency = "EUR" }: { on
           </p>
           {yearlyGain >= 20 && (
             <p className="mt-3 border-t border-cream/15 pt-3 text-sm">
-              Soit environ <b className="font-display text-xl text-tomato">{money(yearlyGain, currency, 0)} gagnés par an</b>, abonnement déduit.
+              Soit environ <b className="font-display text-xl text-tomato">{money(yearlyGain, currency, 0)} gagnés par an</b>, abonnement déduit (courses, gaspillage, achats imprévus et repas à emporter compris).
             </p>
           )}
         </div>

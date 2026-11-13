@@ -172,7 +172,7 @@ export default function Wizard() {
     go(1);
   };
 
-  if (result) return <SavingsScreen plan={result} onContinue={() => router.push("/ma-semaine")} />;
+  if (result) return <SavingsScreen plan={result} profile={p} onContinue={() => router.push("/ma-semaine")} />;
   if (loading) return <Cooking />;
   if (compare === "showing")
     return (

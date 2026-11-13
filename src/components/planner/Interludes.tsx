@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { money } from "@/lib/format";
-import type { WeekPlan } from "@/lib/types";
+import { ASSUMPTIONS, estimateSavings } from "@/lib/savings";
+import type { Profile, WeekPlan } from "@/lib/types";
 
 const ROWS = [
   { before: "😩", beforeText: "« On mange quoi ce soir ? »", after: "📅", afterText: "Tes 7 jours déjà planifiés" },
@@ -60,12 +61,9 @@ function Row({ row, delay }: { row: (typeof ROWS)[number]; delay: number }) {
  * Fin du questionnaire : l'économie annuelle estimée.
  * Base de comparaison : le même panier au prix moyen des enseignes du pays, sans optimisation.
  */
-export function SavingsScreen({ plan, onContinue }: { plan: WeekPlan; onContinue: () => void }) {
+export function SavingsScreen({ plan, profile, onContinue }: { plan: WeekPlan; profile: Pick<Profile, "adults" | "children">; onContinue: () => void }) {
   const currency = plan.currency ?? "EUR";
-  const others = plan.quotes.filter((q) => q.storeId !== plan.storeId);
-  const before = others.length ? others.reduce((a, q) => a + q.total, 0) / others.length : plan.total;
-  const weekly = Math.max(0, before - plan.total);
-  const yearly = Math.round(weekly * 52);
+  const { lines, weekly, yearly, before } = estimateSavings(plan, profile);
   const hasSavings = weekly >= 1;
 
   return (
@@ -107,6 +105,17 @@ export function SavingsScreen({ plan, onContinue }: { plan: WeekPlan; onContinue
               </div>
             </motion.div>
             <p className="mt-2 text-sm font-semibold text-ink-soft">par semaine</p>
+
+            <motion.ul initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1 }} className="mt-6 divide-y divide-line rounded-2xl border border-line bg-white/80 px-4 text-left text-sm">
+              {lines
+                .filter((l) => l.weekly >= 0.5)
+                .map((l) => (
+                  <li key={l.label} className="flex items-center justify-between gap-3 py-2.5">
+                    <span>{l.label}</span>
+                    <b className="shrink-0 font-display text-base text-tomato">+{money(l.weekly * 52, currency, 0)}/an</b>
+                  </li>
+                ))}
+            </motion.ul>
           </>
         ) : (
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-8 font-display text-3xl font-bold">
@@ -114,11 +123,6 @@ export function SavingsScreen({ plan, onContinue }: { plan: WeekPlan; onContinue
           </motion.p>
         )}
 
-        <motion.ul initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="mx-auto mt-8 max-w-xs space-y-2 text-left text-sm">
-          <li className="flex gap-2"><span className="text-tomato">●</span> Tes repas de la semaine décidés en 2 minutes</li>
-          <li className="flex gap-2"><span className="text-tomato">●</span> Une seule liste de courses, rangée par rayon</li>
-          <li className="flex gap-2"><span className="text-tomato">●</span> Les ingrédients réutilisés d&apos;un repas à l&apos;autre</li>
-        </motion.ul>
 
         <motion.button
           initial={{ opacity: 0, y: 16 }}
@@ -131,7 +135,9 @@ export function SavingsScreen({ plan, onContinue }: { plan: WeekPlan; onContinue
         </motion.button>
         {hasSavings && (
           <p className="mt-4 text-xs text-ink-soft">
-            Estimation : ton panier optimisé comparé au même panier au prix moyen des autres enseignes, sur 52 semaines.
+            Estimation sur 52 semaines, à partir de ta semaine et de moyennes : même panier au prix moyen des autres enseignes,{" "}
+            {money(ASSUMPTIONS.wastePerPerson, currency, 2)} de produits jetés par personne et par semaine, {Math.round(ASSUMPTIONS.impulseShare * 100)} % d&apos;achats
+            imprévus, et un repas à emporter ({money(ASSUMPTIONS.takeawayMeal, currency, 0)}) remplacé chaque semaine par adulte.
           </p>
         )}
       </div>

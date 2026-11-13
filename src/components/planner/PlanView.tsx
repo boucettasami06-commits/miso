@@ -11,6 +11,7 @@ import { recipeNutrition } from "@/lib/engine/nutrition";
 import { quotes, basketFromMeals, shoppingList } from "@/lib/engine/pricing";
 import { RECIPE_BY_SLUG, photoRank } from "@/lib/data/recipes";
 import { event } from "@/lib/funnel";
+import { estimateSavings } from "@/lib/savings";
 
 import { INGREDIENTS } from "@/lib/data/ingredients";
 import { STORE_BY_ID } from "@/lib/data/stores";
@@ -117,6 +118,7 @@ export default function PlanView() {
   // Économie de la semaine par rapport au prix moyen des autres enseignes du pays (argument du paiement)
   const others = plan.quotes.filter((q) => q.storeId !== plan.storeId);
   const savings = others.length ? others.reduce((a, q) => a + q.total, 0) / others.length - plan.total : 0;
+  const totalSavings = estimateSavings(plan, profile).weekly;
   // En aperçu, un seul plat est dévoilé : celui qui a la plus belle photo
   const first = revealed(plan.meals);
   const revealKey = first ? `${first.day}-${first.meal}` : "";
@@ -250,7 +252,7 @@ export default function PlanView() {
           </div>
         </div>
       )}
-      <AnimatePresence>{paywall && !mustSignup && <Paywall savings={savings} currency={plan.currency} onClose={() => setPaywall(false)} />}</AnimatePresence>
+      <AnimatePresence>{paywall && !mustSignup && <Paywall savings={savings} totalSavings={totalSavings} currency={plan.currency} onClose={() => setPaywall(false)} />}</AnimatePresence>
       <AnimatePresence>
         {mustSignup && (
           <AuthModal
