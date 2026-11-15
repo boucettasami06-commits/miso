@@ -114,7 +114,7 @@ export interface RelanceInfo {
 }
 
 /**
- * Séquence de relance des inscrits non abonnés : 1 = J+1, 2 = J+3, 3 = J+7 (dernier).
+ * Séquence de relance des inscrits non abonnés, un e-mail toutes les 72 h : 1, 2, puis 3 (dernier).
  * Chaque lien porte utm_campaign pour mesurer quel e-mail convertit.
  */
 export function relanceEmail(step: 1 | 2 | 3, to: string, firstName: string, info: RelanceInfo) {

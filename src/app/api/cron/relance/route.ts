@@ -12,15 +12,12 @@ export const maxDuration = 60;
 
 /**
  * Agent de relance (tâche planifiée quotidienne, vercel.json) : chaque inscrit non abonné reçoit
- * au plus 3 e-mails : J+1, J+3 puis J+7 après l'inscription, jamais deux le même jour.
+ * au plus 3 e-mails, espacés de 72 heures : 72 h après l'inscription, puis 72 h après chaque relance.
  * Avant chaque envoi, on vérifie chez Whop qu'il n'a pas déjà payé ; il peut se désinscrire à tout moment.
  * ?dry=1 : liste ce qui serait envoyé, sans rien envoyer.
  */
-const STEPS: { step: 1 | 2 | 3; afterHours: number }[] = [
-  { step: 1, afterHours: 20 },
-  { step: 2, afterHours: 3 * 24 },
-  { step: 3, afterHours: 7 * 24 },
-];
+/** 72 h entre deux e-mails (marge d'1 h : la tâche quotidienne ne tombe pas toujours à la même seconde). */
+const GAP = "71 hours";
 
 type Row = { id: string; email: string; first_name: string; created_at: string; relance_step: number; profile: Profile | null; plan: WeekPlan | null };
 
@@ -44,8 +41,8 @@ export async function GET(req: Request) {
     WHERE u.relance_step < 3
       AND u.unsubscribed_at IS NULL
       AND u.whop_membership IS NULL AND u.sub_active = false
-      AND u.created_at < now() - interval '20 hours'
-      AND (u.relance_at IS NULL OR u.relance_at < now() - interval '40 hours')
+      AND u.created_at < now() - ${GAP}::interval
+      AND (u.relance_at IS NULL OR u.relance_at < now() - ${GAP}::interval)
     ORDER BY u.created_at LIMIT 150`) as Row[];
 
   // Un seul appel Whop pour toute la relance : on n'écrit jamais à quelqu'un qui a déjà payé.
@@ -62,10 +59,8 @@ export async function GET(req: Request) {
       report.push({ email, step: 0, status: "déjà abonné" });
       continue;
     }
-    const age = (Date.now() - new Date(u.created_at).getTime()) / 3600_000;
-    // Prochain e-mail dû : on n'envoie qu'un e-mail par passage, le suivant le prochain jour.
-    const next = STEPS.find((s) => s.step > u.relance_step && age >= s.afterHours);
-    if (!next) continue;
+    // Prochain e-mail de la séquence (un seul par passage, le suivant 72 h plus tard)
+    const next = { step: (u.relance_step + 1) as 1 | 2 | 3 };
 
     let weekTotal: string | undefined;
     let yearly: string | undefined;
