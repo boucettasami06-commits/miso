@@ -31,6 +31,11 @@ export function ensureSchema() {
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until timestamptz`;
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS paywall_seen_at timestamptz`;
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS reminder_sent_at timestamptz`;
+    // Séquence de relance des inscrits non abonnés (voir api/cron/relance)
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS relance_step int NOT NULL DEFAULT 0`;
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS relance_at timestamptz`;
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS unsubscribed_at timestamptz`;
+    await q`UPDATE users SET relance_step = 1, relance_at = reminder_sent_at WHERE reminder_sent_at IS NOT NULL AND relance_step = 0`;
     await q`CREATE TABLE IF NOT EXISTS password_resets (
       token_hash text PRIMARY KEY,
       user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,

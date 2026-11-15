@@ -25,7 +25,7 @@ function mailer() {
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 /** Gabarit commun : sobre, lisible sur mobile, aux couleurs de la marque. */
-function layout(title: string, body: string, cta?: { label: string; url: string }) {
+function layout(title: string, body: string, cta?: { label: string; url: string }, unsubscribe?: string) {
   return `<!doctype html><html lang="fr"><body style="margin:0;background:#fafaf5;font-family:Arial,Helvetica,sans-serif;color:#10231c">
 <table width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px"><tr><td align="center">
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:20px;padding:32px">
@@ -35,11 +35,11 @@ function layout(title: string, body: string, cta?: { label: string; url: string 
 <div style="font-size:16px;line-height:1.6;color:#4b5b53">${body}</div>
 ${cta ? `<p style="margin:28px 0 8px"><a href="${cta.url}" style="display:inline-block;background:#fa654c;color:#ffffff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:999px">${esc(cta.label)}</a></p>` : ""}
 </td></tr></table>
-<p style="font-size:12px;color:#8a958f;margin-top:16px">Budgemy · ${esc(SITE.url.replace(/^https?:\/\//, ""))}</p>
+<p style="font-size:12px;color:#8a958f;margin-top:16px">Budgemy · ${esc(SITE.url.replace(/^https?:\/\//, ""))}${unsubscribe ? ` · <a href="${unsubscribe}" style="color:#8a958f">Ne plus recevoir ces rappels</a>` : ""}</p>
 </td></tr></table></body></html>`;
 }
 
-async function send(to: string, subject: string, html: string, text: string) {
+async function send(to: string, subject: string, html: string, text: string, unsubscribe?: string) {
   if (!mailReady()) return false;
   await mailer().sendMail({
     from: process.env.MAIL_FROM ?? `Budgemy <${process.env.SMTP_USER}>`,
@@ -47,6 +47,7 @@ async function send(to: string, subject: string, html: string, text: string) {
     subject,
     html,
     text,
+    ...(unsubscribe ? { list: { unsubscribe: { url: unsubscribe, comment: "Ne plus recevoir les rappels" } } } : {}),
   });
   return true;
 }
@@ -102,4 +103,57 @@ export function sendPaywallReminder(to: string, firstName: string) {
     ),
     `${firstName}, ta semaine Budgemy est prête. Débloque ta liste de courses et tes recettes : ${url}`,
   );
+}
+
+export interface RelanceInfo {
+  /** coût de sa semaine générée, déjà formaté (ex. « 62,40 € »), si elle existe */
+  weekTotal?: string;
+  /** économie annuelle estimée, déjà formatée (ex. « 1 240 € »), si elle existe */
+  yearly?: string;
+  unsubscribe: string;
+}
+
+/**
+ * Séquence de relance des inscrits non abonnés : 1 = J+1, 2 = J+3, 3 = J+7 (dernier).
+ * Chaque lien porte utm_campaign pour mesurer quel e-mail convertit.
+ */
+export function relanceEmail(step: 1 | 2 | 3, to: string, firstName: string, info: RelanceInfo) {
+  const url = `${SITE.url}/ma-semaine?utm_source=relance&utm_medium=email&utm_campaign=relance-${step}`;
+  const perks = `<ul style="padding-left:20px;margin:12px 0"><li>toutes tes recettes détaillées, du petit-déj au dîner ;</li><li>ta liste de courses complète, rangée par rayon, au meilleur prix ;</li><li>une nouvelle semaine quand tu veux, et un plat remplacé en un clic.</li></ul>`;
+  const payNote = `<p style="font-size:14px">Pense à payer avec cette adresse e-mail (${esc(to)}) pour que ta semaine se débloque automatiquement.</p>`;
+
+  const mails = {
+    1: {
+      subject: `${firstName}, ta semaine de repas t'attend 🛒`,
+      title: `Ta semaine est prête, ${firstName} !`,
+      body: `<p>${info.weekTotal ? `Ta semaine de repas est calculée : <strong>${info.weekTotal}</strong> de courses pour 7 jours, dans ton budget et dans tes magasins.` : "Ton compte est prêt : en 2 minutes, Budgemy te prépare 7 jours de repas et ta liste de courses dans ton budget."}</p><p>Il ne manque plus qu'une étape pour débloquer :</p>${perks}<p>Sans engagement, annulable en 1 clic.</p>${payNote}`,
+      cta: info.weekTotal ? "Débloquer ma semaine" : "Créer ma semaine",
+      text: `${firstName}, ta semaine Budgemy t'attend. Débloque tes recettes et ta liste de courses : ${url}`,
+    },
+    2: {
+      subject: info.yearly ? `${firstName}, ${info.yearly} d'économies par an 💸` : `${firstName}, combien tu pourrais économiser sur tes courses 💸`,
+      title: info.yearly ? `${info.yearly} d'économies par an, ${firstName}` : `Moins de courses gaspillées, ${firstName}`,
+      body: `<p>${info.yearly ? `D'après ta semaine, Budgemy peut te faire économiser environ <strong>${info.yearly} par an</strong>` : "Avec un menu et une liste précise, on économise vite plusieurs dizaines d'euros par mois"} : courses au meilleur prix, moins de produits jetés, moins d'achats imprévus et moins de plats à emporter.</p><p>L'abonnement revient à environ <strong>2,30 € par semaine</strong> : il est remboursé dès tes premières courses.</p>${payNote}`,
+      cta: "Voir mes économies",
+      text: `${firstName}, Budgemy peut te faire économiser${info.yearly ? ` environ ${info.yearly} par an` : ""} sur tes courses. Pour environ 2,30 € par semaine : ${url}`,
+    },
+    3: {
+      subject: `${firstName}, dernier rappel pour ta semaine Budgemy`,
+      title: `On garde ta semaine encore un peu, ${firstName}`,
+      body: `<p>Fini le « on mange quoi ce soir ? » : tes 7 jours de repas et ta liste de courses sont prêts${info.weekTotal ? ` (<strong>${info.weekTotal}</strong> pour la semaine)` : ""}.</p>${perks}<p><strong>9,99 € par mois, soit environ 2,30 € par semaine.</strong> Sans engagement : tu annules en 1 clic quand tu veux.</p>${payNote}<p style="font-size:13px;color:#8a958f">C'est le dernier rappel que tu recevras.</p>`,
+      cta: "Débloquer ma semaine",
+      text: `${firstName}, dernier rappel : ta semaine Budgemy est prête. 9,99 €/mois, sans engagement : ${url}`,
+    },
+  }[step];
+
+  return {
+    subject: mails.subject,
+    html: layout(mails.title, mails.body, { label: mails.cta, url }, info.unsubscribe),
+    text: `${mails.text}\n\nNe plus recevoir ces rappels : ${info.unsubscribe}`,
+  };
+}
+
+export function sendRelance(step: 1 | 2 | 3, to: string, firstName: string, info: RelanceInfo) {
+  const m = relanceEmail(step, to, firstName, info);
+  return send(to, m.subject, m.html, m.text, info.unsubscribe);
 }

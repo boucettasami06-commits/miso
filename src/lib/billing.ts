@@ -103,6 +103,33 @@ export async function findMembershipByEmail(email: string): Promise<string | nul
   return null;
 }
 
+/** E-mails de tous les abonnements Budgemy valides chez Whop (une seule lecture pour toute une relance). */
+export async function paidEmails(): Promise<Set<string> | null> {
+  const key = process.env.WHOP_API_KEY;
+  const products = productIds();
+  if (!key || !products.length) return null;
+  const out = new Set<string>();
+  for (let page = 1; page <= 40; page++) {
+    const res = await fetch(`https://api.whop.com/api/v2/memberships?valid=true&per=50&page=${page}`, {
+      headers: { Authorization: `Bearer ${key}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const { data, pagination } = (await res.json()) as {
+      data?: { email?: string | null; product?: string | null }[];
+      pagination?: { total_page?: number };
+    };
+    for (const m of data ?? []) if (m.email && (!m.product || products.includes(m.product))) out.add(m.email.toLowerCase());
+    if (!pagination?.total_page || page >= pagination.total_page) break;
+  }
+  return out;
+}
+
+/** Lien de désinscription des relances, signé pour qu'on ne puisse pas désinscrire quelqu'un d'autre. */
+export function unsubscribeSig(userId: string): string {
+  return createHmac("sha256", secret() || "budgemy").update(`unsub:${userId}`).digest("base64url").slice(0, 24);
+}
+
 export function token(membership: string): SubToken {
   return { membership, exp: Math.floor(Date.now() / 1000) + RECHECK_SECONDS };
 }
