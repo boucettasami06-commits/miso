@@ -18,7 +18,7 @@ export default function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/25 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur"
+            className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/35 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur"
           >
             <Sparkles size={14} className="text-tomato" /> Ta semaine prête en 2 minutes
           </motion.p>
@@ -27,7 +27,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-6 font-display text-[clamp(2.9rem,5.4vw,5rem)] font-extrabold leading-[0.95] text-balance text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.35)]"
+            className="mt-6 font-display text-[clamp(2.9rem,5.4vw,5rem)] font-extrabold leading-[0.95] text-balance text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.45),0_4px_28px_rgba(0,0,0,0.55)]"
           >
             Mange mieux.
             <br />
@@ -38,7 +38,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.25 }}
-            className="mt-6 max-w-lg text-lg leading-relaxed text-white/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.4)] sm:text-xl"
+            className="mt-6 max-w-lg text-lg leading-relaxed text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,0.6),0_2px_16px_rgba(0,0,0,0.6)] sm:text-xl"
           >
             Tes repas de la semaine et ta liste de courses, calculés pour ton budget. <b className="text-white">En 2 minutes.</b>
           </motion.p>
@@ -58,7 +58,7 @@ export default function Hero() {
             </Link>
             <Link
               href="/menus"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/15 px-7 py-4 text-base font-semibold text-white backdrop-blur transition hover:bg-white/25"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/50 bg-black/25 px-7 py-4 text-base font-semibold text-white backdrop-blur transition hover:bg-white/25"
             >
               Voir un exemple
             </Link>
@@ -68,7 +68,7 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]"
+            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.7),0_2px_12px_rgba(0,0,0,0.6)]"
           >
             {[`🇫🇷 🇧🇪 🇨🇭 🇩🇪 ${STORES.length} enseignes`, `${RECIPES.length} recettes faciles`, "Adapté à ton matériel"].map((t) => (
               <li key={t} className="flex items-center gap-2">
