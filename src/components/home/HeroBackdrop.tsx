@@ -45,9 +45,9 @@ export default function HeroBackdrop() {
           <Image src={unsplash(scene.id, 2400)} alt="" fill priority={i === 0} sizes="100vw" quality={70} className="object-cover" />
         </motion.div>
       </AnimatePresence>
-      {/* Voile crème : le texte reste parfaitement lisible, la photo donne la vie en arrière-plan */}
-      <div className="absolute inset-0 bg-cream/80 lg:bg-transparent lg:bg-gradient-to-r lg:from-cream lg:via-cream/85 lg:to-cream/45" />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-cream to-transparent" />
+      {/* Photo nette, sans voile : une ombre légère derrière le texte suffit à le garder lisible */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/35 lg:bg-gradient-to-r lg:from-black/55 lg:via-black/20 lg:to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-cream to-transparent" />
     </div>
   );
 }

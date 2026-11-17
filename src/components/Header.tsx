@@ -31,6 +31,8 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   useEffect(() => setOpen(false), [pathname]);
+  /** En haut de l'accueil, le menu est posé sur la photo : logo et textes en blanc. */
+  const onPhoto = pathname === "/" && !scrolled && !open;
 
   return (
     <header
@@ -40,11 +42,11 @@ export default function Header() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 md:h-20">
         <Link href="/" aria-label="Budgemy, accueil">
-          <Logo />
+          <Logo light={onPhoto} />
         </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium lg:flex" aria-label="Navigation principale">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className="relative text-ink-soft transition-colors hover:text-ink">
+            <Link key={n.href} href={n.href} className={`relative transition-colors ${onPhoto ? "text-white/85 hover:text-white" : "text-ink-soft hover:text-ink"}`}>
               {n.label}
             </Link>
           ))}
@@ -53,13 +55,13 @@ export default function Header() {
           {auth.enabled && !auth.loading && (
             auth.user ? (
               <div className="hidden items-center gap-2 text-sm md:flex">
-                <span className="font-semibold">Bonjour {auth.user.firstName}</span>
-                <button onClick={() => logout()} className="rounded-full px-3 py-2 text-ink-soft transition hover:text-ink">
+                <span className={`font-semibold ${onPhoto ? "text-white" : ""}`}>Bonjour {auth.user.firstName}</span>
+                <button onClick={() => logout()} className={`rounded-full px-3 py-2 transition ${onPhoto ? "text-white/85 hover:text-white" : "text-ink-soft hover:text-ink"}`}>
                   Déconnexion
                 </button>
               </div>
             ) : (
-              <button data-no-gate onClick={() => setLogin(true)} className="hidden rounded-full px-4 py-2.5 text-sm font-semibold text-ink-soft transition hover:text-ink md:inline-flex">
+              <button data-no-gate onClick={() => setLogin(true)} className={`hidden rounded-full px-4 py-2.5 text-sm font-semibold transition md:inline-flex ${onPhoto ? "text-white/85 hover:text-white" : "text-ink-soft hover:text-ink"}`}>
                 Connexion
               </button>
             )
@@ -72,7 +74,7 @@ export default function Header() {
           </Link>
           <button
             data-no-gate
-            className="grid h-10 w-10 place-items-center rounded-full border border-line lg:hidden"
+            className={`grid h-10 w-10 place-items-center rounded-full border lg:hidden ${onPhoto ? "border-white/50 text-white" : "border-line"}`}
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}

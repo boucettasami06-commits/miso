@@ -12,15 +12,13 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden pt-28 pb-16 md:pt-36 md:pb-24">
       <HeroBackdrop />
-      <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-saffron/25 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -left-40 top-1/2 h-[28rem] w-[28rem] rounded-full bg-sage/25 blur-3xl" />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-[0.95fr_1.15fr]">
         <div>
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-white/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink-soft backdrop-blur"
+            className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-black/25 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur"
           >
             <Sparkles size={14} className="text-tomato" /> Ta semaine prête en 2 minutes
           </motion.p>
@@ -29,7 +27,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-6 font-display text-[clamp(2.9rem,5.4vw,5rem)] font-extrabold leading-[0.95] text-balance"
+            className="mt-6 font-display text-[clamp(2.9rem,5.4vw,5rem)] font-extrabold leading-[0.95] text-balance text-white [text-shadow:0_2px_24px_rgba(0,0,0,0.35)]"
           >
             Mange mieux.
             <br />
@@ -40,9 +38,9 @@ export default function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.25 }}
-            className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft sm:text-xl"
+            className="mt-6 max-w-lg text-lg leading-relaxed text-white/90 [text-shadow:0_1px_12px_rgba(0,0,0,0.4)] sm:text-xl"
           >
-            Tes repas de la semaine et ta liste de courses, calculés pour ton budget. <b className="text-ink">En 2 minutes.</b>
+            Tes repas de la semaine et ta liste de courses, calculés pour ton budget. <b className="text-white">En 2 minutes.</b>
           </motion.p>
 
           <motion.div
@@ -60,7 +58,7 @@ export default function Hero() {
             </Link>
             <Link
               href="/menus"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-ink/15 bg-white/50 px-7 py-4 text-base font-semibold backdrop-blur transition hover:border-ink"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/15 px-7 py-4 text-base font-semibold text-white backdrop-blur transition hover:bg-white/25"
             >
               Voir un exemple
             </Link>
@@ -70,11 +68,11 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft"
+            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.5)]"
           >
             {[`🇫🇷 🇧🇪 🇨🇭 🇩🇪 ${STORES.length} enseignes`, `${RECIPES.length} recettes faciles`, "Adapté à ton matériel"].map((t) => (
               <li key={t} className="flex items-center gap-2">
-                <Check size={16} className="text-sage" /> {t}
+                <Check size={16} className="text-tomato" /> {t}
               </li>
             ))}
           </motion.ul>
