@@ -1,6 +1,7 @@
 import type { Recipe } from "../types";
 import { EXTRA, type RawRecipe } from "./recipes-extra";
 import MORE from "./recipes-more.json";
+import AI_PHOTOS from "./ai-photos.json";
 import PHOTOS from "./photos.json";
 
 /** Identifiants de photos Unsplash (licence libre). Servies en haute définition via next/image. */
@@ -923,16 +924,20 @@ const ILLUSTRATION_MATCHES = new Set([
 export const RECIPES: Recipe[] = [...BASE, ...FROM_EXTRA].map((r) => {
   const photo = (PHOTOS as Record<string, Photo>)[r.slug];
   if (photo) return { ...r, image: photo.src, credit: { author: photo.author, url: photo.url, license: photo.license, source: photo.source ?? "Pexels" } };
-  return ILLUSTRATION_MATCHES.has(r.slug) ? r : { ...r, image: "" };
+  if (ILLUSTRATION_MATCHES.has(r.slug) && r.image) return r;
+  // Sinon : illustration générée par IA (scripts/gen-photos.mts), ou vignette si elle n'existe pas encore
+  return { ...r, image: (AI_PHOTOS as Record<string, string>)[r.slug] ?? "" };
 });
 
 export const RECIPE_BY_SLUG: Record<string, Recipe> = Object.fromEntries(RECIPES.map((r) => [r.slug, r]));
 
 /**
  * Qualité de la photo, pour mettre en avant les plus belles :
- * 2 = photo culinaire professionnelle (Unsplash), 1 = photo libre (Wikimedia), 0 = pas de photo (vignette illustrée).
+ * 3 = photo culinaire professionnelle (Unsplash), 2 = photo libre (Wikimedia, Pexels),
+ * 1 = illustration générée par IA, 0 = pas de photo (vignette illustrée).
  */
-export const photoRank = (r: Pick<Recipe, "image">) => (!r.image ? 0 : r.image.startsWith("http") ? 1 : 2);
+export const isAiPhoto = (image?: string) => !!image?.startsWith("/recipes/");
+export const photoRank = (r: Pick<Recipe, "image">) => (!r.image ? 0 : isAiPhoto(r.image) ? 1 : r.image.startsWith("http") ? 2 : 3);
 
 /** Trie des recettes de la plus belle photo à l'absence de photo (ordre d'origine conservé à qualité égale). */
 export const byPhoto = <T extends Pick<Recipe, "image">>(list: T[]) => [...list].sort((a, b) => photoRank(b) - photoRank(a));
@@ -940,6 +945,6 @@ export const byPhoto = <T extends Pick<Recipe, "image">>(list: T[]) => [...list]
 /** Accepte un identifiant Unsplash ou une URL complète (ex. photo Pexels). */
 export function unsplash(id: string, width = 1600) {
   if (!id) return "";
-  if (id.startsWith("http")) return id;
+  if (id.startsWith("http") || id.startsWith("/")) return id;
   return `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=80`;
 }

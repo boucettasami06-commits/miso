@@ -5,7 +5,7 @@ import { ArrowRight, ChefHat, Clock, Flame, Wallet } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import RecipeCard from "@/components/RecipeCard";
 import Reveal from "@/components/Reveal";
-import { RECIPES, RECIPE_BY_SLUG, byPhoto, unsplash } from "@/lib/data/recipes";
+import { RECIPES, RECIPE_BY_SLUG, byPhoto, isAiPhoto, unsplash } from "@/lib/data/recipes";
 import { INGREDIENTS } from "@/lib/data/ingredients";
 import { packPrice } from "@/lib/data/stores";
 import { recipeNutrition } from "@/lib/engine/nutrition";
@@ -49,7 +49,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     "@type": "Recipe",
     name: r.title,
     description: r.description,
-    image: r.image ? [unsplash(r.image, 1200), unsplash(r.image, 1920)] : undefined,
+    image: r.image ? [new URL(unsplash(r.image, 1200), SITE.url).href, new URL(unsplash(r.image, 1920), SITE.url).href] : undefined,
     author: { "@type": "Organization", name: SITE.name },
     totalTime: `PT${r.time}M`,
     recipeYield: "1 portion",
@@ -87,6 +87,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           <a href={r.credit.url} target="_blank" rel="noopener nofollow" className="absolute right-4 top-24 rounded-full bg-black/40 px-3 py-1 text-xs text-white/80 backdrop-blur hover:text-white">
             Photo : {r.credit.author} / {r.credit.source ?? "Pexels"}{r.credit.license ? ` · ${r.credit.license}` : ""}
           </a>
+        )}
+        {isAiPhoto(r.image) && (
+          <span className="absolute right-4 top-24 rounded-full bg-black/40 px-3 py-1 text-xs text-white/80 backdrop-blur">Illustration générée par IA</span>
         )}
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-7xl px-4 pb-12 text-white sm:px-6">
           <nav className="text-sm text-white/70" aria-label="Fil d'Ariane">
