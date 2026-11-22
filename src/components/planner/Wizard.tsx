@@ -17,6 +17,7 @@ import { loadProfile, savePlan, saveProfile } from "@/lib/storage";
 import type { Allergen, CookTime, Country, Diet, MealType, Profile, Restriction, WeekPlan } from "@/lib/types";
 import { CompareScreen, SavingsScreen } from "./Interludes";
 import StoreLogo from "../StoreLogo";
+import AuthModal from "../AuthModal";
 
 interface Style {
   id: string;
@@ -99,6 +100,10 @@ export default function Wizard() {
   const [compare, setCompare] = useState<"pending" | "showing" | "done">("pending");
   const [result, setResult] = useState<WeekPlan | null>(null);
   const auth = useAuth();
+  const signupMissing = auth.enabled && !auth.loading && !auth.user;
+  useEffect(() => {
+    if (signupMissing) event("signup_open", { from: "questionnaire" });
+  }, [signupMissing]);
 
   useEffect(() => {
     const saved = loadProfile();
@@ -175,7 +180,7 @@ export default function Wizard() {
     }, 1900);
   };
 
-  /** La semaine est générée sans compte : l'inscription est demandée à son affichage (voir PlanView). */
+  /** L'inscription se fait avant le questionnaire (bouton « Créer ma semaine » ou arrivée directe ici). */
   const finish = () => {
     event("wizard_done");
     generate();
@@ -206,8 +211,19 @@ export default function Wizard() {
     );
 
 
+  // Arrivée sur le questionnaire sans compte (lien direct) : inscription d'abord, puis on enchaîne
+  const needSignup = signupMissing;
+
   return (
     <div className="mx-auto max-w-4xl px-4 pb-40 pt-28 sm:px-6 md:pt-32">
+      {needSignup && (
+        <AuthModal
+          title="Crée ton compte gratuit"
+          subtitle="Ensuite, on prépare ta semaine de repas et ta liste de courses en 2 minutes."
+          onClose={() => router.push("/")}
+          onSuccess={() => {}}
+        />
+      )}
       {/* Progression */}
       <div className="flex items-center gap-2" aria-label={`Étape ${step + 1} sur ${STEPS.length}`}>
         {STEPS.map((s, i) => (
