@@ -1,7 +1,7 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-export type PlanId = "monthly" | "yearly";
+export type PlanId = "monthly" | "yearly" | "lifetime";
 
 /**
  * Tarifs affichés (le prix réellement facturé est celui configuré dans Whop) :
@@ -11,6 +11,8 @@ export type PlanId = "monthly" | "yearly";
 export const PLANS: Record<PlanId, { checkoutEnv: string }> = {
   monthly: { checkoutEnv: "WHOP_CHECKOUT_URL_MONTHLY" },
   yearly: { checkoutEnv: "WHOP_CHECKOUT_URL_YEARLY" },
+  /** paiement unique de 59,99 € : accès illimité, sans abonnement */
+  lifetime: { checkoutEnv: "WHOP_CHECKOUT_URL_LIFETIME" },
 };
 
 export const COOKIE = "mijo_sub";

@@ -22,6 +22,9 @@ const PERKS = [
   ["Une nouvelle semaine quand tu veux", "avec de nouvelles recettes à chaque fois"],
 ] as const;
 
+/** L'offre « paiement unique » s'affiche dès que son lien de paiement Whop est configuré (NEXT_PUBLIC_LIFETIME_ON=1). */
+const LIFETIME_ON = process.env.NEXT_PUBLIC_LIFETIME_ON === "1";
+
 /** Prix ramené à la semaine : 9,99 € × 12 / 52 ≈ 2,30 €. */
 const WEEKLY = 2.3;
 
@@ -40,7 +43,9 @@ export default function Paywall({
 }) {
   /** Gain annuel net : économie hebdomadaire moins le prix de l'abonnement ramené à la semaine. */
   const yearlyGain = Math.round((totalSavings - WEEKLY) * 52);
-  const [plan, setPlan] = useState<"yearly" | "monthly">("monthly");
+  const [yearlyBox, setYearlyBox] = useState(false);
+  const [lifetime, setLifetime] = useState(false);
+  const plan = lifetime ? "lifetime" : yearlyBox ? "yearly" : "monthly";
   const yearly = plan === "yearly";
   const auth = useAuth();
 
@@ -109,7 +114,10 @@ export default function Paywall({
         </div>
 
         {/* Une seule formule affichée au mois ; l'option annuelle est une case à cocher (même prix mensuel, réduit) */}
-        <div className="mt-6 rounded-2xl border-2 border-tomato bg-white p-5 shadow-lg">
+        <div
+          onClick={() => lifetime && (setLifetime(false), event("plan_select", { formule: yearlyBox ? "yearly" : "monthly" }))}
+          className={`mt-6 rounded-2xl border-2 bg-white p-5 transition ${lifetime ? "cursor-pointer border-line opacity-70" : "border-tomato shadow-lg"}`}
+        >
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-display text-lg font-bold">Accès complet Budgemy</p>
@@ -124,11 +132,11 @@ export default function Paywall({
           <label className={`mt-4 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-3 transition ${yearly ? "border-tomato bg-tomato/5" : "border-dashed border-line"}`}>
             <input
               type="checkbox"
-              checked={yearly}
+              checked={yearlyBox}
               onChange={(e) => {
-                const p = e.target.checked ? "yearly" : "monthly";
-                setPlan(p);
-                event("plan_select", { formule: p });
+                setYearlyBox(e.target.checked);
+                setLifetime(false);
+                event("plan_select", { formule: e.target.checked ? "yearly" : "monthly" });
               }}
               className="h-5 w-5 shrink-0 accent-tomato"
             />
@@ -139,6 +147,29 @@ export default function Paywall({
             </span>
           </label>
         </div>
+
+        {LIFETIME_ON && (
+          <button
+            type="button"
+            onClick={() => {
+              setLifetime(true);
+              event("plan_select", { formule: "lifetime" });
+            }}
+            aria-pressed={lifetime}
+            className={`mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border-2 bg-white p-4 text-left transition ${lifetime ? "border-tomato shadow-lg" : "border-line"}`}
+          >
+            <span className="flex items-center gap-3">
+              <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${lifetime ? "border-tomato bg-tomato" : "border-line"}`}>
+                {lifetime && <span className="h-2 w-2 rounded-full bg-white" />}
+              </span>
+              <span>
+                <span className="block font-display text-base font-bold">Paiement unique · accès à vie</span>
+                <span className="block text-xs text-ink-soft">Une seule fois, sans abonnement, accès illimité</span>
+              </span>
+            </span>
+            <span className="shrink-0 whitespace-nowrap font-display text-2xl font-extrabold">59,99 €</span>
+          </button>
+        )}
 
         {auth.user && (
           <div className="mt-6 rounded-2xl border-2 border-tomato/40 bg-cream-2 p-4 text-sm">

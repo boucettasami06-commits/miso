@@ -33,6 +33,10 @@ export default function Page() {
       <ul className="mt-3 list-disc space-y-1 pl-6">
         <li>Abonnement mensuel : 9,99 € TTC par mois.</li>
         <li>Abonnement annuel : 107,89 € TTC par an (soit 10 % de réduction par rapport au mensuel).</li>
+        <li>
+          Accès à vie : 59,99 € TTC en paiement unique, sans abonnement ni renouvellement. Il donne un accès illimité au service pour toute la durée
+          de son exploitation par l&apos;éditeur.
+        </li>
       </ul>
       <p className="mt-3">
         Les prix sont indiqués en euros, toutes taxes comprises. L&apos;éditeur peut faire évoluer ses prix ; tout changement est annoncé par e-mail au
