@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { COOKIE, checkMembership, cookieOptions, findMembershipByEmail, sign, token, verify } from "@/lib/billing";
+import { COOKIE, checkMembership, cookieOptions, findMembershipByEmail, freeAccess, sign, token, verify } from "@/lib/billing";
 import { currentUser } from "@/lib/auth";
 import { sql } from "@/lib/db";
 
@@ -16,6 +16,8 @@ const DAY = 24 * 3600 * 1000;
  */
 export async function GET() {
   const user = await currentUser().catch(() => null);
+  // Accès offert à vie : jamais retiré, quel que soit l'état chez Whop
+  if (freeAccess(user?.email)) return NextResponse.json({ active: true });
   if (user?.whop_membership) {
     const fresh = user.sub_checked_at && Date.now() - new Date(user.sub_checked_at).getTime() < DAY;
     if (fresh) return NextResponse.json({ active: user.sub_active });

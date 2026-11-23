@@ -47,6 +47,19 @@ export function verify(raw: string | undefined): SubToken | null {
   }
 }
 
+/**
+ * Accès gratuit et permanent (compte du fondateur, testeurs…), sans abonnement Whop :
+ * adresses listées dans FREE_ACCESS_EMAILS et ADMIN_EMAILS (séparées par des virgules).
+ */
+export function freeAccess(email: string | null | undefined): boolean {
+  if (!email) return false;
+  const list = `${process.env.FREE_ACCESS_EMAILS ?? ""},${process.env.ADMIN_EMAILS ?? ""}`
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  return list.includes(email.trim().toLowerCase());
+}
+
 export const billingReady = () => !!(process.env.WHOP_API_KEY && secret());
 
 /**
