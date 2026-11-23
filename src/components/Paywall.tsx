@@ -8,11 +8,7 @@ import { money } from "@/lib/format";
 import { event } from "@/lib/funnel";
 import { useAuth } from "@/lib/useAuth";
 
-/** Tarifs affichés : 9,99 €/mois ou 107,89 €/an (= 12 × 9,99 € avec 10 % de réduction). */
-const PLANS = [
-  { id: "yearly", name: "Annuel", price: "107,89 €", per: "/ an", sub: "soit 8,99 €/mois · 2,07 € par semaine", badge: "-10 %" },
-  { id: "monthly", name: "Mensuel", price: "9,99 €", per: "/ mois", sub: "≈ 2,30 € par semaine · sans engagement" },
-] as const;
+/** Tarifs : 9,99 €/mois, ou 107,89 €/an (= 12 × 9,99 € avec 10 % de réduction, soit 8,99 €/mois). */
 
 /** Ce que l'abonnement change concrètement (uniquement des fonctions réellement disponibles). */
 const PERKS = [
@@ -44,7 +40,8 @@ export default function Paywall({
 }) {
   /** Gain annuel net : économie hebdomadaire moins le prix de l'abonnement ramené à la semaine. */
   const yearlyGain = Math.round((totalSavings - WEEKLY) * 52);
-  const [plan, setPlan] = useState<"yearly" | "monthly">("yearly");
+  const [plan, setPlan] = useState<"yearly" | "monthly">("monthly");
+  const yearly = plan === "yearly";
   const auth = useAuth();
 
   useEffect(() => {
@@ -82,7 +79,7 @@ export default function Paywall({
           <Lock size={22} />
         </span>
         <h2 className="mt-4 font-display text-3xl font-extrabold leading-tight">Ta semaine est prête 🎉</h2>
-        <p className="mt-2 text-ink-soft">Pour générer ta semaine et ta liste de courses, choisis ta formule.</p>
+        <p className="mt-2 text-ink-soft">Pour débloquer ta semaine et ta liste de courses.</p>
 
         <div className="mt-5 flex items-center gap-3 rounded-2xl border-2 border-tomato/30 bg-tomato/5 p-4">
           <ShieldCheck size={28} className="shrink-0 text-tomato" />
@@ -93,7 +90,7 @@ export default function Paywall({
         </div>
 
         <div className="mt-3 rounded-2xl bg-ink p-4 text-cream">
-          <p className="font-display text-2xl font-extrabold">≈ 2,30 € par semaine</p>
+          <p className="font-display text-2xl font-extrabold">≈ {yearly ? "2,07" : "2,30"} € par semaine</p>
           <p className="mt-1 text-sm text-cream/80">
             {savings >= WEEKLY + 0.5 ? (
               <>
@@ -111,35 +108,37 @@ export default function Paywall({
           )}
         </div>
 
-        <div className="mt-6 grid gap-3">
-          {PLANS.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => {
-                setPlan(p.id);
-                event("plan_select", { formule: p.id });
+        {/* Une seule formule affichée au mois ; l'option annuelle est une case à cocher (même prix mensuel, réduit) */}
+        <div className="mt-6 rounded-2xl border-2 border-tomato bg-white p-5 shadow-lg">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-display text-lg font-bold">Accès complet Budgemy</p>
+              <p className="text-xs text-ink-soft">{yearly ? "≈ 2,07 € par semaine" : "≈ 2,30 € par semaine · sans engagement"}</p>
+            </div>
+            <p className="shrink-0 whitespace-nowrap text-right">
+              {yearly && <span className="mr-1.5 text-sm text-ink-soft line-through">9,99 €</span>}
+              <span className="font-display text-3xl font-extrabold">{yearly ? "8,99 €" : "9,99 €"}</span>
+              <span className="text-sm text-ink-soft"> / mois</span>
+            </p>
+          </div>
+          <label className={`mt-4 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-3 transition ${yearly ? "border-tomato bg-tomato/5" : "border-dashed border-line"}`}>
+            <input
+              type="checkbox"
+              checked={yearly}
+              onChange={(e) => {
+                const p = e.target.checked ? "yearly" : "monthly";
+                setPlan(p);
+                event("plan_select", { formule: p });
               }}
-              aria-pressed={plan === p.id}
-              className={`relative flex items-center justify-between rounded-2xl border-2 p-4 text-left transition ${plan === p.id ? "border-tomato bg-white shadow-lg" : "border-line bg-white/60"}`}
-            >
-              <span className="flex items-center gap-3">
-                <span className={`grid h-5 w-5 place-items-center rounded-full border-2 ${plan === p.id ? "border-tomato bg-tomato" : "border-line"}`}>
-                  {plan === p.id && <span className="h-2 w-2 rounded-full bg-white" />}
-                </span>
-                <span>
-                  <span className="block font-display text-lg font-bold">{p.name}</span>
-                  <span className="block text-xs text-ink-soft">{p.sub}</span>
-                </span>
-              </span>
-              <span className="shrink-0 whitespace-nowrap text-right">
-                <span className="font-display text-2xl font-extrabold">{p.price}</span>
-                <span className="text-sm text-ink-soft"> {p.per}</span>
-              </span>
-              {"badge" in p && <span className="absolute -top-2.5 right-4 rounded-full bg-tomato px-2.5 text-white py-0.5 text-xs font-bold">{p.badge}</span>}
-            </button>
-          ))}
+              className="h-5 w-5 shrink-0 accent-tomato"
+            />
+            <span className="text-sm">
+              <span className="font-semibold">Payer à l&apos;année et économiser 10&nbsp;%</span>
+              <span className="ml-2 rounded-full bg-tomato px-2 py-0.5 text-xs font-bold text-white">-10 %</span>
+              <span className="block text-xs text-ink-soft">8,99 €/mois au lieu de 9,99 €, réglés en une fois : 107,89 € pour 12 mois.</span>
+            </span>
+          </label>
         </div>
-
 
         {auth.user && (
           <div className="mt-6 rounded-2xl border-2 border-tomato/40 bg-cream-2 p-4 text-sm">
