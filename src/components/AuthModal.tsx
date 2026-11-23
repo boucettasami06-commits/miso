@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2, X } from "lucide-react";
 import { event } from "@/lib/funnel";
-import { notifyAuthChange, type PublicUser } from "@/lib/useAuth";
+import { notifyAuthChange, useAuth, type PublicUser } from "@/lib/useAuth";
 
 type Mode = "signup" | "login";
 
@@ -16,6 +16,7 @@ export default function AuthModal({
   onClose,
   onSuccess,
   dismissible = true,
+  next,
 }: {
   initialMode?: Mode;
   title?: string;
@@ -24,7 +25,14 @@ export default function AuthModal({
   onSuccess: (u: PublicUser) => void;
   /** false : inscription obligatoire, la fenêtre ne peut pas être fermée. */
   dismissible?: boolean;
+  /** page où revenir après « Continuer avec Google » (par défaut : la page actuelle) */
+  next?: string;
 }) {
+  const { google } = useAuth();
+  const startGoogle = () => {
+    const to = next ?? location.pathname + location.search;
+    location.href = `/api/auth/google?next=${encodeURIComponent(to)}`;
+  };
   const [mode, setMode] = useState<Mode>(initialMode);
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", consent: false });
   const [busy, setBusy] = useState(false);
@@ -87,7 +95,37 @@ export default function AuthModal({
           {mode === "signup" ? subtitle ?? "Ta semaine et ta liste de courses seront enregistrées dans ton compte." : "Connecte-toi pour retrouver ta semaine."}
         </p>
 
-        <form onSubmit={submit} className="mt-6 space-y-3">
+        {google && (
+          <>
+            <button
+              type="button"
+              onClick={startGoogle}
+              className="mt-6 flex w-full items-center justify-center gap-3 rounded-full border border-line bg-white py-3.5 font-semibold transition hover:border-ink"
+            >
+              <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden>
+                <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
+                <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+                <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+                <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
+              </svg>
+              {mode === "signup" ? "S'inscrire avec Google" : "Se connecter avec Google"}
+            </button>
+            {mode === "signup" && (
+              <p className="mt-2 text-center text-xs text-ink-soft">
+                En continuant avec Google, tu acceptes la{" "}
+                <Link href="/confidentialite" target="_blank" className="underline underline-offset-2">
+                  politique de confidentialité
+                </Link>
+                .
+              </p>
+            )}
+            <div className="my-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              <span className="h-px flex-1 bg-line" /> ou avec ton e-mail <span className="h-px flex-1 bg-line" />
+            </div>
+          </>
+        )}
+
+        <form onSubmit={submit} className={google ? "space-y-3" : "mt-6 space-y-3"}>
           {mode === "signup" && (
             <div className="grid grid-cols-2 gap-3">
               <input className={input} placeholder="Prénom" autoComplete="given-name" required value={form.firstName} onChange={set("firstName")} aria-label="Prénom" />

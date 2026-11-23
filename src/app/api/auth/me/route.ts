@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { currentUser, publicUser } from "@/lib/auth";
 import { dbReady } from "@/lib/db";
+import { googleReady } from "@/lib/google";
 
 export const dynamic = "force-dynamic";
 
@@ -8,5 +9,5 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   if (!dbReady()) return NextResponse.json({ enabled: false, user: null });
   const u = await currentUser().catch(() => null);
-  return NextResponse.json({ enabled: true, user: u ? publicUser(u) : null });
+  return NextResponse.json({ enabled: true, google: googleReady(), user: u ? publicUser(u) : null });
 }

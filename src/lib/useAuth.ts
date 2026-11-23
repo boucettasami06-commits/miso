@@ -10,17 +10,18 @@ export interface PublicUser {
 
 /** État de connexion côté navigateur. `enabled` = la base de comptes est branchée. */
 export function useAuth() {
-  const [state, setState] = useState<{ loading: boolean; enabled: boolean; user: PublicUser | null }>({
+  const [state, setState] = useState<{ loading: boolean; enabled: boolean; google: boolean; user: PublicUser | null }>({
     loading: true,
     enabled: false,
+    google: false,
     user: null,
   });
 
   const refresh = useCallback(async () => {
     const d = (await fetch("/api/auth/me", { cache: "no-store" })
       .then((r) => r.json())
-      .catch(() => ({ enabled: false, user: null }))) as { enabled: boolean; user: PublicUser | null };
-    setState({ loading: false, enabled: d.enabled, user: d.user });
+      .catch(() => ({ enabled: false, user: null }))) as { enabled: boolean; google?: boolean; user: PublicUser | null };
+    setState({ loading: false, enabled: d.enabled, google: !!d.google, user: d.user });
     return d;
   }, []);
 

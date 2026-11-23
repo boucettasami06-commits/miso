@@ -35,6 +35,7 @@ export function ensureSchema() {
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS relance_step int NOT NULL DEFAULT 0`;
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS relance_at timestamptz`;
     await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS unsubscribed_at timestamptz`;
+    await q`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_sub text`;
     await q`UPDATE users SET relance_step = 1, relance_at = reminder_sent_at WHERE reminder_sent_at IS NOT NULL AND relance_step = 0`;
     await q`CREATE TABLE IF NOT EXISTS password_resets (
       token_hash text PRIMARY KEY,

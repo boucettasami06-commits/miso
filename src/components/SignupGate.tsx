@@ -16,6 +16,19 @@ export default function SignupGate() {
   const router = useRouter();
   const [target, setTarget] = useState<string | null>(null);
 
+  // Retour de « Continuer avec Google » : on mesure l'inscription ou la connexion, puis on nettoie l'adresse
+  useEffect(() => {
+    const url = new URL(location.href);
+    const a = url.searchParams.get("auth");
+    if (!a?.startsWith("google_")) return;
+    if (a === "google_inscription") event("signup_ok", { via: "google" });
+    else if (a === "google_connexion") event("login_ok", { via: "google" });
+    else if (a === "google_erreur") alert("La connexion avec Google n'a pas abouti. Réessaie, ou inscris-toi avec ton e-mail.");
+    url.searchParams.delete("auth");
+    url.searchParams.delete("raison");
+    history.replaceState(null, "", url.pathname + url.search + url.hash);
+  }, []);
+
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (!auth.enabled || auth.user || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
@@ -36,6 +49,7 @@ export default function SignupGate() {
   if (!target) return null;
   return (
     <AuthModal
+      next={target}
       title="Crée ton compte gratuit"
       subtitle="Ensuite, on prépare ta semaine de repas et ta liste de courses en 2 minutes."
       onClose={() => setTarget(null)}
