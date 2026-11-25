@@ -50,6 +50,24 @@ export function verify(raw: string | undefined): SubToken | null {
 }
 
 /**
+ * Adresse e-mail sous sa forme canonique, pour comparer le compte Budgemy et l'acheteur Whop :
+ * minuscules, et pour Gmail les points et le « +suffixe » sont ignorés (comme le fait Gmail),
+ * donc boucettasami.06@gmail.com = boucetta.sami06@gmail.com.
+ */
+export function canonicalEmail(email: string | null | undefined): string {
+  const e = (email ?? "").trim().toLowerCase();
+  const at = e.lastIndexOf("@");
+  if (at < 0) return e;
+  let local = e.slice(0, at);
+  let domain = e.slice(at + 1);
+  if (domain === "gmail.com" || domain === "googlemail.com") {
+    local = local.split("+")[0].replace(/\./g, "");
+    domain = "gmail.com";
+  }
+  return `${local}@${domain}`;
+}
+
+/**
  * Accès gratuit et permanent (compte du fondateur, testeurs…), sans abonnement Whop :
  * adresses listées dans FREE_ACCESS_EMAILS et ADMIN_EMAILS (séparées par des virgules).
  */
@@ -57,9 +75,9 @@ export function freeAccess(email: string | null | undefined): boolean {
   if (!email) return false;
   const list = `${process.env.FREE_ACCESS_EMAILS ?? ""},${process.env.ADMIN_EMAILS ?? ""}`
     .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  return list.includes(email.trim().toLowerCase());
+    .map(canonicalEmail)
+    .filter((s) => s.length > 1);
+  return list.includes(canonicalEmail(email));
 }
 
 export const billingReady = () => !!(process.env.WHOP_API_KEY && secret());
@@ -92,7 +110,7 @@ export async function checkMembership(id: string): Promise<boolean> {
 export async function findMembershipByEmail(email: string): Promise<string | null> {
   const key = process.env.WHOP_API_KEY;
   if (!key) return null;
-  const wanted = email.trim().toLowerCase();
+  const wanted = canonicalEmail(email);
   // L'API v2 renvoie l'e-mail de l'acheteur sur chaque abonnement ; on parcourt les abonnements valides page par page.
   for (let page = 1; page <= 20; page++) {
     const res = await fetch(`https://api.whop.com/api/v2/memberships?valid=true&per=50&page=${page}`, {
@@ -104,7 +122,7 @@ export async function findMembershipByEmail(email: string): Promise<string | nul
       data?: { id: string; email?: string | null }[];
       pagination?: { total_page?: number };
     };
-    const hit = data?.find((m) => (m.email ?? "").toLowerCase() === wanted);
+    const hit = data?.find((m) => canonicalEmail(m.email) === wanted);
     if (hit) return hit.id;
     if (!pagination?.total_page || page >= pagination.total_page) break;
   }
@@ -126,7 +144,7 @@ export async function paidEmails(): Promise<Set<string> | null> {
       data?: { email?: string | null }[];
       pagination?: { total_page?: number };
     };
-    for (const m of data ?? []) if (m.email) out.add(m.email.toLowerCase());
+    for (const m of data ?? []) if (m.email) out.add(canonicalEmail(m.email));
     if (!pagination?.total_page || page >= pagination.total_page) break;
   }
   return out;

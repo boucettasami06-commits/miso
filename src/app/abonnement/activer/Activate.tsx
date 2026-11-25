@@ -55,11 +55,22 @@ export default function Activate() {
       activateId(fromWhop).finally(() => setChecking(false));
       return;
     }
-    // Compte connecté : l'abonnement est retrouvé automatiquement grâce à l'e-mail utilisé chez Whop
-    fetch("/api/subscription", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d: { active?: boolean }) => (d.active ? done() : setChecking(false)))
-      .catch(() => setChecking(false));
+    // Compte connecté : l'abonnement est retrouvé automatiquement grâce à l'e-mail utilisé chez Whop.
+    // Juste après le paiement, Whop peut mettre quelques secondes à l'enregistrer : on réessaie pendant ~45 s.
+    let stop = false;
+    const tryOnce = async (n: number) => {
+      const d = (await fetch("/api/subscription", { cache: "no-store" })
+        .then((r) => r.json())
+        .catch(() => ({}))) as { active?: boolean };
+      if (stop) return;
+      if (d.active) return done();
+      if (n < 5) setTimeout(() => tryOnce(n + 1), 9000);
+      else setChecking(false);
+    };
+    tryOnce(0);
+    return () => {
+      stop = true;
+    };
   }, [params, activateId, done]);
 
   const sendCode = async () => {

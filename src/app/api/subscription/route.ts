@@ -12,7 +12,7 @@ const DAY = 24 * 3600 * 1000;
  * L'utilisateur a-t-il un abonnement actif ?
  * 1) compte connecté : abonnement rattaché au compte (revérifié chez Whop une fois par jour) ;
  * 2) sinon : jeton signé de l'appareil (accès activé avant la création des comptes) ;
- * 3) sinon : abonnement Whop souscrit avec la même adresse e-mail que le compte (vérifié au plus toutes les minutes).
+ * 3) sinon : abonnement Whop souscrit avec la même adresse e-mail que le compte (vérifié au plus toutes les 8 secondes).
  */
 export async function GET() {
   const user = await currentUser().catch(() => null);
@@ -28,7 +28,7 @@ export async function GET() {
 
   const t = verify((await cookies()).get(COOKIE)?.value);
   if (!t) {
-    const recent = user?.sub_checked_at && Date.now() - new Date(user.sub_checked_at).getTime() < 60 * 1000;
+    const recent = user?.sub_checked_at && Date.now() - new Date(user.sub_checked_at).getTime() < 8 * 1000;
     if (!user || recent) return NextResponse.json({ active: false });
     const found = await findMembershipByEmail(user.email).catch(() => null);
     await sql()`UPDATE users SET whop_membership = ${found}, sub_active = ${!!found}, sub_checked_at = now() WHERE id = ${user.id}`;

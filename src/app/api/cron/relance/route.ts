@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { freeAccess, paidEmails, unsubscribeSig } from "@/lib/billing";
+import { canonicalEmail, freeAccess, paidEmails, unsubscribeSig } from "@/lib/billing";
 import { dbReady, ensureSchema, sql } from "@/lib/db";
 import { money } from "@/lib/format";
 import { mailReady, sendRelance } from "@/lib/mail";
@@ -54,7 +54,7 @@ export async function GET(req: Request) {
   for (const u of rows) {
     const email = u.email.toLowerCase();
     if (admins.includes(email) || freeAccess(email)) continue;
-    if (paid?.has(email)) {
+    if (paid?.has(canonicalEmail(email))) {
       if (!dry) await sql()`UPDATE users SET sub_active = true, sub_checked_at = now() WHERE id = ${u.id}`;
       report.push({ email, step: 0, status: "déjà abonné" });
       continue;
