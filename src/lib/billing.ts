@@ -66,7 +66,7 @@ export const billingReady = () => !!(process.env.WHOP_API_KEY && secret());
 
 /**
  * Vérifie auprès de l'API Whop qu'un abonnement (ou une clé de licence) est valide,
- * et qu'il appartient bien à un produit Budgemy si WHOP_PRODUCT_ID est défini
+ * (tout produit de la boutique Whop Budgemy : abonnements ou paiement unique).
  * (plusieurs identifiants séparés par des virgules : un produit par formule).
  */
 export async function checkMembership(id: string): Promise<boolean> {
@@ -78,18 +78,13 @@ export async function checkMembership(id: string): Promise<boolean> {
   });
   if (!res.ok) return false;
   const m = (await res.json()) as { valid?: boolean; status?: string; product?: string | { id?: string } };
-  const product = typeof m.product === "string" ? m.product : m.product?.id;
-  const wanted = productIds();
-  if (wanted.length && product && !wanted.includes(product)) return false;
   return m.valid === true || ["active", "trialing", "completed"].includes(m.status ?? "");
 }
 
-/** Produits Budgemy autorisés (WHOP_PRODUCT_ID, séparés par des virgules). */
-const productIds = () =>
-  (process.env.WHOP_PRODUCT_ID ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+/**
+ * Tous les produits de la boutique Whop Budgemy donnent accès (abonnements mensuel/annuel, paiement unique…) :
+ * la clé API ne voit que les ventes de cette boutique.
+ */
 
 /**
  * Retrouve l'abonnement actif d'un client à partir de l'e-mail utilisé chez Whop,
@@ -97,8 +92,7 @@ const productIds = () =>
  */
 export async function findMembershipByEmail(email: string): Promise<string | null> {
   const key = process.env.WHOP_API_KEY;
-  const products = productIds();
-  if (!key || !products.length) return null;
+  if (!key) return null;
   const wanted = email.trim().toLowerCase();
   // L'API v2 renvoie l'e-mail de l'acheteur sur chaque abonnement ; on parcourt les abonnements valides page par page.
   for (let page = 1; page <= 20; page++) {
@@ -108,10 +102,10 @@ export async function findMembershipByEmail(email: string): Promise<string | nul
     });
     if (!res.ok) return null;
     const { data, pagination } = (await res.json()) as {
-      data?: { id: string; email?: string | null; product?: string | null }[];
+      data?: { id: string; email?: string | null }[];
       pagination?: { total_page?: number };
     };
-    const hit = data?.find((m) => (m.email ?? "").toLowerCase() === wanted && (!m.product || products.includes(m.product)));
+    const hit = data?.find((m) => (m.email ?? "").toLowerCase() === wanted);
     if (hit) return hit.id;
     if (!pagination?.total_page || page >= pagination.total_page) break;
   }
@@ -121,8 +115,7 @@ export async function findMembershipByEmail(email: string): Promise<string | nul
 /** E-mails de tous les abonnements Budgemy valides chez Whop (une seule lecture pour toute une relance). */
 export async function paidEmails(): Promise<Set<string> | null> {
   const key = process.env.WHOP_API_KEY;
-  const products = productIds();
-  if (!key || !products.length) return null;
+  if (!key) return null;
   const out = new Set<string>();
   for (let page = 1; page <= 40; page++) {
     const res = await fetch(`https://api.whop.com/api/v2/memberships?valid=true&per=50&page=${page}`, {
@@ -131,10 +124,10 @@ export async function paidEmails(): Promise<Set<string> | null> {
     });
     if (!res.ok) return null;
     const { data, pagination } = (await res.json()) as {
-      data?: { email?: string | null; product?: string | null }[];
+      data?: { email?: string | null }[];
       pagination?: { total_page?: number };
     };
-    for (const m of data ?? []) if (m.email && (!m.product || products.includes(m.product))) out.add(m.email.toLowerCase());
+    for (const m of data ?? []) if (m.email) out.add(m.email.toLowerCase());
     if (!pagination?.total_page || page >= pagination.total_page) break;
   }
   return out;
