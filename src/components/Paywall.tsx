@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Lock, ShieldCheck, X } from "lucide-react";
+import { Check, Flame, Lock, ShieldCheck, X } from "lucide-react";
 import { money } from "@/lib/format";
 import { event } from "@/lib/funnel";
 import { useAuth } from "@/lib/useAuth";
+import { LIFETIME_END, LIFETIME_END_LABEL, LIFETIME_PRICE, lifetimeOpen } from "@/lib/offer";
 
 /** Tarifs : 9,99 €/mois, ou 107,89 €/an (= 12 × 9,99 € avec 10 % de réduction, soit 8,99 €/mois). */
 
@@ -22,8 +23,6 @@ const PERKS = [
   ["Une nouvelle semaine quand tu veux", "avec de nouvelles recettes à chaque fois"],
 ] as const;
 
-/** L'offre « paiement unique » s'affiche dès que son lien de paiement Whop est configuré (NEXT_PUBLIC_LIFETIME_ON=1). */
-const LIFETIME_ON = process.env.NEXT_PUBLIC_LIFETIME_ON === "1";
 
 /** Prix ramené à la semaine : 9,99 € × 12 / 52 ≈ 2,30 €. */
 const WEEKLY = 2.3;
@@ -45,6 +44,9 @@ export default function Paywall({
   const yearlyGain = Math.round((totalSavings - WEEKLY) * 52);
   const [yearlyBox, setYearlyBox] = useState(false);
   const [lifetime, setLifetime] = useState(false);
+  // Vérifié après l'affichage (l'heure du serveur et du navigateur peuvent différer)
+  const [showLifetime, setShowLifetime] = useState(false);
+  useEffect(() => setShowLifetime(lifetimeOpen()), []);
   const plan = lifetime ? "lifetime" : yearlyBox ? "yearly" : "monthly";
   const yearly = plan === "yearly";
   const auth = useAuth();
@@ -148,27 +150,14 @@ export default function Paywall({
           </label>
         </div>
 
-        {LIFETIME_ON && (
-          <button
-            type="button"
-            onClick={() => {
+        {showLifetime && (
+          <LifetimeOffer
+            selected={lifetime}
+            onSelect={() => {
               setLifetime(true);
               event("plan_select", { formule: "lifetime" });
             }}
-            aria-pressed={lifetime}
-            className={`mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border-2 bg-white p-4 text-left transition ${lifetime ? "border-tomato shadow-lg" : "border-line"}`}
-          >
-            <span className="flex items-center gap-3">
-              <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${lifetime ? "border-tomato bg-tomato" : "border-line"}`}>
-                {lifetime && <span className="h-2 w-2 rounded-full bg-white" />}
-              </span>
-              <span>
-                <span className="block font-display text-base font-bold">Paiement unique · accès à vie</span>
-                <span className="block text-xs text-ink-soft">Une seule fois, sans abonnement, accès illimité</span>
-              </span>
-            </span>
-            <span className="shrink-0 whitespace-nowrap font-display text-2xl font-extrabold">59,99 €</span>
-          </button>
+          />
         )}
 
         {auth.user && (
@@ -221,5 +210,71 @@ export default function Paywall({
         </p>
       </motion.div>
     </motion.div>
+  );
+}
+
+/** Compte à rebours jusqu'à la vraie date de fin de l'offre. */
+function useCountdown(end: Date) {
+  const [left, setLeft] = useState(() => Math.max(0, end.getTime() - Date.now()));
+  useEffect(() => {
+    const t = setInterval(() => setLeft(Math.max(0, end.getTime() - Date.now())), 1000);
+    return () => clearInterval(t);
+  }, [end]);
+  const s = Math.floor(left / 1000);
+  return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60, over: left <= 0 };
+}
+
+function LifetimeOffer({ selected, onSelect }: { selected: boolean; onSelect: () => void }) {
+  const c = useCountdown(LIFETIME_END);
+  if (c.over) return null;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`relative mt-5 w-full overflow-hidden rounded-2xl bg-ink p-5 pt-9 text-left text-cream transition ${selected ? "ring-4 ring-tomato" : "ring-2 ring-tomato/40 hover:ring-tomato"}`}
+    >
+      <span className="absolute inset-x-0 top-0 flex items-center justify-center gap-1.5 bg-tomato py-1.5 text-xs font-extrabold uppercase tracking-widest text-white">
+        <Flame size={14} /> Offre spéciale de lancement
+      </span>
+      <span className="flex items-start justify-between gap-3">
+        <span>
+          <span className="block font-display text-2xl font-extrabold leading-tight">Paye une fois.<br />Profite à vie.</span>
+          <span className="mt-1 block text-sm text-cream/75">Le prix de 6 mois d&apos;abonnement, pour toujours.</span>
+        </span>
+        <span className="shrink-0 text-right">
+          <span className="block font-display text-3xl font-extrabold text-tomato">{LIFETIME_PRICE}</span>
+          <span className="block text-xs font-semibold text-cream/75">une seule fois</span>
+        </span>
+      </span>
+      <span className="mt-4 grid gap-1.5 text-sm">
+        {["Accès illimité à toutes les fonctions", "Aucun abonnement, aucun prélèvement mensuel", "Toutes les nouveautés incluses"].map((t) => (
+          <span key={t} className="flex items-center gap-2">
+            <Check size={15} strokeWidth={3} className="shrink-0 text-tomato" /> {t}
+          </span>
+        ))}
+      </span>
+      <span className="mt-4 block rounded-xl bg-white/10 p-3 text-center">
+        <span className="block text-xs font-semibold uppercase tracking-wider text-cream/75">L&apos;offre se termine dans</span>
+        <span className="mt-1 flex justify-center gap-2 font-display text-xl font-extrabold tabular-nums">
+          {[
+            [c.d, "j"],
+            [pad(c.h), "h"],
+            [pad(c.m), "min"],
+            [pad(c.s), "s"],
+          ].map(([v, u]) => (
+            <span key={u as string}>
+              {v}
+              <span className="ml-0.5 text-xs font-semibold text-cream/75">{u}</span>
+            </span>
+          ))}
+        </span>
+        <span className="mt-1 block text-xs text-cream/75">Jusqu&apos;au {LIFETIME_END_LABEL}. Ensuite, Budgemy sera uniquement disponible en abonnement.</span>
+      </span>
+      <span className={`mt-4 flex items-center justify-center gap-2 rounded-full py-2.5 text-sm font-bold ${selected ? "bg-tomato text-white" : "bg-white/15"}`}>
+        {selected ? <><Check size={16} strokeWidth={3} /> Offre sélectionnée</> : "Choisir l'accès à vie"}
+      </span>
+    </button>
   );
 }

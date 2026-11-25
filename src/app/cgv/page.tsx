@@ -34,8 +34,8 @@ export default function Page() {
         <li>Abonnement mensuel : 9,99 € TTC par mois.</li>
         <li>Abonnement annuel : 107,89 € TTC par an (soit 10 % de réduction par rapport au mensuel).</li>
         <li>
-          Accès à vie : 59,99 € TTC en paiement unique, sans abonnement ni renouvellement. Il donne un accès illimité au service pour toute la durée
-          de son exploitation par l&apos;éditeur.
+          Accès à vie (offre de lancement, disponible jusqu&apos;au 31 décembre 2026 à 23h59, heure de Paris) : 59,99 € TTC en paiement unique,
+          sans abonnement ni renouvellement. Il donne un accès illimité au service pour toute la durée de son exploitation par l&apos;éditeur.
         </li>
       </ul>
       <p className="mt-3">
