@@ -65,9 +65,8 @@ export function freeAccess(email: string | null | undefined): boolean {
 export const billingReady = () => !!(process.env.WHOP_API_KEY && secret());
 
 /**
- * Vérifie auprès de l'API Whop qu'un abonnement (ou une clé de licence) est valide,
+ * Vérifie auprès de l'API Whop qu'un abonnement (ou une clé de licence) est valide
  * (tout produit de la boutique Whop Budgemy : abonnements ou paiement unique).
- * (plusieurs identifiants séparés par des virgules : un produit par formule).
  */
 export async function checkMembership(id: string): Promise<boolean> {
   const key = process.env.WHOP_API_KEY;
